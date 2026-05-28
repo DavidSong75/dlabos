@@ -1,0 +1,1604 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>D.LAB ONE - 통합 운영 플랫폼 프로토타입</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #6b7280;
+      --line: #dfe4ec;
+      --panel: #ffffff;
+      --bg: #f5f7fb;
+      --brand: #ffd335;
+      --brand-ink: #594600;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --green: #16a34a;
+      --red: #dc2626;
+      --violet: #7c3aed;
+      --orange: #ea580c;
+      --slate: #334155;
+      --shadow: 0 12px 32px rgba(23, 32, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--ink);
+      background: linear-gradient(180deg, rgba(255,211,53,.18), rgba(255,255,255,0) 250px), var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    /* ===== ROLE SELECT ===== */
+    .role-select-screen {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px;
+    }
+    .role-select-screen.hidden { display: none; }
+    .role-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .role-logo-mark { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 12px; background: var(--brand); font-weight: 900; font-size: 18px; border: 1px solid #e8c229; }
+    .role-logo-text { font-size: 28px; font-weight: 950; letter-spacing: -.5px; }
+    .role-subtitle { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
+    .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 880px; width: 100%; }
+    .role-card {
+      padding: 24px 20px; border: 2px solid var(--line); border-radius: 14px; background: white;
+      cursor: pointer; transition: all .2s; text-align: left;
+    }
+    .role-card:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .role-icon { font-size: 32px; margin-bottom: 12px; }
+    .role-card-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+    .role-card-desc { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    /* ===== APP SHELL ===== */
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 248px 1fr; }
+    .app-shell.hidden { display: none; }
+
+    .rail {
+      position: sticky; top: 0; height: 100vh; padding: 22px 16px;
+      border-right: 1px solid var(--line); background: rgba(255,255,255,.88);
+      backdrop-filter: blur(12px); overflow-y: auto;
+    }
+    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #e8c229; border-radius: 8px; background: var(--brand); color: #151515; font-weight: 900; }
+    .brand-title { font-size: 17px; font-weight: 900; }
+    .brand-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    .role-switch-btn {
+      width: 100%; padding: 8px 12px; margin-bottom: 14px; border: 1px solid var(--line);
+      border-radius: 8px; background: #f8fafc; color: var(--muted); font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .role-switch-btn:hover { background: #eef2f7; color: var(--ink); }
+
+    .nav-group-label { margin: 18px 8px 8px; color: #8b93a1; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .nav-btn {
+      width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 11px; margin: 3px 0;
+      border: 1px solid transparent; border-radius: 8px; background: transparent;
+      color: var(--slate); text-align: left; font-weight: 750; font-size: 14px;
+    }
+    .nav-btn:hover { background: #f1f5f9; }
+    .nav-btn.active { border-color: #e0bd28; background: #fff8d9; color: #201800; }
+    .nav-icon { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 7px; background: #eef2f7; font-size: 14px; font-weight: 900; }
+    .active .nav-icon { background: var(--brand); }
+
+    .main { min-width: 0; }
+    .topbar {
+      position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; padding: 18px 28px; border-bottom: 1px solid rgba(223,228,236,.82);
+      background: rgba(245,247,251,.78); backdrop-filter: blur(12px);
+    }
+    .page-title { font-size: 23px; margin: 0; letter-spacing: 0; }
+    .page-copy { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .content { padding: 24px 28px 48px; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ===== COMPONENTS ===== */
+    .select, .input, .textarea { border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); outline: none; }
+    .select { padding: 9px 10px; }
+    .input { width: 100%; padding: 12px; }
+    .textarea { width: 100%; min-height: 104px; padding: 12px; resize: vertical; line-height: 1.5; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 38px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 8px;
+      background: white; color: var(--ink); font-weight: 800; font-size: 13px;
+    }
+    .btn.primary { border-color: #d8b81e; background: var(--brand); color: #181300; }
+    .btn.dark { background: #172033; color: white; border-color: #172033; }
+    .btn.green { background: #dcfce7; color: #14532d; border-color: #b7ebc6; }
+    .btn.red { background: #fee2e2; color: #7f1d1d; border-color: #fecaca; }
+    .btn.blue { background: #dbeafe; color: #1e3a8a; border-color: #bfdbfe; }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .btn.sm { min-height: 30px; padding: 5px 10px; font-size: 12px; }
+
+    .grid { display: grid; gap: 14px; }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+
+    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
+    .panel.pad { padding: 16px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 15px 16px; border-bottom: 1px solid var(--line); }
+    .panel-title { margin: 0; font-size: 15px; font-weight: 900; }
+    .panel-sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .metric { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: white; min-height: 110px; }
+    .metric-label { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .metric-value { font-size: 28px; font-weight: 950; letter-spacing: 0; }
+    .metric-note { color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px;
+      border: 1px solid var(--line); background: #f8fafc; color: var(--slate); font-size: 12px; font-weight: 800; white-space: nowrap;
+    }
+    .tag.green { background: #dcfce7; color: #14532d; border-color: #b7ebc6; }
+    .tag.blue { background: #dbeafe; color: #1e3a8a; border-color: #bfdbfe; }
+    .tag.red { background: #fee2e2; color: #7f1d1d; border-color: #fecaca; }
+    .tag.yellow { background: #fff4bf; color: #594600; border-color: #ead77d; }
+    .tag.violet { background: #ede9fe; color: #4c1d95; border-color: #ddd6fe; }
+    .tag.orange { background: #ffedd5; color: #7c2d12; border-color: #fed7aa; }
+
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); padding: 0 16px; overflow-x: auto; }
+    .tab { padding: 10px 14px; border: none; background: none; color: var(--muted); font-weight: 800; font-size: 13px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+    .tab:hover { color: var(--ink); }
+    .tab.active { color: var(--ink); border-bottom-color: var(--brand); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #edf1f6; }
+    th { font-weight: 800; color: var(--muted); font-size: 12px; background: #fafbfd; }
+    .table-wrap { overflow-x: auto; }
+
+    .row-card { padding: 14px 16px; border-bottom: 1px solid #edf1f6; }
+    .row-card:last-child { border-bottom: 0; }
+    .row-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .row-title { font-weight: 850; font-size: 14px; }
+    .row-copy { color: var(--muted); font-size: 12px; margin-top: 4px; line-height: 1.5; }
+
+    /* Score badge */
+    .score { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; padding: 3px 8px; border-radius: 6px; background: #dcfce7; color: #14532d; font-weight: 900; font-size: 13px; }
+    .score.warn { background: #fff4bf; color: #594600; }
+    .score.danger { background: #fee2e2; color: #7f1d1d; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 13px 22px; border-radius: 10px; font-weight: 800; font-size: 14px; z-index: 999; opacity: 0; transition: all .3s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Kiosk */
+    .kiosk { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; }
+    .kiosk-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .kiosk-key {
+      aspect-ratio: 1.3; display: grid; place-items: center; border: 1px solid var(--line);
+      border-radius: 10px; background: white; font-size: 22px; font-weight: 900;
+    }
+    .kiosk-key:hover { background: #f1f5f9; }
+    .kiosk-key.action { background: var(--brand); border-color: #e0bd28; font-size: 14px; }
+    .kiosk-display {
+      text-align: center; padding: 20px; border: 1px solid var(--line); border-radius: 10px;
+      background: white; margin-bottom: 14px; letter-spacing: 12px; font-size: 32px; font-weight: 900;
+      min-height: 80px; display: flex; align-items: center; justify-content: center; color: var(--muted);
+    }
+    .kiosk-display.filled { color: var(--ink); }
+    .kiosk-result { text-align: center; padding: 30px; }
+    .kiosk-result .name { font-size: 22px; font-weight: 950; margin-bottom: 8px; }
+
+    /* Phone preview */
+    .phone { max-width: 340px; margin: 0 auto; border: 2px solid var(--line); border-radius: 24px; background: white; overflow: hidden; }
+    .phone-top { padding: 14px 16px; font-weight: 900; font-size: 14px; border-bottom: 1px solid var(--line); background: #fafbfd; }
+    .bubble { margin: 16px; padding: 14px; background: #fff8d9; border-radius: 4px 14px 14px 14px; font-size: 13px; line-height: 1.65; white-space: pre-line; }
+
+    /* Progress ring */
+    .progress-ring { position: relative; width: 120px; height: 120px; }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring .label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 950; }
+    .progress-ring .label .level { font-size: 28px; }
+    .progress-ring .label .sub { font-size: 11px; color: var(--muted); }
+
+    /* Bar chart (CSS) */
+    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 10px 0; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--blue); min-height: 4px; transition: height .3s; }
+    .bar.brand { background: var(--brand); }
+    .bar.green { background: var(--green); }
+    .bar.cyan { background: var(--cyan); }
+    .bar-label { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .bar-value { font-size: 11px; font-weight: 800; }
+
+    /* Heatmap */
+    .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: #edf1f6; }
+    .heatmap-cell.l1 { background: #dcfce7; }
+    .heatmap-cell.l2 { background: #86efac; }
+    .heatmap-cell.l3 { background: #22c55e; }
+    .heatmap-cell.l4 { background: #15803d; }
+    .heatmap-cell.empty { background: transparent; }
+    .heatmap-legend { display: flex; gap: 4px; align-items: center; margin-top: 6px; font-size: 11px; color: var(--muted); }
+    .heatmap-legend span { width: 12px; height: 12px; border-radius: 2px; }
+
+    /* Badge */
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 16px; }
+    .badge-item { text-align: center; padding: 14px 8px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+    .badge-item.locked { opacity: .4; }
+    .badge-icon { font-size: 28px; margin-bottom: 6px; }
+    .badge-name { font-size: 11px; font-weight: 800; }
+
+    /* Leaderboard */
+    .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #edf1f6; }
+    .lb-rank { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-weight: 900; font-size: 13px; background: #eef2f7; }
+    .lb-rank.gold { background: #ffd335; color: #594600; }
+    .lb-rank.silver { background: #e2e8f0; color: #334155; }
+    .lb-rank.bronze { background: #fed7aa; color: #7c2d12; }
+    .lb-name { flex: 1; font-weight: 800; }
+    .lb-pts { font-weight: 900; color: var(--blue); }
+
+    /* Level bar */
+    .levelbar { height: 8px; background: #edf1f6; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .levelbar span { display: block; height: 100%; background: var(--brand); border-radius: 4px; }
+
+    /* Schedule grid */
+    .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 2px; font-size: 12px; }
+    .schedule-cell { padding: 8px; background: white; border: 1px solid #edf1f6; min-height: 50px; }
+    .schedule-cell.header { background: #fafbfd; font-weight: 800; text-align: center; }
+    .schedule-cell.filled { background: #fff8d9; border-color: #ead77d; font-weight: 700; cursor: pointer; }
+    .schedule-cell.filled:hover { background: #fef3c7; }
+
+    /* Notification card */
+    .notif-card { padding: 14px 16px; border-bottom: 1px solid #edf1f6; cursor: pointer; }
+    .notif-card:hover { background: #fafbfd; }
+    .notif-card.unread { border-left: 3px solid var(--blue); }
+    .notif-time { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .notif-title { font-weight: 850; margin: 4px 0; }
+    .notif-body { font-size: 13px; color: var(--muted); line-height: 1.5; display: none; }
+    .notif-card.expanded .notif-body { display: block; }
+
+    /* Recording indicator */
+    .rec-indicator { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; background: #fee2e2; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); animation: blink 1s infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .rec-timer { font-weight: 900; font-size: 18px; color: var(--red); }
+
+    /* Checkin animation */
+    .checkin-success { text-align: center; padding: 40px; animation: popIn .4s ease-out; }
+    @keyframes popIn { 0% { transform: scale(.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .checkin-emoji { font-size: 64px; margin-bottom: 16px; }
+    .checkin-name { font-size: 26px; font-weight: 950; margin-bottom: 8px; }
+    .checkin-info { color: var(--muted); font-size: 14px; margin-bottom: 4px; }
+    .checkin-points { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #fff8d9; font-weight: 900; margin-top: 12px; }
+
+    /* Step indicator */
+    .steps { display: flex; align-items: center; gap: 0; margin-bottom: 20px; }
+    .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--muted); }
+    .step.active { color: var(--ink); }
+    .step.done { color: var(--green); }
+    .step-num { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #eef2f7; font-size: 12px; }
+    .step.active .step-num { background: var(--brand); color: var(--brand-ink); }
+    .step.done .step-num { background: #dcfce7; color: #14532d; }
+    .step-line { width: 32px; height: 2px; background: var(--line); margin: 0 4px; }
+
+    /* Cart item */
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #edf1f6; }
+    .cart-item-info { flex: 1; }
+    .cart-item-price { font-weight: 900; text-align: right; }
+
+    /* DRM notice */
+    .drm-notice { padding: 12px 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+
+    /* Breadcrumb */
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .breadcrumb a { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 700; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 1080px) {
+      .app-shell { grid-template-columns: 200px 1fr; }
+      .cols-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 680px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .rail { display: none; }
+      .cols-2, .cols-3 { grid-template-columns: 1fr; }
+      .kiosk { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ROLE SELECTION -->
+<div id="roleScreen" class="role-select-screen">
+  <div class="role-logo">
+    <div class="role-logo-mark">D</div>
+    <div class="role-logo-text">D.LAB ONE</div>
+  </div>
+  <div class="role-subtitle">통합 운영 플랫폼 프로토타입 - 역할을 선택하세요</div>
+  <div class="role-grid" id="roleGrid"></div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" class="app-shell hidden">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand-mark">D</div>
+      <div><div class="brand-title">D.LAB ONE</div><div class="brand-sub" id="roleBadge"></div></div>
+    </div>
+    <button class="role-switch-btn" onclick="switchRole()">&#x21C4; 역할 전환</button>
+    <nav id="nav"></nav>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div><h1 class="page-title" id="pageTitle"></h1><p class="page-copy" id="pageCopy"></p></div>
+      <div class="toolbar" id="topToolbar"></div>
+    </div>
+    <div class="content" id="viewContainer"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== DATA ====================
+
+const roles = [
+  { id: "student", label: "학생", icon: "&#x1F393;", desc: "출석, 수업, 보상, 성장 기록", default: "student-kiosk" },
+  { id: "parent", label: "학부모", icon: "&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F466;", desc: "알림, 리포트, 성장 추적, 결제", default: "parent-home" },
+  { id: "teacher", label: "교사", icon: "&#x1F4DA;", desc: "수업 관리, 녹음, AI 리포트, 포인트", default: "teacher-home" },
+  { id: "director", label: "캠퍼스 원장", icon: "&#x1F3EB;", desc: "운영 현황, 학생/재무 관리", default: "director-dashboard" },
+  { id: "hq", label: "본사 운영", icon: "&#x1F3E2;", desc: "프랜차이즈 전체 모니터링, 품질 관리", default: "hq-dashboard" },
+  { id: "market", label: "콘텐츠 마켓", icon: "&#x1F6D2;", desc: "콘텐츠 탐색, 구매, 판매, 정산", default: "market-browse" },
+  { id: "admin", label: "관리자", icon: "&#x2699;&#xFE0F;", desc: "LMS, 동의 관리, 감사 로그", default: "admin-lms" },
+];
+
+const navConfig = {
+  student: [
+    ["student-kiosk", "출석 키오스크", "&#x1F4F1;"],
+    ["student-dashboard", "학생 대시보드", "&#x1F3E0;"],
+    ["student-class", "오늘의 수업", "&#x1F4BB;"],
+    ["student-rewards", "보상 & 상점", "&#x1F3C6;"],
+    ["student-growth", "나의 성장", "&#x1F4C8;"],
+  ],
+  parent: [
+    ["parent-home", "홈", "&#x1F3E0;"],
+    ["parent-notifications", "알림", "&#x1F514;"],
+    ["parent-reports", "학습 리포트", "&#x1F4CB;"],
+    ["parent-growth", "아이 성장", "&#x1F331;"],
+    ["parent-payments", "결제 관리", "&#x1F4B3;"],
+  ],
+  teacher: [
+    ["teacher-home", "홈", "&#x1F3E0;"],
+    ["teacher-class", "수업 관리", "&#x1F4DA;"],
+    ["teacher-recording", "녹음 & AI", "&#x1F3A4;"],
+    ["teacher-review", "AI 리포트 검수", "&#x2705;"],
+    ["teacher-points", "포인트 관리", "&#x2B50;"],
+    ["teacher-content", "나의 콘텐츠", "&#x1F4E6;"],
+  ],
+  director: [
+    ["director-dashboard", "대시보드", "&#x1F4CA;"],
+    ["director-students", "학생 관리", "&#x1F465;"],
+    ["director-attendance", "출결 현황", "&#x1F4C5;"],
+    ["director-finance", "재무 현황", "&#x1F4B0;"],
+    ["director-schedule", "교실 스케줄", "&#x1F5D3;"],
+  ],
+  hq: [
+    ["hq-dashboard", "대시보드", "&#x1F4CA;"],
+    ["hq-campuses", "캠퍼스 비교", "&#x1F30D;"],
+    ["hq-campus-detail", "캠퍼스 상세", "&#x1F50D;"],
+    ["hq-royalty", "로열티 & 정산", "&#x1F4B8;"],
+    ["hq-content", "콘텐츠 검수", "&#x1F50E;"],
+  ],
+  market: [
+    ["market-browse", "콘텐츠 스토어", "&#x1F6D2;"],
+    ["market-detail", "콘텐츠 상세", "&#x1F4C4;"],
+    ["market-cart", "장바구니 & 구매", "&#x1F6D2;"],
+    ["market-register", "콘텐츠 등록", "&#x2795;"],
+    ["market-seller", "판매자 대시보드", "&#x1F4B0;"],
+    ["market-settlement", "정산 현황", "&#x1F4C3;"],
+  ],
+  admin: [
+    ["admin-lms", "LMS 커리큘럼", "&#x1F4DA;"],
+    ["admin-consent", "동의 관리", "&#x1F512;"],
+    ["admin-audit", "감사 로그", "&#x1F4DC;"],
+  ],
+};
+
+const campuses = [
+  { id: "pangyo", name: "판교 직영캠퍼스", type: "직영", students: 124, attendance: 94, reports: 91, recordings: 88, renewal: 86, revenue: 41300000, royaltyRate: 8 },
+  { id: "bundang", name: "분당 직영캠퍼스", type: "직영", students: 98, attendance: 91, reports: 85, recordings: 82, renewal: 83, revenue: 33200000, royaltyRate: 8 },
+  { id: "gangnam", name: "강남 우수가맹", type: "가맹", students: 78, attendance: 89, reports: 82, recordings: 79, renewal: 80, revenue: 26400000, royaltyRate: 10 },
+  { id: "songdo", name: "송도 가맹", type: "가맹", students: 52, attendance: 83, reports: 72, recordings: 68, renewal: 74, revenue: 17500000, royaltyRate: 10 },
+];
+
+const classes = [
+  { id: "algo-a", campusId: "bundang", name: "알고리즘 A", teacher: "이수진", room: "301", capacity: 12, content: "코딩 사고력", status: "진행 중", time: "15:30~17:00", day: "월/수" },
+  { id: "python-b", campusId: "bundang", name: "파이썬 기초 B", teacher: "박민호", room: "302", capacity: 10, content: "파이썬 입문", status: "예정", time: "17:30~19:00", day: "화/목" },
+  { id: "maker-c", campusId: "bundang", name: "메이커 C", teacher: "이수진", room: "Lab", capacity: 8, content: "아두이노 IoT", status: "예정", time: "10:00~12:00", day: "토" },
+  { id: "algo-p1", campusId: "pangyo", name: "알고리즘 심화", teacher: "김정현", room: "201", capacity: 12, content: "코딩 올림피아드", status: "진행 중", time: "16:00~18:00", day: "월/수" },
+  { id: "ai-g1", campusId: "gangnam", name: "AI 프로젝트", teacher: "정하나", room: "101", capacity: 10, content: "AI 기초", status: "진행 중", time: "15:00~17:00", day: "화/목" },
+];
+
+const students = [
+  { id: "s1", name: "김민준", phone: "1842", classId: "algo-a", campusId: "bundang", parentPhone: "010-2345-1842", status: "scheduled", points: 620, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s2", name: "이서연", phone: "3074", classId: "algo-a", campusId: "bundang", parentPhone: "010-8877-3074", status: "scheduled", points: 480, level: 2, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s3", name: "박하준", phone: "5512", classId: "algo-a", campusId: "bundang", parentPhone: "010-5566-5512", status: "scheduled", points: 310, level: 2, absences: 3, homework: false, participation: 2, risk: "high" },
+  { id: "s4", name: "최유나", phone: "9201", classId: "algo-a", campusId: "bundang", parentPhone: "010-1234-9201", status: "scheduled", points: 750, level: 3, absences: 0, homework: true, participation: 5, risk: "low" },
+  { id: "s5", name: "정도윤", phone: "6688", classId: "algo-a", campusId: "bundang", parentPhone: "010-9988-6688", status: "scheduled", points: 410, level: 2, absences: 2, homework: false, participation: 3, risk: "medium" },
+  { id: "s6", name: "강지우", phone: "7733", classId: "python-b", campusId: "bundang", parentPhone: "010-4455-7733", status: "scheduled", points: 550, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s7", name: "윤시우", phone: "2211", classId: "python-b", campusId: "bundang", parentPhone: "010-3322-2211", status: "scheduled", points: 200, level: 1, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s8", name: "한소율", phone: "4456", classId: "maker-c", campusId: "bundang", parentPhone: "010-7788-4456", status: "scheduled", points: 880, level: 4, absences: 0, homework: true, participation: 5, risk: "low" },
+];
+
+const contentPackages = [
+  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, studentCount: 34, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
+  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, studentCount: 18, campus: "판교/강남", creator: "김정현 (판교)", status: "검수 대기", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
+  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, studentCount: 12, campus: "분당", creator: "박민호 (분당)", status: "승인", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
+  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, studentCount: 8, campus: "강남", creator: "정하나 (강남)", status: "수정 요청", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
+  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, studentCount: 42, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+];
+
+const invoices = [
+  { student: "김민준", className: "알고리즘 A", amount: 330000, method: "자동결제", due: "2026-06-05", status: "완료" },
+  { student: "이서연", className: "알고리즘 A", amount: 330000, method: "카드", due: "2026-06-05", status: "완료" },
+  { student: "박하준", className: "알고리즘 A", amount: 330000, method: "계좌이체", due: "2026-06-05", status: "미납" },
+  { student: "최유나", className: "알고리즘 A", amount: 330000, method: "자동결제", due: "2026-06-05", status: "완료" },
+  { student: "정도윤", className: "알고리즘 A", amount: 330000, method: "가상계좌", due: "2026-06-05", status: "확인 필요" },
+  { student: "강지우", className: "파이썬 기초 B", amount: 380000, method: "자동결제", due: "2026-06-05", status: "완료" },
+];
+
+const transcript = [
+  { who: "이수진 교사", text: "오늘은 조건문의 흐름을 순서도로 그려볼 거예요.", confidence: 97 },
+  { who: "김민준", text: "선생님, if 안에 if를 또 넣을 수 있어요?", confidence: 92 },
+  { who: "이수진 교사", text: "좋은 질문이에요. 중첩 조건문이라고 하는데, 오늘 미션 3에서 다뤄볼 거예요.", confidence: 95 },
+  { who: "최유나", text: "저는 순서도부터 그렸는데, 그러니까 코드가 더 쉬워졌어요.", confidence: 88 },
+  { who: "박하준", text: "근데 else if는 언제 써요?", confidence: 85 },
+  { who: "이수진 교사", text: "조건이 여러 개일 때 쓰는 건데, 미션 2에서 직접 해볼게요.", confidence: 96 },
+];
+
+const badges = [
+  { id: "b1", icon: "&#x1F3AF;", name: "첫 출석", desc: "첫 번째 출석", earned: true },
+  { id: "b2", icon: "&#x1F525;", name: "7일 연속", desc: "7일 연속 출석", earned: true },
+  { id: "b3", icon: "&#x2753;", name: "질문왕", desc: "질문 10회", earned: true },
+  { id: "b4", icon: "&#x1F4A1;", name: "아이디어뱅크", desc: "창의 미션 5회 완료", earned: true },
+  { id: "b5", icon: "&#x1F3C5;", name: "올클리어", desc: "주차 미션 전체 완료", earned: false },
+  { id: "b6", icon: "&#x1F680;", name: "코드마스터", desc: "고급 과제 3회 완료", earned: false },
+  { id: "b7", icon: "&#x1F91D;", name: "협동왕", desc: "팀 프로젝트 리더 2회", earned: false },
+  { id: "b8", icon: "&#x1F31F;", name: "30일 연속", desc: "30일 연속 출석", earned: false },
+];
+
+const curriculum = [
+  { week: 1, theme: "프로그래밍이란?", topic: "컴퓨터와 대화하기", missions: 2 },
+  { week: 2, theme: "순서와 반복", topic: "순서도 그리기 & 반복문", missions: 3 },
+  { week: 3, theme: "조건문", topic: "조건에 따라 다르게! if/else", missions: 3 },
+  { week: 4, theme: "변수와 데이터", topic: "정보를 담는 상자", missions: 2 },
+  { week: 5, theme: "함수", topic: "나만의 명령어 만들기", missions: 3 },
+  { week: 6, theme: "리스트", topic: "데이터 여러 개 다루기", missions: 3 },
+  { week: 7, theme: "미니 프로젝트 1", topic: "계산기 만들기", missions: 4 },
+  { week: 8, theme: "파일 다루기", topic: "파일 읽고 쓰기", missions: 2 },
+  { week: 9, theme: "API 기초", topic: "외부 데이터 가져오기", missions: 3 },
+  { week: 10, theme: "최종 프로젝트", topic: "나만의 앱 기획 & 개발", missions: 5 },
+  { week: 11, theme: "발표 & 회고", topic: "프로젝트 발표와 피드백", missions: 1 },
+];
+
+const parentNotifications = [
+  { id: "n1", type: "attendance", time: "15:52", date: "2026-05-28", title: "입실 알림", body: "미래의 주커버그, 김민준이가 오늘 D.LAB에 입장했습니다.\n입실 시간: 15:52\n오늘도 새로운 문제를 해결하러 왔습니다.", read: false },
+  { id: "n2", type: "report", time: "18:30", date: "2026-05-27", title: "수업 리포트", body: "김민준 학생의 오늘 수업 기록입니다.\n배운 내용: 조건문의 흐름을 순서도로 정리\n참여도: 높음 (질문 2회, 발표 1회)\n선생님 코멘트: 논리적 사고력이 뛰어납니다.", read: true },
+  { id: "n3", type: "payment", time: "09:00", date: "2026-05-26", title: "수강료 결제 완료", body: "6월 수강료 330,000원이 자동결제 되었습니다.\n결제 수단: 신한카드 (****1234)", read: true },
+  { id: "n4", type: "report", time: "18:00", date: "2026-05-24", title: "주간 학습 리포트", body: "이번 주 김민준 학생의 학습 현황입니다.\n출석: 2/2 (100%)\n과제 완료: 3/3 (100%)\n포인트 획득: +110점\n레벨: Lv.3 유지", read: true },
+  { id: "n5", type: "attendance", time: "15:48", date: "2026-05-24", title: "퇴실 알림", body: "김민준 학생이 오늘 수업을 마치고 퇴실했습니다.\n퇴실 시간: 17:05\n오늘 획득 포인트: +50", read: true },
+];
+
+const weeklyData = [
+  { week: "4주차", attendance: 100, homework: 100, participation: 80 },
+  { week: "5주차", attendance: 100, homework: 80, participation: 70 },
+  { week: "6주차", attendance: 100, homework: 100, participation: 90 },
+  { week: "7주차", attendance: 50, homework: 60, participation: 50 },
+  { week: "8주차", attendance: 100, homework: 100, participation: 85 },
+  { week: "9주차", attendance: 100, homework: 80, participation: 95 },
+];
+
+const leaderboard = [
+  { name: "한소율", points: 880, cls: "메이커 C" },
+  { name: "최유나", points: 750, cls: "알고리즘 A" },
+  { name: "김민준", points: 620, cls: "알고리즘 A" },
+  { name: "강지우", points: 550, cls: "파이썬 기초 B" },
+  { name: "이서연", points: 480, cls: "알고리즘 A" },
+  { name: "정도윤", points: 410, cls: "알고리즘 A" },
+  { name: "박하준", points: 310, cls: "알고리즘 A" },
+  { name: "윤시우", points: 200, cls: "파이썬 기초 B" },
+];
+
+const auditLog = [
+  { time: "15:52:03", action: "출석 처리", actor: "시스템", target: "김민준", detail: "전화번호 뒤 4자리 확인, 포인트 +30" },
+  { time: "15:52:04", action: "알림 발송", actor: "시스템", target: "010-2345-1842", detail: "카카오 알림톡 입실 알림" },
+  { time: "15:30:00", action: "수업 시작", actor: "이수진", target: "알고리즘 A", detail: "녹음 세션 시작, 학생 5명 연결" },
+  { time: "17:00:00", action: "녹음 종료", actor: "이수진", target: "알고리즘 A", detail: "STT 처리 시작, 90분 녹음" },
+  { time: "17:02:15", action: "AI 요약 생성", actor: "시스템", target: "알고리즘 A", detail: "학생별 참여 분석 및 리포트 초안 5건" },
+  { time: "17:15:00", action: "리포트 검수", actor: "이수진", target: "알고리즘 A", detail: "교사 코멘트 추가 후 발송 승인" },
+  { time: "17:15:30", action: "리포트 발송", actor: "시스템", target: "학부모 5명", detail: "카카오 알림톡 수업 리포트" },
+  { time: "09:00:00", action: "자동결제", actor: "시스템", target: "김민준 외 3명", detail: "6월 수강료 자동결제 처리" },
+  { time: "10:30:00", action: "콘텐츠 등록", actor: "김정현", target: "파이썬 데이터 분석", detail: "검수 대기 상태로 등록" },
+];
+
+// ==================== STATE ====================
+
+const defaultState = {
+  role: null,
+  view: null,
+  campusId: "bundang",
+  selectedClassId: "algo-a",
+  selectedStudentId: "s1",
+  selectedContentId: "c1",
+  selectedCampusId: "pangyo",
+  digits: "",
+  checkedIn: false,
+  recording: false,
+  recordingDone: false,
+  reportsSent: false,
+  cart: [],
+  purchased: false,
+  expandedNotif: null,
+};
+
+let state = { ...defaultState };
+
+function saveState() { localStorage.setItem("dlabOne", JSON.stringify(state)); }
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem("dlabOne"));
+    if (s) state = { ...defaultState, ...s };
+  } catch {}
+}
+
+// ==================== UTILITIES ====================
+
+function money(n) { return new Intl.NumberFormat("ko-KR").format(n) + "원"; }
+function pct(n) { return Math.round(n) + "%"; }
+function studentById(id) { return students.find(s => s.id === (id || state.selectedStudentId)) || students[0]; }
+function classStudents(cid) { return students.filter(s => s.classId === (cid || state.selectedClassId)); }
+function qualityScore(c) { return Math.round(c.attendance * .30 + c.reports * .25 + c.recordings * .25 + c.renewal * .20); }
+
+function statusTag(status) {
+  const map = {
+    present: ["출석", "green"], scheduled: ["예정", ""], late: ["지각", "yellow"], absent: ["결석", "red"],
+    "완료": ["완료", "green"], "대기": ["대기", "yellow"], "미납": ["미납", "red"],
+    "확인 필요": ["확인 필요", "violet"], "승인": ["승인", "green"], "검수 대기": ["검수 대기", "yellow"], "수정 요청": ["수정 요청", "red"],
+  };
+  const m = map[status] || [status, ""];
+  return `<span class="tag ${m[1]}">${m[0]}</span>`;
+}
+
+function toast(text) {
+  const el = document.getElementById("toast");
+  el.textContent = text; el.classList.add("show");
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function metric(label, value, note) {
+  return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value">${value}</div><div class="metric-note">${note}</div></div>`;
+}
+
+function progressRing(pctVal, lvl) {
+  const r = 50, c = 2 * Math.PI * r, offset = c - (pctVal / 100) * c;
+  return `<div class="progress-ring"><svg width="120" height="120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="#edf1f6" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="#ffd335" stroke-width="10" stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round"/></svg><div class="label"><div class="level">Lv.${lvl}</div><div class="sub">${pctVal}%</div></div></div>`;
+}
+
+function barChart(data, key, color) {
+  const max = Math.max(...data.map(d => d[key]));
+  return `<div class="bar-chart">${data.map(d => `<div class="bar-col"><div class="bar-value">${d[key]}</div><div class="bar ${color}" style="height:${(d[key]/max)*100}%"></div><div class="bar-label">${d.week}</div></div>`).join("")}</div>`;
+}
+
+function heatmapMonth() {
+  const cells = [];
+  for (let i = 0; i < 3; i++) cells.push('<div class="heatmap-cell empty"></div>');
+  for (let d = 1; d <= 28; d++) {
+    const lvl = d % 7 === 0 ? "" : d % 3 === 0 ? "l1" : d % 5 === 0 ? "l3" : "l2";
+    cells.push(`<div class="heatmap-cell ${lvl}"></div>`);
+  }
+  return `<div class="heatmap">${cells.join("")}</div><div class="heatmap-legend"><span style="background:#edf1f6"></span>없음 <span style="background:#dcfce7"></span>1회 <span style="background:#86efac"></span>2회 <span style="background:#22c55e"></span>3회+ </div>`;
+}
+
+// ==================== NAVIGATION ====================
+
+function selectRole(roleId) {
+  const role = roles.find(r => r.id === roleId);
+  state.role = roleId;
+  state.view = role.default;
+  saveState();
+  renderApp();
+}
+
+function switchRole() {
+  state.role = null;
+  state.view = null;
+  saveState();
+  renderApp();
+}
+
+function showView(viewId) {
+  state.view = viewId;
+  saveState();
+  renderApp();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ==================== RENDER ====================
+
+function renderApp() {
+  const roleScreen = document.getElementById("roleScreen");
+  const appShell = document.getElementById("appShell");
+
+  if (!state.role) {
+    roleScreen.classList.remove("hidden");
+    appShell.classList.add("hidden");
+    renderRoleSelect();
+    return;
+  }
+
+  roleScreen.classList.add("hidden");
+  appShell.classList.remove("hidden");
+  renderNav();
+  renderShell();
+  renderView();
+}
+
+function renderRoleSelect() {
+  document.getElementById("roleGrid").innerHTML = roles.map(r =>
+    `<div class="role-card" onclick="selectRole('${r.id}')">
+      <div class="role-icon">${r.icon}</div>
+      <div class="role-card-title">${r.label}</div>
+      <div class="role-card-desc">${r.desc}</div>
+    </div>`
+  ).join("");
+}
+
+function renderNav() {
+  const items = navConfig[state.role] || [];
+  document.getElementById("roleBadge").textContent = (roles.find(r => r.id === state.role) || {}).label || "";
+  document.getElementById("nav").innerHTML = items.map(([id, label, icon]) =>
+    `<button class="nav-btn ${state.view === id ? "active" : ""}" onclick="showView('${id}')"><span class="nav-icon">${icon}</span><span>${label}</span></button>`
+  ).join("");
+}
+
+function renderShell() {
+  const items = navConfig[state.role] || [];
+  const item = items.find(n => n[0] === state.view) || items[0] || ["", "D.LAB ONE", ""];
+  document.getElementById("pageTitle").textContent = item[1];
+  document.getElementById("pageCopy").textContent = "";
+  document.getElementById("topToolbar").innerHTML = `<button class="btn" onclick="resetDemo()">&#x1F504; 데모 초기화</button>`;
+}
+
+function renderView() {
+  const container = document.getElementById("viewContainer");
+  const fn = viewRenderers[state.view];
+  container.innerHTML = fn ? fn() : `<div class="panel pad"><p>준비 중인 화면입니다.</p></div>`;
+}
+
+// ==================== ACTIONS ====================
+
+function setDigits(v) {
+  if (v === "back") state.digits = state.digits.slice(0, -1);
+  else if (v === "clear") state.digits = "";
+  else if (state.digits.length < 4) state.digits += v;
+  saveState(); renderView();
+}
+
+function checkIn(sid) {
+  const s = students.find(x => x.id === sid);
+  if (s) { s.status = "present"; s.points += 30; }
+  state.checkedIn = true;
+  state.selectedStudentId = sid;
+  state.digits = "";
+  saveState(); renderView();
+  toast(`${s.name} 학생 출석 완료! 학부모 알림이 발송되었습니다.`);
+}
+
+function toggleRecording() {
+  state.recording = !state.recording;
+  if (!state.recording) state.recordingDone = true;
+  saveState(); renderView();
+  toast(state.recording ? "녹음을 시작합니다." : "녹음 종료 - AI 리포트를 생성합니다.");
+}
+
+function sendReports() {
+  state.reportsSent = true;
+  saveState(); renderView();
+  toast("학부모 리포트가 발송되었습니다.");
+}
+
+function addToCart(cid) {
+  if (!state.cart.includes(cid)) { state.cart.push(cid); saveState(); }
+  toast("장바구니에 추가되었습니다.");
+}
+
+function removeFromCart(cid) {
+  state.cart = state.cart.filter(x => x !== cid);
+  saveState(); renderView();
+}
+
+function purchaseCart() {
+  state.purchased = true;
+  state.cart = [];
+  saveState(); renderView();
+  toast("구매가 완료되었습니다!");
+}
+
+function resetDemo() {
+  students.forEach(s => { s.status = "scheduled"; s.points = [620,480,310,750,410,550,200,880][students.indexOf(s)]; });
+  state = { ...defaultState, role: state.role, view: state.view };
+  saveState(); renderApp();
+  toast("데모가 초기화되었습니다.");
+}
+
+function toggleNotif(nid) {
+  state.expandedNotif = state.expandedNotif === nid ? null : nid;
+  saveState(); renderView();
+}
+
+function approveContent(cid, newStatus) {
+  const c = contentPackages.find(x => x.id === cid);
+  if (c) c.status = newStatus;
+  renderView();
+  toast(`${c.title} - ${newStatus} 처리되었습니다.`);
+}
+
+// ==================== VIEW RENDERERS ====================
+
+const viewRenderers = {};
+
+// ===== STUDENT VIEWS =====
+
+viewRenderers["student-kiosk"] = () => {
+  if (state.checkedIn) {
+    const s = studentById();
+    return `<div class="checkin-success">
+      <div class="checkin-emoji">&#x1F389;</div>
+      <div class="checkin-name">${s.name} 학생, 환영합니다!</div>
+      <div class="checkin-info">입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}</div>
+      <div class="checkin-info">Lv.${s.level} &middot; ${s.points}P</div>
+      <div class="checkin-points">&#x2B50; 출석 포인트 +30P 획득!</div>
+      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;">
+        <button class="btn primary" onclick="showView('student-dashboard')">대시보드 보기</button>
+        <button class="btn" onclick="state.checkedIn=false;saveState();renderView();">다른 학생 출석</button>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="panel pad" style="max-width:360px;margin:0 auto;">
+          <div style="font-weight:800;margin-bottom:8px;">&#x1F4F1; 학부모 알림 미리보기</div>
+          <div class="phone"><div class="phone-top">D.LAB 알림톡</div><div class="bubble">미래의 주커버그, ${s.name}이(가) 오늘 D.LAB에 입장했습니다.\n\n입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}\n오늘도 새로운 문제를 해결하러 왔습니다.</div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const matches = state.digits.length === 4 ? students.filter(s => s.phone === state.digits) : [];
+  return `<div class="kiosk">
+    <div>
+      <div class="panel pad">
+        <div style="text-align:center;margin-bottom:14px;"><span style="font-size:28px;">&#x1F4F1;</span><div style="font-weight:900;font-size:18px;margin-top:6px;">D.LAB 출석 체크</div><div style="color:var(--muted);font-size:13px;">전화번호 뒤 4자리를 입력하세요</div></div>
+        <div class="kiosk-display ${state.digits ? 'filled' : ''}">${state.digits || "_ _ _ _"}</div>
+        <div class="kiosk-pad">
+          ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="kiosk-key" onclick="setDigits('${n}')">${n}</button>`).join("")}
+          <button class="kiosk-key action" onclick="setDigits('clear')">C</button>
+          <button class="kiosk-key" onclick="setDigits('0')">0</button>
+          <button class="kiosk-key action" onclick="setDigits('back')">&larr;</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      ${matches.length > 0 ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 확인</h2></div></div>${matches.map(s =>
+        `<div class="row-card"><div class="row-top"><div><div class="row-title">${s.name}</div><div class="row-copy">${s.classId === "algo-a" ? "알고리즘 A" : s.classId === "python-b" ? "파이썬 기초 B" : "메이커 C"} &middot; Lv.${s.level} &middot; ${s.points}P</div></div><button class="btn primary" onclick="checkIn('${s.id}')">출석 확인</button></div></div>`
+      ).join("")}</div>` : state.digits.length === 4 ? `<div class="panel pad" style="text-align:center;padding:40px;"><div style="font-size:32px;margin-bottom:10px;">&#x1F614;</div><div style="font-weight:800;">일치하는 학생이 없습니다</div><div style="color:var(--muted);font-size:13px;margin-top:4px;">번호를 다시 확인해주세요</div></div>` : `<div class="panel pad" style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:40px;margin-bottom:10px;">&#x1F44B;</div><div style="font-weight:800;">전화번호 뒤 4자리를 입력하면<br>학생 정보가 표시됩니다</div><div style="margin-top:16px;font-size:13px;">테스트: 1842, 3074, 9201</div></div>`}
+    </div>
+  </div>`;
+};
+
+viewRenderers["student-dashboard"] = () => {
+  const s = studentById();
+  const lvlPct = Math.round((s.points % 300) / 300 * 100);
+  return `<div class="grid cols-4">
+    ${metric("나의 레벨", `Lv.${s.level}`, `다음 레벨까지 ${300 - (s.points % 300)}P`)}
+    ${metric("보유 포인트", `${s.points}P`, "출석, 과제, 참여로 획득")}
+    ${metric("캠퍼스 랭킹", "3위", "분당캠퍼스 전체 기준")}
+    ${metric("출석 스트릭", "12일", "연속 출석 기록")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">레벨 진행</h2></div></div>
+      <div style="padding:20px;display:flex;align-items:center;gap:24px;">
+        ${progressRing(lvlPct, s.level)}
+        <div>
+          <div style="font-weight:900;font-size:18px;">${s.name}</div>
+          <div style="color:var(--muted);font-size:13px;margin-top:4px;">알고리즘 A &middot; 분당캠퍼스</div>
+          <div class="levelbar" style="width:200px;margin-top:10px;"><span style="width:${lvlPct}%"></span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">${s.points}P / ${Math.ceil(s.points/300)*300}P (다음 레벨)</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">오늘 스케줄</h2></div></div>
+      <div class="row-card"><div class="row-top"><div class="row-title">알고리즘 A</div>${statusTag(s.status)}</div><div class="row-copy">15:30~17:00 &middot; 301호 &middot; 이수진 교사</div><div style="margin-top:8px;"><button class="btn sm primary" onclick="showView('student-class')">수업 입장</button></div></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px;"><div class="panel-head"><div><h2 class="panel-title">최근 배지</h2></div><button class="btn sm" onclick="showView('student-rewards')">전체 보기</button></div>
+    <div style="display:flex;gap:12px;padding:16px;">
+      ${badges.filter(b=>b.earned).slice(0,4).map(b => `<div class="badge-item"><div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div></div>`).join("")}
+    </div>
+  </div>`;
+};
+
+viewRenderers["student-class"] = () => {
+  const missions = [
+    { title: "미션 1: 순서도 그리기", desc: "조건문 흐름을 순서도로 표현", done: true },
+    { title: "미션 2: else if 실습", desc: "3개 이상 조건을 처리하는 코드 작성", done: false },
+    { title: "미션 3: 중첩 조건문", desc: "if 안에 if를 넣어 복잡한 조건 처리", done: false },
+  ];
+  return `<div class="grid cols-3">
+    ${metric("오늘 주제", "조건문", "3주차 - 조건에 따라 다르게!")}
+    ${metric("미션 진행", "1 / 3", "미션 완료 시 포인트 획득")}
+    ${metric("예상 포인트", "+80P", "전체 완료 시 보너스 +20P")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">오늘 미션</h2></div></div>
+      ${missions.map(m => `<div class="row-card"><div class="row-top"><div class="row-title">${m.title}</div>${m.done ? '<span class="tag green">완료</span>' : '<span class="tag">진행 중</span>'}</div><div class="row-copy">${m.desc}</div>${!m.done ? '<button class="btn sm primary" style="margin-top:8px;" onclick="toast(\'코딩 환경으로 이동합니다.\')">미션 시작</button>' : ''}</div>`).join("")}
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">수업 자료</h2></div></div>
+      <div class="row-card"><div class="row-title">3주차: 조건문 교안</div><div class="row-copy">PDF &middot; 12페이지</div><button class="btn sm" style="margin-top:8px;" onclick="toast('교안 뷰어로 이동합니다.')">열기</button></div>
+      <div class="row-card"><div class="row-title">코딩 실습 환경</div><div class="row-copy">Scratch / Python 온라인 IDE</div><button class="btn sm blue" style="margin-top:8px;" onclick="toast('코딩 환경을 엽니다.')">실습 시작</button></div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["student-rewards"] = () => {
+  return `<div class="grid cols-3">
+    ${metric("보유 포인트", `${studentById().points}P`, "포인트로 상점 아이템 교환")}
+    ${metric("획득 배지", `${badges.filter(b=>b.earned).length}개`, `전체 ${badges.length}개 중`)}
+    ${metric("캠퍼스 랭킹", "3위", "분당캠퍼스 8명 중")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">배지 컬렉션</h2></div></div>
+      <div class="badge-grid">${badges.map(b => `<div class="badge-item ${b.earned ? '' : 'locked'}"><div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div></div>`).join("")}</div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">리더보드</h2></div></div>
+      ${leaderboard.map((l, i) => `<div class="lb-row"><div class="lb-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div><div class="lb-name">${l.name}<div style="font-size:11px;color:var(--muted);font-weight:600;">${l.cls}</div></div><div class="lb-pts">${l.points}P</div></div>`).join("")}
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px;"><div class="panel-head"><div><h2 class="panel-title">포인트 상점</h2></div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px;">
+      ${[["&#x1F36D;","간식 교환권","200P"],["&#x1F3AE;","게임 시간 30분","300P"],["&#x1F4D3;","디랩 노트","150P"],["&#x1F3C6;","특별 수업 참가권","500P"]].map(([ic,nm,pt]) =>
+        `<div class="panel pad" style="text-align:center;cursor:pointer;" onclick="toast('${nm} 교환을 신청했습니다!')"><div style="font-size:28px;margin-bottom:8px;">${ic}</div><div style="font-weight:800;font-size:13px;">${nm}</div><div style="color:var(--blue);font-weight:900;margin-top:4px;">${pt}</div></div>`
+      ).join("")}
+    </div>
+  </div>`;
+};
+
+viewRenderers["student-growth"] = () => {
+  return `<div class="grid cols-2">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">주차별 학습 현황</h2></div></div>
+      <div style="padding:16px;">${barChart(weeklyData, 'participation', 'brand')}<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px;">참여도 추이</div></div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">출석 히트맵 (5월)</h2></div></div>
+      <div style="padding:16px;"><div style="display:flex;gap:4px;margin-bottom:6px;font-size:11px;color:var(--muted);font-weight:700;">${["일","월","화","수","목","금","토"].map(d=>`<div style="flex:1;text-align:center;">${d}</div>`).join("")}</div>${heatmapMonth()}</div>
+    </div>
+  </div>
+  <div class="grid cols-3" style="margin-top:14px;">
+    ${metric("총 출석일", "24일", "이번 달 출석 현황")}
+    ${metric("과제 완료율", "87%", "전체 과제 기준")}
+    ${metric("연속 출석", "12일", "현재 스트릭")}
+  </div>
+  <div class="panel" style="margin-top:14px;"><div class="panel-head"><div><h2 class="panel-title">커리큘럼 진도</h2></div></div>
+    <div style="padding:16px;">
+      ${curriculum.slice(0, 6).map((w, i) => `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #edf1f6;"><div style="width:60px;font-weight:800;font-size:13px;color:var(--muted);">${w.week}주차</div><div style="flex:1;"><div style="font-weight:800;">${w.theme}</div><div style="font-size:12px;color:var(--muted);">${w.topic}</div></div>${i < 3 ? '<span class="tag green">완료</span>' : i === 3 ? '<span class="tag yellow">진행 중</span>' : '<span class="tag">예정</span>'}</div>`).join("")}
+    </div>
+  </div>`;
+};
+
+// ===== PARENT VIEWS =====
+
+viewRenderers["parent-home"] = () => {
+  const s = studentById();
+  return `<div class="grid cols-4">
+    ${metric("오늘 출석", s.status === "present" ? "출석 완료" : "예정", "알고리즘 A 15:30")}
+    ${metric("이번 주 과제", "2/3 완료", "미완료 1건")}
+    ${metric("현재 레벨", `Lv.${s.level}`, `${s.points}P 보유`)}
+    ${metric("다음 결제", "2026-06-05", "330,000원")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">자녀 정보</h2></div></div>
+      <div style="padding:20px;display:flex;align-items:center;gap:20px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--brand);display:grid;place-items:center;font-size:24px;font-weight:900;">${s.name[0]}</div>
+        <div><div style="font-weight:900;font-size:18px;">${s.name}</div>
+          <div style="color:var(--muted);font-size:13px;">알고리즘 A &middot; 분당캠퍼스 &middot; 이수진 교사</div>
+          <div style="margin-top:6px;display:flex;gap:6px;">${progressRing(Math.round((s.points%300)/300*100), s.level)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">최근 알림</h2></div><button class="btn sm" onclick="showView('parent-notifications')">전체 보기</button></div>
+      ${parentNotifications.slice(0, 3).map(n => `<div class="row-card" style="cursor:pointer;" onclick="showView('parent-notifications')"><div class="row-top"><div class="row-title">${n.title}</div><div style="font-size:11px;color:var(--muted);">${n.date}</div></div><div class="row-copy" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.body.split('\n')[0]}</div></div>`).join("")}
+    </div>
+  </div>`;
+};
+
+viewRenderers["parent-notifications"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">알림 내역</h2><p class="panel-sub">카카오 알림톡으로 발송된 알림입니다</p></div></div>
+    ${parentNotifications.map(n => `<div class="notif-card ${n.read ? '' : 'unread'} ${state.expandedNotif === n.id ? 'expanded' : ''}" onclick="toggleNotif('${n.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><span class="tag ${n.type === 'attendance' ? 'blue' : n.type === 'report' ? 'green' : 'yellow'}">${n.type === 'attendance' ? '출결' : n.type === 'report' ? '리포트' : '결제'}</span><span class="notif-title" style="margin-left:8px;">${n.title}</span></div>
+        <div class="notif-time">${n.date} ${n.time}</div>
+      </div>
+      <div class="notif-body" style="margin-top:10px;">
+        <div class="phone" style="max-width:320px;"><div class="phone-top">D.LAB 알림톡</div><div class="bubble">${n.body}</div></div>
+        ${n.type === 'report' ? `<button class="btn sm primary" style="margin-top:10px;" onclick="event.stopPropagation();showView('parent-reports')">리포트 상세 보기</button>` : ''}
+      </div>
+    </div>`).join("")}
+  </div>`;
+};
+
+viewRenderers["parent-reports"] = () => {
+  const s = studentById();
+  return `<div class="grid cols-2">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">최근 수업 리포트</h2></div></div>
+      <div style="padding:16px;">
+        <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:12px;">
+          <div style="font-weight:900;margin-bottom:8px;">2026-05-27 알고리즘 A</div>
+          <div style="font-size:13px;line-height:1.7;color:var(--slate);">
+            <strong>1. 오늘 배운 내용</strong><br>조건문의 흐름을 순서도로 정리했습니다.<br><br>
+            <strong>2. 아이가 한 활동</strong><br>문제 상황을 단계별로 나누고, 조건에 따라 다른 결과가 나오는 미션을 수행했습니다.<br><br>
+            <strong>3. 아이가 한 말/질문</strong><br>"조건이 여러 개면 순서를 어떻게 정해요?"<br><br>
+            <strong>4. 선생님 코멘트</strong><br>논리적 사고력이 뛰어나고, 질문이 매우 구체적입니다.
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;"><span class="tag green">참여도 높음</span><span class="tag blue">질문 2회</span><span class="tag yellow">포인트 +50</span></div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">주간 참여도 추이</h2></div></div>
+      <div style="padding:16px;">${barChart(weeklyData, 'participation', 'brand')}</div>
+      <div style="padding:0 16px 16px;">
+        <div class="grid cols-3" style="gap:8px;">
+          ${metric("평균 출석", "92%", "")}
+          ${metric("평균 과제", "87%", "")}
+          ${metric("평균 참여", "78%", "")}
+        </div>
+      </div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["parent-growth"] = () => {
+  const s = studentById();
+  return `<div class="grid cols-4">
+    ${metric("현재 레벨", `Lv.${s.level}`, `${s.points}P`)}
+    ${metric("획득 배지", `${badges.filter(b=>b.earned).length}개`, `전체 ${badges.length}개`)}
+    ${metric("캠퍼스 랭킹", "3위", "8명 중")}
+    ${metric("이번 달 출석", "24일", "출석률 96%")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">출석 현황 (5월)</h2></div></div>
+      <div style="padding:16px;"><div style="display:flex;gap:4px;margin-bottom:6px;font-size:11px;color:var(--muted);font-weight:700;">${["일","월","화","수","목","금","토"].map(d=>`<div style="flex:1;text-align:center;">${d}</div>`).join("")}</div>${heatmapMonth()}</div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">배지 현황</h2></div></div>
+      <div class="badge-grid">${badges.map(b => `<div class="badge-item ${b.earned?'':'locked'}"><div class="badge-icon">${b.icon}</div><div class="badge-name">${b.name}</div></div>`).join("")}</div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["parent-payments"] = () => {
+  return `<div class="grid cols-3">
+    ${metric("이번 달 수강료", "330,000원", "자동결제 예정")}
+    ${metric("결제일", "2026-06-05", "신한카드 ****1234")}
+    ${metric("누적 결제", "1,980,000원", "6개월 합계")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">결제 내역</h2></div></div>
+      <div class="table-wrap"><table><thead><tr><th>날짜</th><th>항목</th><th>금액</th><th>상태</th></tr></thead><tbody>
+        ${[["2026-05-05","5월 수강료","330,000원","완료"],["2026-04-05","4월 수강료","330,000원","완료"],["2026-03-05","3월 수강료","330,000원","완료"],["2026-03-01","교재비","45,000원","완료"]].map(r =>
+          `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${statusTag(r[3])}</td></tr>`).join("")}
+      </tbody></table></div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">결제 설정</h2></div></div>
+      <div style="padding:16px;">
+        <div class="row-card"><div class="row-top"><div class="row-title">자동결제</div><span class="tag green">활성</span></div><div class="row-copy">매월 5일 자동 결제</div></div>
+        <div class="row-card"><div class="row-top"><div class="row-title">결제 수단</div><button class="btn sm" onclick="toast('결제 수단 변경 화면으로 이동합니다.')">변경</button></div><div class="row-copy">신한카드 ****1234</div></div>
+        <div class="row-card"><div class="row-top"><div class="row-title">영수증</div><button class="btn sm" onclick="toast('영수증을 다운로드합니다.')">다운로드</button></div><div class="row-copy">최근 6개월 영수증</div></div>
+      </div>
+    </div>
+  </div>`;
+};
+
+// ===== TEACHER VIEWS =====
+
+viewRenderers["teacher-home"] = () => {
+  return `<div class="grid cols-4">
+    ${metric("오늘 수업", "3개", "알고리즘 A, 파이썬 B, 메이커 C")}
+    ${metric("전체 학생", `${students.filter(s=>s.campusId==="bundang").length}명`, "분당캠퍼스 담당")}
+    ${metric("발송 리포트", state.reportsSent ? "5건" : "0건", state.reportsSent ? "오늘 발송 완료" : "아직 미발송")}
+    ${metric("녹음 상태", state.recordingDone ? "완료" : state.recording ? "녹음 중" : "대기", "AI 리포트 자동 생성")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">오늘 수업 스케줄</h2></div></div>
+      ${classes.filter(c=>c.campusId==="bundang").map(c => `<div class="row-card" style="cursor:pointer;" onclick="state.selectedClassId='${c.id}';saveState();showView('teacher-class');">
+        <div class="row-top"><div class="row-title">${c.name}</div><span class="tag ${c.status==='진행 중'?'green':''}">${c.status}</span></div>
+        <div class="row-copy">${c.time} &middot; ${c.room}호 &middot; ${classStudents(c.id).length}명</div>
+      </div>`).join("")}
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">빠른 작업</h2></div></div>
+      <div style="padding:16px;display:grid;gap:10px;">
+        <button class="btn primary" onclick="showView('teacher-class')" style="width:100%;justify-content:flex-start;">&#x1F4DA; 수업 관리 시작</button>
+        <button class="btn" onclick="showView('teacher-recording')" style="width:100%;justify-content:flex-start;">&#x1F3A4; 녹음 & AI 관리</button>
+        <button class="btn" onclick="showView('teacher-points')" style="width:100%;justify-content:flex-start;">&#x2B50; 포인트 부여</button>
+        <button class="btn" onclick="showView('teacher-content')" style="width:100%;justify-content:flex-start;">&#x1F4E6; 나의 콘텐츠</button>
+      </div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["teacher-class"] = () => {
+  const cls = classes.find(c => c.id === state.selectedClassId) || classes[0];
+  const roster = classStudents(cls.id);
+  return `<div style="margin-bottom:14px;display:flex;gap:8px;">
+    ${classes.filter(c=>c.campusId==="bundang").map(c => `<button class="btn ${state.selectedClassId===c.id?'primary':''}" onclick="state.selectedClassId='${c.id}';saveState();renderView();">${c.name}</button>`).join("")}
+  </div>
+  <div class="grid cols-3">
+    ${metric("수업", cls.name, `${cls.time} &middot; ${cls.room}호`)}
+    ${metric("출석", `${roster.filter(s=>s.status==="present").length}/${roster.length}명`, "출석 현황")}
+    ${metric("콘텐츠", cls.content, "오늘 수업 자료")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">학생 출석 관리</h2></div>
+      <button class="btn primary sm" onclick="showView('teacher-recording')">&#x1F3A4; 녹음 시작</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>학생</th><th>레벨</th><th>포인트</th><th>과제</th><th>참여도</th><th>상태</th><th>액션</th></tr></thead>
+      <tbody>${roster.map(s => `<tr>
+        <td style="font-weight:800;">${s.name}</td>
+        <td>Lv.${s.level}</td><td>${s.points}P</td>
+        <td>${s.homework ? '<span class="tag green">완료</span>' : '<span class="tag red">미완료</span>'}</td>
+        <td>${"&#x2B50;".repeat(s.participation)}${"&#x2606;".repeat(5-s.participation)}</td>
+        <td>${statusTag(s.status)}</td>
+        <td><select class="select" style="font-size:12px;padding:4px 8px;" onchange="students.find(x=>x.id==='${s.id}').status=this.value;renderView();">
+          <option value="scheduled" ${s.status==="scheduled"?"selected":""}>예정</option>
+          <option value="present" ${s.status==="present"?"selected":""}>출석</option>
+          <option value="late" ${s.status==="late"?"selected":""}>지각</option>
+          <option value="absent" ${s.status==="absent"?"selected":""}>결석</option>
+        </select></td>
+      </tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["teacher-recording"] = () => {
+  return `<div class="grid cols-2">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">수업 녹음</h2><p class="panel-sub">녹음 → STT → AI 요약이 자동으로 이어집니다</p></div></div>
+      <div style="padding:24px;text-align:center;">
+        ${state.recording ? `<div class="rec-indicator"><div class="rec-dot"></div><div class="rec-timer">00:${String(Math.floor(Math.random()*50+10)).padStart(2,"0")}:${String(Math.floor(Math.random()*59)).padStart(2,"0")}</div></div><div style="color:var(--muted);font-size:13px;margin-top:12px;">녹음 중... 학생 발화를 분석하고 있습니다.</div>` : state.recordingDone ? `<div style="font-size:40px;margin-bottom:10px;">&#x2705;</div><div style="font-weight:900;">녹음 완료 & AI 처리 완료</div><div style="color:var(--muted);font-size:13px;margin-top:8px;">STT 전사 및 학생별 AI 요약이 생성되었습니다.</div>` : `<div style="font-size:40px;margin-bottom:10px;">&#x1F3A4;</div><div style="font-weight:900;">녹음 대기 중</div><div style="color:var(--muted);font-size:13px;margin-top:8px;">수업 시작 시 녹음 버튼을 눌러주세요.</div>`}
+        <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;">
+          ${!state.recording && !state.recordingDone ? `<button class="btn primary" onclick="toggleRecording()">&#x1F534; 녹음 시작</button>` : state.recording ? `<button class="btn red" onclick="toggleRecording()">&#x23F9; 녹음 종료</button>` : `<button class="btn primary" onclick="showView('teacher-review')">AI 리포트 검수하기</button>`}
+        </div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">STT 전사 결과</h2><p class="panel-sub">이름 호출 기반 화자 추정</p></div></div>
+      ${state.recordingDone || state.recording ? transcript.map(t => `<div class="row-card"><div class="row-top"><div class="row-title">${t.who}</div><span class="tag ${t.confidence>90?'green':t.confidence>80?'yellow':'red'}">신뢰도 ${t.confidence}%</span></div><div class="row-copy">${t.text}</div></div>`).join("") : `<div style="padding:40px;text-align:center;color:var(--muted);">녹음을 시작하면 실시간 전사 결과가 표시됩니다.</div>`}
+    </div>
+  </div>`;
+};
+
+viewRenderers["teacher-review"] = () => {
+  const roster = classStudents();
+  const s = studentById();
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">AI 리포트 검수</h2><p class="panel-sub">교사 확인 없이 자동 발송되지 않습니다</p></div></div>
+    <div class="tabs">${roster.map(st => `<button class="tab ${state.selectedStudentId===st.id?'active':''}" onclick="state.selectedStudentId='${st.id}';saveState();renderView();">${st.name}</button>`).join("")}</div>
+    <div style="padding:16px;">
+      <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:12px;">
+        <div style="font-weight:900;margin-bottom:8px;">${s.name} 학생 AI 리포트</div>
+        <textarea class="textarea" style="min-height:200px;">[D.LAB 수업 리포트]
+${s.name} 학생의 오늘 수업 기록입니다.
+
+1. 오늘 배운 내용
+알고리즘의 기본 개념과 조건문 흐름을 순서도로 정리했습니다.
+
+2. 아이가 한 활동
+문제 상황을 단계별로 나누고, 조건에 따라 다른 결과가 나오는 미션을 수행했습니다.
+
+3. 아이가 한 말/질문
+${s.participation >= 4 ? '"조건이 여러 개면 순서를 어떻게 정해요?"처럼 구체적인 질문을 했습니다.' : '오늘은 조용히 집중하며 미션을 수행했습니다.'}
+
+4. 선생님 코멘트
+${s.participation >= 4 ? "자신의 생각을 말로 설명하려는 태도가 좋았습니다." : "다음 시간에는 작은 발표 기회를 주겠습니다."}</textarea>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <span class="tag ${s.participation >= 4 ? 'green' : 'yellow'}">참여도 ${s.participation}/5</span>
+        <span class="tag ${s.homework ? 'green' : 'red'}">과제 ${s.homework ? '완료' : '미완료'}</span>
+        <span class="tag blue">포인트 +${s.participation >= 4 ? 50 : 30}</span>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn primary" onclick="sendReports()">&#x1F4E8; 전체 학부모 발송</button>
+        <button class="btn" onclick="toast('리포트가 저장되었습니다.')">임시 저장</button>
+      </div>
+      ${state.reportsSent ? '<div style="margin-top:10px;"><span class="tag green">&#x2705; 발송 완료</span></div>' : ''}
+    </div>
+  </div>`;
+};
+
+viewRenderers["teacher-points"] = () => {
+  const roster = classStudents();
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">포인트 관리</h2><p class="panel-sub">출석, 과제, 참여, 발표에 대해 포인트를 부여합니다</p></div></div>
+    <div class="table-wrap"><table><thead><tr><th>학생</th><th>현재 포인트</th><th>레벨</th><th>출석</th><th>과제</th><th>참여</th><th>발표</th></tr></thead>
+      <tbody>${roster.map(s => `<tr>
+        <td style="font-weight:800;">${s.name}</td><td>${s.points}P</td><td>Lv.${s.level}</td>
+        <td><button class="btn sm green" onclick="students.find(x=>x.id==='${s.id}').points+=30;renderView();toast('${s.name} +30P (출석)')">+30</button></td>
+        <td><button class="btn sm blue" onclick="students.find(x=>x.id==='${s.id}').points+=50;renderView();toast('${s.name} +50P (과제)')">+50</button></td>
+        <td><button class="btn sm" onclick="students.find(x=>x.id==='${s.id}').points+=20;renderView();toast('${s.name} +20P (참여)')">+20</button></td>
+        <td><button class="btn sm primary" onclick="students.find(x=>x.id==='${s.id}').points+=40;renderView();toast('${s.name} +40P (발표)')">+40</button></td>
+      </tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["teacher-content"] = () => {
+  const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
+  return `<div class="grid cols-3">
+    ${metric("등록 콘텐츠", `${myContent.length}개`, "내가 제작한 콘텐츠")}
+    ${metric("사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "전체 캠퍼스 합산")}
+    ${metric("이번 달 수익", money(myContent.reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "70% 제작자 정산")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">나의 콘텐츠</h2></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠 등록</button></div>
+    <div class="table-wrap"><table><thead><tr><th>제목</th><th>대상</th><th>단가</th><th>사용 학생</th><th>수익(70%)</th><th>상태</th></tr></thead>
+      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${c.studentCount}명</td><td>${money(c.price*c.studentCount*.7)}</td><td>${statusTag(c.status)}</td></tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+// ===== DIRECTOR VIEWS =====
+
+viewRenderers["director-dashboard"] = () => {
+  const c = campuses.find(x => x.id === state.campusId) || campuses[1];
+  const riskStudents = students.filter(s => s.campusId === c.id && s.risk !== "low");
+  return `<div style="margin-bottom:14px;display:flex;gap:8px;">
+    ${campuses.slice(0,2).map(cp => `<button class="btn ${state.campusId===cp.id?'primary':''}" onclick="state.campusId='${cp.id}';saveState();renderView();">${cp.name}</button>`).join("")}
+  </div>
+  <div class="grid cols-4">
+    ${metric("오늘 출석률", pct(c.attendance), "캠퍼스 당일 현황")}
+    ${metric("활성 학생", `${c.students}명`, "등록 학생 수")}
+    ${metric("미납/확인", `${invoices.filter(i=>i.status!=="완료").length}건`, "학부모 알림 대상")}
+    ${metric("위험 학생", `${riskStudents.length}명`, "상담 우선순위")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">반별 운영 현황</h2></div></div>
+      <div class="table-wrap"><table><thead><tr><th>반</th><th>교사</th><th>교실</th><th>정원</th><th>상태</th></tr></thead>
+        <tbody>${classes.filter(x=>x.campusId===c.id).map(x => `<tr><td>${x.name}</td><td>${x.teacher}</td><td>${x.room}</td><td>${classStudents(x.id).length}/${x.capacity}</td><td>${x.status}</td></tr>`).join("")}</tbody>
+      </table></div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">위험 학생</h2><p class="panel-sub">상담 우선순위 보조</p></div></div>
+      ${riskStudents.length ? riskStudents.map(s => `<div class="row-card"><div class="row-top"><div class="row-title">${s.name}</div><span class="tag ${s.risk==='high'?'red':'yellow'}">${s.risk==='high'?'높음':'주의'}</span></div><div class="row-copy">결석 ${s.absences}회 &middot; 과제 ${s.homework?'완료':'미완료'} &middot; 참여도 ${s.participation}/5</div><button class="btn sm" style="margin-top:6px;" onclick="toast('상담 메모를 기록합니다.')">상담 메모</button></div>`).join("") : '<div style="padding:20px;text-align:center;color:var(--muted);">위험 학생이 없습니다.</div>'}
+    </div>
+  </div>`;
+};
+
+viewRenderers["director-students"] = () => {
+  const c = campuses.find(x => x.id === state.campusId) || campuses[1];
+  const sts = students.filter(s => s.campusId === c.id);
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">학생 관리</h2><p class="panel-sub">${c.name} 전체 학생</p></div>
+      <div style="display:flex;gap:8px;"><input class="input" placeholder="학생 검색..." style="width:200px;"><select class="select"><option>전체 반</option>${classes.filter(x=>x.campusId===c.id).map(x=>`<option>${x.name}</option>`).join("")}</select></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>학생</th><th>반</th><th>레벨</th><th>포인트</th><th>출석</th><th>과제</th><th>위험</th><th>연락처</th></tr></thead>
+      <tbody>${sts.map(s => `<tr><td style="font-weight:800;">${s.name}</td><td>${(classes.find(c=>c.id===s.classId)||{}).name||""}</td><td>Lv.${s.level}</td><td>${s.points}P</td><td>${statusTag(s.status)}</td><td>${s.homework?'<span class="tag green">완료</span>':'<span class="tag red">미완료</span>'}</td><td>${s.risk==='low'?'<span class="tag green">정상</span>':s.risk==='high'?'<span class="tag red">높음</span>':'<span class="tag yellow">주의</span>'}</td><td style="font-size:12px;">${s.parentPhone}</td></tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["director-attendance"] = () => {
+  return `<div class="grid cols-4">
+    ${metric("오늘 출석률", "91%", "전체 반 평균")}
+    ${metric("출석", "7명", "정상 출석")}
+    ${metric("지각", "1명", "")}
+    ${metric("결석", "0명", "")}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">주간 출석 추이</h2></div></div>
+      <div style="padding:16px;">${barChart([{week:"월",participation:95},{week:"화",participation:88},{week:"수",participation:92},{week:"목",participation:90},{week:"금",participation:94}], 'participation', 'brand')}</div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">반별 출석 현황</h2></div></div>
+      <div class="table-wrap"><table><thead><tr><th>반</th><th>출석</th><th>지각</th><th>결석</th><th>출석률</th></tr></thead>
+        <tbody>
+          <tr><td>알고리즘 A</td><td>4</td><td>1</td><td>0</td><td>100%</td></tr>
+          <tr><td>파이썬 기초 B</td><td>2</td><td>0</td><td>0</td><td>100%</td></tr>
+          <tr><td>메이커 C</td><td>1</td><td>0</td><td>0</td><td>100%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["director-finance"] = () => {
+  return `<div class="grid cols-4">
+    ${metric("이번 달 매출", money(33200000), "분당캠퍼스")}
+    ${metric("수납 완료", money(27600000), "83% 수납")}
+    ${metric("미납", money(3300000), "2건")}
+    ${metric("콘텐츠 비용", money(1200000), "콘텐츠 사용료")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">결제/미납 현황</h2></div></div>
+    <div class="table-wrap"><table><thead><tr><th>학생</th><th>반</th><th>금액</th><th>방식</th><th>마감</th><th>상태</th><th>액션</th></tr></thead>
+      <tbody>${invoices.map(i => `<tr><td>${i.student}</td><td>${i.className}</td><td>${money(i.amount)}</td><td>${i.method}</td><td>${i.due}</td><td>${statusTag(i.status)}</td><td><button class="btn sm" onclick="toast('${i.student} 학부모에게 결제 안내 발송')">알림</button></td></tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["director-schedule"] = () => {
+  const times = ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"];
+  const days = ["월","화","수","목","금"];
+  const schedule = {
+    "월-15:00": "알고리즘 A\n이수진\n301호",
+    "수-15:00": "알고리즘 A\n이수진\n301호",
+    "화-17:00": "파이썬 B\n박민호\n302호",
+    "목-17:00": "파이썬 B\n박민호\n302호",
+    "토-10:00": "메이커 C\n이수진\nLab",
+  };
+  return `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">주간 교실 스케줄</h2><p class="panel-sub">분당캠퍼스 교실 배정 현황</p></div></div>
+    <div style="padding:16px;overflow-x:auto;">
+      <div class="schedule-grid">
+        <div class="schedule-cell header"></div>${days.map(d=>`<div class="schedule-cell header">${d}</div>`).join("")}
+        ${times.map(t => `<div class="schedule-cell header">${t}</div>${days.map(d => {
+          const key = `${d}-${t}`;
+          const val = schedule[key];
+          return `<div class="schedule-cell ${val?'filled':''}" ${val?`onclick="toast('${val.split('\\n')[0]} 상세')"`:``}>${val?`<div style="font-size:11px;white-space:pre-line;">${val}</div>`:''}</div>`;
+        }).join("")}`).join("")}
+      </div>
+    </div>
+  </div>`;
+};
+
+// ===== HQ VIEWS =====
+
+viewRenderers["hq-dashboard"] = () => {
+  return `<div class="grid cols-4">
+    ${metric("전체 학생", `${campuses.reduce((a,c)=>a+c.students,0)}명`, "직영 + 가맹")}
+    ${metric("평균 출석률", pct(campuses.reduce((a,c)=>a+c.attendance,0)/campuses.length), "캠퍼스 평균")}
+    ${metric("예상 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달")}
+    ${metric("검수 대기", `${contentPackages.filter(c=>c.status!=="승인").length}건`, "콘텐츠 승인 필요")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 현황</h2></div><button class="btn sm" onclick="showView('hq-campuses')">상세 비교</button></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>학생</th><th>출석률</th><th>리포트</th><th>기록</th><th>재등록</th><th>품질</th><th>로열티</th></tr></thead>
+      <tbody>${campuses.map(c => {
+        const q = qualityScore(c);
+        return `<tr style="cursor:pointer;" onclick="state.selectedCampusId='${c.id}';saveState();showView('hq-campus-detail');">
+          <td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${c.students}</td><td>${pct(c.attendance)}</td><td>${pct(c.reports)}</td><td>${pct(c.recordings)}</td><td>${pct(c.renewal)}</td><td><span class="score ${q<80?'danger':q<86?'warn':''}">${q}</span></td><td>${money(c.revenue*c.royaltyRate/100)}</td></tr>`;
+      }).join("")}</tbody>
+    </table></div>
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">운영 품질 산식</h2></div></div>
+      <div style="padding:16px;">
+        ${["출석률 30%","리포트 발송률 25%","수업 기록 완료율 25%","재등록률 20%"].map(x => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;"><div style="width:160px;font-weight:800;font-size:13px;">${x}</div><div class="levelbar" style="flex:1;"><span style="width:${parseInt(x)*3}%"></span></div></div>`).join("")}
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 대기</h2></div><button class="btn sm" onclick="showView('hq-content')">전체 보기</button></div>
+      ${contentPackages.filter(c=>c.status!=="승인").map(c => `<div class="row-card"><div class="row-top"><div class="row-title">${c.title}</div>${statusTag(c.status)}</div><div class="row-copy">${c.grade} &middot; ${c.creator}</div></div>`).join("") || '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
+    </div>
+  </div>`;
+};
+
+viewRenderers["hq-campuses"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">캠퍼스 비교 분석</h2></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>학생</th><th>출석률</th><th>리포트</th><th>기록</th><th>재등록</th><th>품질 점수</th><th>월 매출</th><th>로열티</th></tr></thead>
+      <tbody>${campuses.map(c => {
+        const q = qualityScore(c);
+        return `<tr onclick="state.selectedCampusId='${c.id}';saveState();showView('hq-campus-detail');" style="cursor:pointer;">
+          <td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${c.students}명</td><td>${pct(c.attendance)}</td><td>${pct(c.reports)}</td><td>${pct(c.recordings)}</td><td>${pct(c.renewal)}</td><td><span class="score ${q<80?'danger':q<86?'warn':''}">${q}</span></td><td>${money(c.revenue)}</td><td>${money(c.revenue*c.royaltyRate/100)}</td></tr>`;
+      }).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["hq-campus-detail"] = () => {
+  const c = campuses.find(x => x.id === state.selectedCampusId) || campuses[0];
+  const q = qualityScore(c);
+  return `<div class="breadcrumb"><a onclick="showView('hq-dashboard')">대시보드</a> &gt; <a onclick="showView('hq-campuses')">캠퍼스 비교</a> &gt; <strong>${c.name}</strong></div>
+  <div class="grid cols-4">
+    ${metric("학생 수", `${c.students}명`, c.type)}
+    ${metric("출석률", pct(c.attendance), "")}
+    ${metric("품질 점수", `${q}점`, q >= 86 ? "우수" : q >= 80 ? "보통" : "주의")}
+    ${metric("월 매출", money(c.revenue), `로열티 ${c.royaltyRate}%`)}
+  </div>
+  <div class="grid cols-2" style="margin-top:14px;">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">운영 지표</h2></div></div>
+      <div style="padding:16px;">
+        ${[["출석률", c.attendance],["리포트 발송률", c.reports],["수업 기록율", c.recordings],["재등록률", c.renewal]].map(([label, val]) =>
+          `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;"><div style="width:120px;font-weight:800;font-size:13px;">${label}</div><div class="levelbar" style="flex:1;"><span style="width:${val}%"></span></div><div style="width:40px;font-weight:900;font-size:13px;">${pct(val)}</div></div>`
+        ).join("")}
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">재무 요약</h2></div></div>
+      <div style="padding:16px;">
+        <div class="row-card"><div class="row-top"><span class="row-title">월 매출</span><span style="font-weight:900;">${money(c.revenue)}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">콘텐츠 사용료</span><span style="font-weight:900;">${money(Math.round(c.revenue * 0.03))}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">로열티 (${c.royaltyRate}%)</span><span style="font-weight:900;color:var(--blue);">${money(c.revenue * c.royaltyRate / 100)}</span></div></div>
+      </div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["hq-royalty"] = () => {
+  return `<div class="grid cols-3">
+    ${metric("총 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달 예상")}
+    ${metric("콘텐츠 수수료", money(contentPackages.reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "30% HQ 수수료")}
+    ${metric("프랜차이즈 수", `${campuses.length}개`, "직영 2 + 가맹 2")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">월 정산 테이블</h2></div>
+      <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>캠퍼스</th><th>월 매출</th><th>콘텐츠 비용</th><th>로열티율</th><th>로열티 금액</th><th>정산 상태</th></tr></thead>
+      <tbody>${campuses.map(c => `<tr>
+        <td style="font-weight:800;">${c.name}</td><td>${money(c.revenue)}</td><td>${money(Math.round(c.revenue*0.03))}</td><td>${c.royaltyRate}%</td><td style="font-weight:900;color:var(--blue);">${money(c.revenue*c.royaltyRate/100)}</td><td>${statusTag("완료")}</td>
+      </tr>`).join("")}</tbody>
+    </table></div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 정산</h2></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생 수</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th></tr></thead>
+      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
+        const gross = c.price * c.studentCount;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td>${money(gross*.7)}</td></tr>`;
+      }).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["hq-content"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 관리</h2><p class="panel-sub">본사 승인 없이 콘텐츠가 노출되지 않습니다</p></div></div>
+    <div class="tabs"><button class="tab active">전체</button><button class="tab">검수 대기</button><button class="tab">수정 요청</button><button class="tab">승인 완료</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px;">
+      ${contentPackages.map(c => `<div class="panel">
+        <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${statusTag(c.status)}</div>
+        <div style="padding:12px;">
+          <div class="row-copy">${c.desc}</div>
+          <div style="margin-top:8px;"><span class="row-copy">학생당 ${money(c.price)} &middot; ${c.studentCount}명 사용 중</span></div>
+          ${c.status !== "승인" ? `<div style="margin-top:10px;display:flex;gap:6px;"><button class="btn sm primary" onclick="approveContent('${c.id}','승인')">승인</button><button class="btn sm red" onclick="approveContent('${c.id}','수정 요청')">수정 요청</button></div>` : '<div style="margin-top:8px;"><span class="tag green">승인 완료</span></div>'}
+        </div>
+      </div>`).join("")}
+    </div>
+  </div>`;
+};
+
+// ===== MARKET VIEWS =====
+
+viewRenderers["market-browse"] = () => {
+  return `<div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
+    <input class="input" placeholder="콘텐츠 검색..." style="width:300px;">
+    <select class="select"><option>전체 학년</option><option>초등 1~2</option><option>초등 3~4</option><option>초등 5~6</option><option>중등</option></select>
+    <select class="select"><option>전체 난이도</option><option>입문</option><option>중급</option><option>고급</option></select>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+    ${contentPackages.filter(c=>c.status==="승인").map(c => `<div class="panel" style="cursor:pointer;" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">
+      <div style="height:120px;background:linear-gradient(135deg,#ffd335,#f59e0b);display:grid;place-items:center;font-size:40px;">&#x1F4DA;</div>
+      <div style="padding:14px;">
+        <div style="font-weight:900;font-size:15px;">${c.title}</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px;">${c.grade} &middot; 난이도 ${c.difficulty}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          <div style="font-weight:900;color:var(--blue);">학생당 ${money(c.price)}</div>
+          <div style="font-size:12px;color:var(--muted);">&#x2B50; ${c.rating || '-'} (${c.reviews})</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">${c.creator}</div>
+      </div>
+    </div>`).join("")}
+  </div>`;
+};
+
+viewRenderers["market-detail"] = () => {
+  const c = contentPackages.find(x => x.id === state.selectedContentId) || contentPackages[0];
+  return `<div class="breadcrumb"><a onclick="showView('market-browse')">콘텐츠 스토어</a> &gt; <strong>${c.title}</strong></div>
+  <div class="grid cols-3">
+    <div class="span-2">
+      <div class="panel">
+        <div style="height:200px;background:linear-gradient(135deg,#ffd335,#f59e0b);display:grid;place-items:center;font-size:60px;">&#x1F4DA;</div>
+        <div style="padding:20px;">
+          <h2 style="margin:0 0 8px;font-size:22px;">${c.title}</h2>
+          <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <span class="tag blue">${c.grade}</span><span class="tag">${c.difficulty}</span><span class="tag yellow">&#x2B50; ${c.rating}</span>
+          </div>
+          <p style="color:var(--slate);line-height:1.7;">${c.desc}</p>
+          <div class="drm-notice" style="margin-top:14px;">&#x1F512; 1주일 미리보기 가능 &middot; 복사/캡처/개발자도구 차단 DRM 적용</div>
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn primary" onclick="addToCart('${c.id}');showView('market-cart');">&#x1F6D2; 장바구니 담기</button>
+            <button class="btn" onclick="toast('미리보기를 시작합니다.')">&#x1F440; 미리보기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel pad">
+        <div style="font-weight:900;margin-bottom:12px;">콘텐츠 정보</div>
+        ${[["제작자", c.creator],["학생당 단가", money(c.price)],["대상 학년", c.grade],["난이도", c.difficulty],["사용 학생", `${c.studentCount}명`],["리뷰", `${c.reviews}개`]].map(([k,v]) =>
+          `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #edf1f6;font-size:13px;"><span style="color:var(--muted);">${k}</span><span style="font-weight:800;">${v}</span></div>`
+        ).join("")}
+      </div>
+      <div class="panel pad" style="margin-top:14px;">
+        <div style="font-weight:900;margin-bottom:8px;">수익 분배</div>
+        <div style="font-size:13px;line-height:1.7;">
+          <div style="display:flex;justify-content:space-between;"><span>본사 수수료 (30%)</span><span style="font-weight:800;">${money(c.price * .3)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * .7)}</span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["market-cart"] = () => {
+  if (state.purchased) {
+    return `<div class="checkin-success">
+      <div class="checkin-emoji">&#x2705;</div>
+      <div class="checkin-name">구매가 완료되었습니다!</div>
+      <div class="checkin-info">콘텐츠가 캠퍼스에 등록되었습니다.</div>
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;">
+        <button class="btn primary" onclick="showView('market-browse')">스토어로 돌아가기</button>
+        <button class="btn" onclick="showView('market-settlement')">정산 현황 보기</button>
+      </div>
+    </div>`;
+  }
+
+  const items = state.cart.map(cid => contentPackages.find(c => c.id === cid)).filter(Boolean);
+  const studentCount = 10;
+  const total = items.reduce((a, c) => a + c.price * studentCount, 0);
+
+  if (!items.length) {
+    return `<div style="text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:16px;">&#x1F6D2;</div><div style="font-weight:900;font-size:18px;">장바구니가 비어있습니다</div><div style="color:var(--muted);margin-top:8px;"><button class="btn primary" style="margin-top:12px;" onclick="showView('market-browse')">콘텐츠 스토어 가기</button></div></div>`;
+  }
+
+  return `<div class="steps">
+    <div class="step done"><div class="step-num">1</div>콘텐츠 선택</div><div class="step-line"></div>
+    <div class="step active"><div class="step-num">2</div>결제 확인</div><div class="step-line"></div>
+    <div class="step"><div class="step-num">3</div>완료</div>
+  </div>
+  <div class="grid cols-3">
+    <div class="span-2">
+      <div class="panel">
+        <div class="panel-head"><div><h2 class="panel-title">장바구니</h2></div></div>
+        ${items.map(c => `<div class="cart-item">
+          <div class="cart-item-info"><div style="font-weight:800;">${c.title}</div><div style="font-size:12px;color:var(--muted);">${c.grade} &middot; ${c.difficulty} &middot; 학생 ${studentCount}명 적용</div></div>
+          <div class="cart-item-price">${money(c.price * studentCount)}<br><button class="btn sm red" style="margin-top:4px;" onclick="removeFromCart('${c.id}')">삭제</button></div>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="panel pad">
+      <div style="font-weight:900;margin-bottom:14px;">주문 요약</div>
+      <div style="font-size:13px;">
+        ${items.map(c => `<div style="display:flex;justify-content:space-between;padding:6px 0;"><span>${c.title}</span><span>${money(c.price * studentCount)}</span></div>`).join("")}
+        <div style="border-top:2px solid var(--ink);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:900;font-size:16px;"><span>합계</span><span>${money(total)}</span></div>
+        <div style="margin-top:6px;font-size:12px;color:var(--muted);">학생 ${studentCount}명 &times; ${items.length}개 콘텐츠</div>
+      </div>
+      <button class="btn primary" style="width:100%;margin-top:16px;" onclick="purchaseCart()">&#x1F4B3; 프리페이드 포인트로 구매</button>
+    </div>
+  </div>`;
+};
+
+viewRenderers["market-register"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 등록</h2><p class="panel-sub">등록 후 본사 검수를 거쳐 스토어에 노출됩니다</p></div></div>
+    <div style="padding:20px;display:grid;gap:16px;max-width:600px;">
+      <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠 제목</label><input class="input" placeholder="예: 파이썬 데이터 분석 기초"></div>
+      <div class="grid cols-2">
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">대상 학년</label><select class="select" style="width:100%;"><option>초등 1~2</option><option>초등 3~4</option><option>초등 5~6</option><option>중등</option></select></div>
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">난이도</label><select class="select" style="width:100%;"><option>입문</option><option>중급</option><option>고급</option></select></div>
+      </div>
+      <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">학생당 월 단가</label><input class="input" type="number" placeholder="15000"></div>
+      <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠 설명</label><textarea class="textarea" placeholder="콘텐츠에 대한 상세 설명을 입력하세요."></textarea></div>
+      <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">파일 업로드</label><div style="border:2px dashed var(--line);border-radius:8px;padding:30px;text-align:center;color:var(--muted);cursor:pointer;" onclick="toast('파일 업로드 대화상자가 열립니다.')">PDF, 코딩 환경 URL 또는 파일을 드래그하세요</div></div>
+      <div style="background:#fef3c7;padding:12px;border-radius:8px;font-size:13px;">&#x1F4B0; 수익 분배: 본사 30% / 제작자 <strong>70%</strong></div>
+      <button class="btn primary" onclick="toast('콘텐츠가 등록되었습니다. 본사 검수를 기다려주세요.')">등록 신청</button>
+    </div>
+  </div>`;
+};
+
+viewRenderers["market-seller"] = () => {
+  const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
+  const totalEarnings = myContent.reduce((a, c) => a + c.price * c.studentCount * .7, 0);
+  return `<div class="grid cols-4">
+    ${metric("등록 콘텐츠", `${myContent.length}개`, "")}
+    ${metric("총 사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "")}
+    ${metric("이번 달 수익", money(totalEarnings), "70% 정산")}
+    ${metric("누적 수익", money(totalEarnings * 3), "최근 3개월")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 수익</h2></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>콘텐츠</th><th>학생 수</th><th>단가</th><th>총 사용료</th><th>HQ 30%</th><th>내 수익 70%</th><th>상태</th></tr></thead>
+      <tbody>${myContent.map(c => {
+        const gross = c.price * c.studentCount;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td style="font-weight:900;color:var(--green);">${money(gross*.7)}</td><td>${statusTag(c.status)}</td></tr>`;
+      }).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+viewRenderers["market-settlement"] = () => {
+  return `<div class="grid cols-3">
+    ${metric("이번 달 정산", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount,0)), "전체 콘텐츠 거래")}
+    ${metric("HQ 수수료 (30%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "")}
+    ${metric("제작자 정산 (70%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">정산 상세</h2></div>
+      <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 내보내기')">Excel</button><button class="btn sm" onclick="toast('PDF 내보내기')">PDF</button><button class="btn sm" onclick="toast('세금계산서 발행 화면으로 이동합니다.')">세금계산서 발행</button></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
+      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
+        const g = c.price * c.studentCount;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(g)}</td><td>${money(g*.3)}</td><td>${money(g*.7)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
+      }).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+// ===== ADMIN VIEWS =====
+
+viewRenderers["admin-lms"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">11주 커리큘럼</h2><p class="panel-sub">코딩 사고력 과정 (초등 3~4)</p></div></div>
+    <div style="padding:16px;">
+      ${curriculum.map((w, i) => `<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #edf1f6;">
+        <div style="width:50px;height:50px;border-radius:10px;background:${i<3?'#dcfce7':i===3?'#fff4bf':'#eef2f7'};display:grid;place-items:center;font-weight:900;font-size:16px;">${w.week}</div>
+        <div style="flex:1;">
+          <div style="font-weight:900;">${w.theme}</div>
+          <div style="font-size:13px;color:var(--muted);">${w.topic}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="tag">${w.missions}개 미션</span>
+          ${i < 3 ? '<span class="tag green">완료</span>' : i === 3 ? '<span class="tag yellow">진행 중</span>' : '<span class="tag">예정</span>'}
+        </div>
+        <button class="btn sm" onclick="toast('${w.week}주차 상세 화면으로 이동합니다.')">상세</button>
+      </div>`).join("")}
+    </div>
+  </div>`;
+};
+
+viewRenderers["admin-consent"] = () => {
+  const items = ["학생 개인정보 수집/이용", "학부모 연락처 수집/이용", "출결 알림 발송", "수업 녹음", "AI 기반 수업 요약/분석", "학부모 리포트 발송", "학생 결과물 저장/활용", "홍보용 사진/영상 활용"];
+  return `<div class="grid cols-2">
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">통합 동의서 항목</h2><p class="panel-sub">홍보 활용은 선택 동의로 분리</p></div></div>
+      <div style="padding:16px;">
+        ${items.map((x, i) => `<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f6;cursor:pointer;"><input type="checkbox" ${i<7?'checked':''}><div><div style="font-weight:800;font-size:14px;">${x}</div><div style="font-size:12px;color:var(--muted);">${i===7?'선택 동의':'운영 필수 동의'}</div></div></label>`).join("")}
+        <button class="btn primary" style="margin-top:14px;" onclick="toast('동의서가 저장되었습니다.')">서명 저장</button>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><div><h2 class="panel-title">데이터 보관 정책</h2></div></div>
+      <div style="padding:16px;">
+        ${[["수업 녹음 원본","100일","자동 삭제"],["AI 수업 요약","영구","서비스 종료 시"],["학생 학습 데이터","영구","개인정보 제외"],["결제 기록","5년","법적 의무"]].map(([item, period, note]) =>
+          `<div class="row-card"><div class="row-top"><div class="row-title">${item}</div><span class="tag blue">${period}</span></div><div class="row-copy">${note}</div></div>`
+        ).join("")}
+      </div>
+    </div>
+  </div>`;
+};
+
+viewRenderers["admin-audit"] = () => {
+  return `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">감사 로그</h2><p class="panel-sub">시스템의 모든 주요 작업이 기록됩니다</p></div>
+      <div style="display:flex;gap:8px;"><input class="input" placeholder="검색..." style="width:200px;"><select class="select"><option>전체</option><option>출석</option><option>리포트</option><option>결제</option><option>콘텐츠</option></select></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>시간</th><th>작업</th><th>수행자</th><th>대상</th><th>상세</th></tr></thead>
+      <tbody>${auditLog.map(l => `<tr><td style="font-family:monospace;font-size:12px;">${l.time}</td><td style="font-weight:800;">${l.action}</td><td>${l.actor}</td><td>${l.target}</td><td style="font-size:12px;color:var(--muted);">${l.detail}</td></tr>`).join("")}</tbody>
+    </table></div>
+  </div>`;
+};
+
+// ==================== INIT ====================
+
+loadState();
+renderApp();
+</script>
+</body>
+</html>
