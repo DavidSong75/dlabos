@@ -1,0 +1,108 @@
+// D.LAB MMS 콘텐츠 마켓 스키마
+// 기획서: Draft~Signature 7단계 등급, Verified 이상만 유통, 실제 수강 학생 수로 정산
+// SQLite로 시작(무설치 실행). datasource provider만 바꾸면 PostgreSQL로 이전 가능.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 참고: SQLite는 Prisma enum 미지원 → String으로 관리(허용값은 src/constants.ts에서 강제)
+// ContentStatus: Draft | Review | Revision | Rejected | Verified | Popular | Signature
+//   (Verified 이상만 마켓 공개·구매 가능)
+// Role: creator | campus_director | hq_reviewer | hq_admin
+
+model Campus {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // 직영 | 가맹
+  revenue   Int      @default(0) // 월 교육(수강료) 매출 — 로열티 6% 기준
+  users     User[]
+  contents  Content[] @relation("CampusContents")
+  usages    Usage[]
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  name         String
+  passwordHash String
+  role         String   // creator | campus_director | hq_reviewer | hq_admin
+  campus       Campus?  @relation(fields: [campusId], references: [id])
+  campusId     String?
+  contents     Content[] @relation("CreatorContents")
+  createdAt    DateTime @default(now())
+}
+
+model Content {
+  id            String        @id @default(cuid())
+  title         String
+  gradeLevel    String        // 대상 학년 (초등 3~4 등)
+  difficulty    String        // 입문/중급/고급
+  pricePerStudent Int         // 학생 1인당 사용료(원)
+  status        String        @default("Draft") // ContentStatus
+  summary       String        @default("")
+  description   String        @default("")
+  // 수업 패키지 구성요소(기획서 5번)
+  teacherGuide  String        @default("")
+  studentMaterial String      @default("")
+  outcome       String        @default("") // 최종 결과물
+  rubric        String        @default("") // 평가 기준
+  rating        Float         @default(0)
+  reviewNote    String        @default("") // 본사 검수 코멘트(보완/반려 사유)
+
+  creator       User          @relation("CreatorContents", fields: [creatorId], references: [id])
+  creatorId     String
+  campus        Campus        @relation("CampusContents", fields: [campusId], references: [id])
+  campusId      String        // 제작 캠퍼스
+
+  files         ContentFile[]
+  usages        Usage[]
+  reviews       ReviewLog[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model ContentFile {
+  id         String   @id @default(cuid())
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId  String
+  filename   String   // 저장 파일명
+  originalName String // 원본 파일명
+  mimeType   String
+  size       Int
+  createdAt  DateTime @default(now())
+}
+
+// 수업 사용 등록 — 어느 캠퍼스에서 몇 명이 사용했는가 (정산·등급 평가의 원천)
+model Usage {
+  id           String   @id @default(cuid())
+  content      Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId    String
+  campus       Campus   @relation(fields: [campusId], references: [id])
+  campusId     String
+  classroom    String   @default("") // 반
+  teacher      String   @default("")
+  studentCount Int      // 실제 수강 학생 수
+  sessionDate  String   @default("")
+  note         String   @default("") // 강사 후기/결과물 메모
+  createdAt    DateTime @default(now())
+}
+
+// 본사 검수 이력
+model ReviewLog {
+  id        String   @id @default(cuid())
+  content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId String
+  fromStatus String
+  toStatus   String
+  note       String  @default("")
+  reviewer   String  @default("")
+  createdAt DateTime @default(now())
+}
