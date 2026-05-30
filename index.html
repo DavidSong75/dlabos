@@ -223,11 +223,14 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Kiosk */
-    .kiosk { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; }
+    .app-shell.kiosk-mode { grid-template-columns: 1fr; }
+    .app-shell.kiosk-mode .rail { display: none; }
+    .app-shell.kiosk-mode .content { padding-top: 12px; padding-bottom: 14px; }
+    .kiosk { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; align-items: start; }
     .kiosk-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .kiosk-key {
       aspect-ratio: 1.3; display: grid; place-items: center; border: 1px solid var(--line-strong);
-      border-radius: var(--radius-md); background: rgba(255, 255, 255, .05); font-size: 22px; font-weight: 600;
+      border-radius: var(--radius-md); background: rgba(255, 255, 255, .05); color: var(--ink); font-size: 22px; font-weight: 600;
       transition: transform .12s var(--ease), background .15s var(--ease);
     }
     .kiosk-key:hover { background: rgba(255, 255, 255, .1); }
@@ -241,6 +244,81 @@
     .kiosk-display.filled { color: var(--ink); }
     .kiosk-result { text-align: center; padding: 30px; }
     .kiosk-result .name { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+
+    /* Kiosk stage — center content, no dead whitespace */
+    .kiosk-stage { min-height: calc(100vh - 150px); display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+    .kiosk-stage .kiosk { width: 100%; max-width: 860px; }
+    /* keypad input — keypad stays centered & fixed; student info floats on the right (keypad never moves) */
+    .kiosk-input-stage { position: relative; }
+    .kiosk-input-stage .keypad-card { width: 372px; }
+    .kiosk-input-stage .kiosk-side { position: absolute; left: calc(50% + 202px); right: 24px; top: 50%; transform: translateY(-50%); }
+    @media (max-width: 820px) {
+      .kiosk-input-stage { flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+      .kiosk-input-stage .keypad-card { width: 100%; max-width: 392px; }
+      .kiosk-input-stage .kiosk-side { position: static; transform: none; left: auto; right: auto; width: 100%; max-width: 392px; margin-top: 14px; }
+    }
+    .keypad-head { text-align: center; margin-bottom: 16px; }
+    .keypad-head .ic { font-size: 30px; }
+    .keypad-head .t { font-weight: 750; font-size: 19px; margin-top: 6px; letter-spacing: -0.02em; }
+    .keypad-head .s { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .kiosk-test { display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--muted); font-size: 13px; }
+    .kiosk-test b { padding: 4px 11px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-weight: 700; }
+    .kiosk-hint { display: grid; place-items: center; gap: 10px; text-align: center; padding: 30px 22px; }
+    .kiosk-hint .wave { font-size: 44px; animation: wave 1.8s var(--ease) infinite; transform-origin: 70% 80%; }
+    @keyframes wave { 0%,60%,100%{transform:rotate(0)} 15%{transform:rotate(16deg)} 30%{transform:rotate(-8deg)} 45%{transform:rotate(12deg)} }
+    .kiosk-hint .h { font-weight: 700; font-size: 16px; color: var(--ink); letter-spacing: -0.02em; }
+    .kiosk-hint .test { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .kiosk-hint .test b { padding: 4px 10px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 700; }
+
+    /* Kiosk check-in celebration (gamified, kid-friendly) */
+    .celebrate { width: 100%; max-width: 720px; margin: 0 auto; animation: popIn .5s var(--ease); }
+    .hero-card { position: relative; overflow: hidden; border-radius: var(--radius-xl); padding: 30px 26px; text-align: center; color: #fff; background: linear-gradient(135deg, #fa4616 0%, #ff8a3d 100%); box-shadow: 0 20px 54px rgba(250, 70, 22, .38); }
+    .hero-card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(440px 220px at 50% -40%, rgba(255, 255, 255, .4), transparent 70%); pointer-events: none; }
+    .hero-emoji { font-size: 56px; line-height: 1; animation: bounce 1.5s var(--ease) infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    .hero-hi { font-size: 30px; font-weight: 800; letter-spacing: -0.035em; margin-top: 8px; }
+    .hero-sub { font-size: 14px; opacity: .94; margin-top: 6px; }
+    .hero-chips { display: flex; gap: 9px; justify-content: center; margin-top: 18px; flex-wrap: wrap; position: relative; z-index: 1; }
+    .hero-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 15px; border-radius: 999px; background: rgba(255, 255, 255, .24); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-weight: 700; font-size: 14px; }
+    .hero-chip.pop { background: #fff; color: #d6360f; animation: chipPop .6s var(--ease) both .2s; }
+    @keyframes chipPop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+    .lesson-big { font-size: 20px; font-weight: 750; letter-spacing: -0.02em; margin: 2px 0 2px; }
+    .lesson-meta { color: var(--muted); font-size: 13px; }
+    .mission-pill { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; padding: 9px 13px; border-radius: var(--radius-md); background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .26); color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+    .lvl-row { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 0; font-size: 12px; color: var(--muted); font-weight: 600; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 17px; background: var(--brand-soft); color: var(--brand); flex-shrink: 0; }
+    .lb-row.me { background: var(--brand-soft); }
+    .lb-row.me .lb-name { color: var(--brand); }
+    /* keep the 3 stat cards in a row even on narrow kiosk/portrait so the top stays compact */
+    .celebrate .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .celebrate .cols-3 .metric { min-height: 88px; padding: 14px; gap: 4px; }
+    .celebrate .cols-3 .metric-value { font-size: 23px; }
+
+    /* Kiosk check-in — landscape iPad optimized (single screen, two columns) */
+    .celebrate-stage { min-height: calc(100vh - 110px); display: flex; align-items: center; justify-content: center; padding: 2px 0; }
+    .celebrate-wide { width: 100%; max-width: 1060px; display: grid; grid-template-columns: 1.04fr .96fr; gap: 14px; animation: popIn .45s var(--ease); }
+    .cel-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .hero-compact { display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px 22px; }
+    .hero-compact .hero-emoji { font-size: 44px; margin: 0; }
+    .hero-compact .hero-hi { font-size: 23px; margin: 0; }
+    .hero-compact .hero-sub { margin-top: 4px; font-size: 13px; }
+    .pt-card { gap: 5px; min-height: 0; padding: 15px 16px; }
+    .pt-card .metric-value { font-size: 27px; }
+    .earn-badge { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: rgba(48, 209, 88, .16); color: #4ade80; font-size: 12px; font-weight: 700; }
+    .rank-badge { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .28); color: var(--brand); font-size: 12px; font-weight: 700; }
+    .lesson-card { padding: 16px; }
+    .lesson-card .lesson-big { margin: 3px 0 2px; }
+    .shop-head { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .shop-row { display: flex; align-items: center; gap: 12px; padding: 7px 16px; border-bottom: 1px solid var(--line); }
+    .shop-row:last-child { border-bottom: 0; }
+    .shop-ic { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; background: rgba(255, 255, 255, .06); font-size: 19px; flex-shrink: 0; }
+    .shop-info { flex: 1; min-width: 0; }
+    .shop-name { font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; }
+    .shop-cost { font-size: 12px; color: var(--brand); font-weight: 700; margin-top: 1px; }
+    .lb-row.kiosk { padding: 8px 16px; }
+    @media (max-width: 920px) {
+      .celebrate-wide { grid-template-columns: 1fr; max-width: 560px; }
+    }
 
     /* Phone preview */
     .phone { max-width: 340px; margin: 0 auto; border: 1px solid var(--line-strong); border-radius: 28px; background: var(--panel); overflow: hidden; box-shadow: var(--shadow); }
@@ -479,14 +557,22 @@ const classes = [
 ];
 
 const students = [
-  { id: "s1", name: "김민준", phone: "1842", classId: "algo-a", campusId: "bundang", parentPhone: "010-2345-1842", status: "scheduled", points: 620, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
-  { id: "s2", name: "이서연", phone: "3074", classId: "algo-a", campusId: "bundang", parentPhone: "010-8877-3074", status: "scheduled", points: 480, level: 2, absences: 1, homework: true, participation: 3, risk: "low" },
-  { id: "s3", name: "박하준", phone: "5512", classId: "algo-a", campusId: "bundang", parentPhone: "010-5566-5512", status: "scheduled", points: 310, level: 2, absences: 3, homework: false, participation: 2, risk: "high" },
-  { id: "s4", name: "최유나", phone: "9201", classId: "algo-a", campusId: "bundang", parentPhone: "010-1234-9201", status: "scheduled", points: 750, level: 3, absences: 0, homework: true, participation: 5, risk: "low" },
-  { id: "s5", name: "정도윤", phone: "6688", classId: "algo-a", campusId: "bundang", parentPhone: "010-9988-6688", status: "scheduled", points: 410, level: 2, absences: 2, homework: false, participation: 3, risk: "medium" },
-  { id: "s6", name: "강지우", phone: "7733", classId: "python-b", campusId: "bundang", parentPhone: "010-4455-7733", status: "scheduled", points: 550, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
-  { id: "s7", name: "윤시우", phone: "2211", classId: "python-b", campusId: "bundang", parentPhone: "010-3322-2211", status: "scheduled", points: 200, level: 1, absences: 1, homework: true, participation: 3, risk: "low" },
-  { id: "s8", name: "한소율", phone: "4456", classId: "maker-c", campusId: "bundang", parentPhone: "010-7788-4456", status: "scheduled", points: 880, level: 4, absences: 0, homework: true, participation: 5, risk: "low" },
+  { id: "s1", name: "김민준", phone: "1842", classId: "algo-a", campusId: "bundang", parentPhone: "010-2345-1842", status: "scheduled", points: 620, balance: 320, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s2", name: "이서연", phone: "3074", classId: "algo-a", campusId: "bundang", parentPhone: "010-8877-3074", status: "scheduled", points: 480, balance: 200, level: 2, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s3", name: "박하준", phone: "5512", classId: "algo-a", campusId: "bundang", parentPhone: "010-5566-5512", status: "scheduled", points: 310, balance: 150, level: 2, absences: 3, homework: false, participation: 2, risk: "high" },
+  { id: "s4", name: "최유나", phone: "9201", classId: "algo-a", campusId: "bundang", parentPhone: "010-1234-9201", status: "scheduled", points: 750, balance: 400, level: 3, absences: 0, homework: true, participation: 5, risk: "low" },
+  { id: "s5", name: "정도윤", phone: "6688", classId: "algo-a", campusId: "bundang", parentPhone: "010-9988-6688", status: "scheduled", points: 410, balance: 180, level: 2, absences: 2, homework: false, participation: 3, risk: "medium" },
+  { id: "s6", name: "강지우", phone: "7733", classId: "python-b", campusId: "bundang", parentPhone: "010-4455-7733", status: "scheduled", points: 550, balance: 260, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s7", name: "윤시우", phone: "2211", classId: "python-b", campusId: "bundang", parentPhone: "010-3322-2211", status: "scheduled", points: 200, balance: 90, level: 1, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s8", name: "한소율", phone: "4456", classId: "maker-c", campusId: "bundang", parentPhone: "010-7788-4456", status: "scheduled", points: 880, balance: 500, level: 4, absences: 0, homework: true, participation: 5, risk: "low" },
+];
+
+const shopItems = [
+  { id: "sh1", icon: "&#x1F36D;", name: "간식 교환권", cost: 200 },
+  { id: "sh2", icon: "&#x1F3AE;", name: "게임 시간 30분", cost: 300 },
+  { id: "sh3", icon: "&#x1F4D3;", name: "디랩 노트", cost: 150 },
+  { id: "sh4", icon: "&#x1F3C6;", name: "특별 수업 참가권", cost: 500 },
+  { id: "sh5", icon: "&#x1F381;", name: "디랩 굿즈 키트", cost: 800 },
 ];
 
 const contentPackages = [
@@ -698,6 +784,7 @@ function renderApp() {
 
   roleScreen.classList.add("hidden");
   appShell.classList.remove("hidden");
+  appShell.classList.toggle("kiosk-mode", state.view === "student-kiosk");
   renderNav();
   renderShell();
   renderView();
@@ -726,7 +813,8 @@ function renderShell() {
   const item = items.find(n => n[0] === state.view) || items[0] || ["", "D.LAB ONE", ""];
   document.getElementById("pageTitle").textContent = item[1];
   document.getElementById("pageCopy").textContent = "";
-  document.getElementById("topToolbar").innerHTML = `<button class="btn" onclick="resetDemo()">&#x1F504; 데모 초기화</button>`;
+  const kioskExit = state.view === "student-kiosk" ? `<button class="btn" onclick="switchRole()">&#x21C4; 역할 전환</button>` : "";
+  document.getElementById("topToolbar").innerHTML = `${kioskExit}<button class="btn" onclick="resetDemo()">&#x1F504; 데모 초기화</button>`;
 }
 
 function renderView() {
@@ -746,12 +834,24 @@ function setDigits(v) {
 
 function checkIn(sid) {
   const s = students.find(x => x.id === sid);
-  if (s) { s.status = "present"; s.points += 30; }
+  // 출석 보상: 누적 포인트(랭킹·레벨)와 사용 가능 포인트(상점) 모두 +30
+  if (s) { s.status = "present"; s.points += 30; s.balance = (s.balance || 0) + 30; }
   state.checkedIn = true;
   state.selectedStudentId = sid;
   state.digits = "";
   saveState(); renderView();
   toast(`${s.name} 학생 출석 완료! 학부모 알림이 발송되었습니다.`);
+}
+
+function buyReward(itemId) {
+  const item = shopItems.find(i => i.id === itemId);
+  const s = studentById();
+  if (!item || !s) return;
+  if ((s.balance || 0) < item.cost) { toast("사용 가능 포인트가 부족해요."); return; }
+  // 사용 가능 포인트만 차감 — 누적 포인트(랭킹)는 그대로 유지
+  s.balance -= item.cost;
+  saveState(); renderView();
+  toast(`${item.name} 교환 완료! 사용 가능 포인트 ${s.balance}P`);
 }
 
 function toggleRecording() {
@@ -812,44 +912,90 @@ const viewRenderers = {};
 viewRenderers["student-kiosk"] = () => {
   if (state.checkedIn) {
     const s = studentById();
-    return `<div class="checkin-success">
-      <div class="checkin-emoji">&#x1F389;</div>
-      <div class="checkin-name">${s.name} 학생, 환영합니다!</div>
-      <div class="checkin-info">입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}</div>
-      <div class="checkin-info">Lv.${s.level} &middot; ${s.points}P</div>
-      <div class="checkin-points">&#x2B50; 출석 포인트 +30P 획득!</div>
-      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;">
-        <button class="btn primary" onclick="showView('student-dashboard')">대시보드 보기</button>
-        <button class="btn" onclick="state.checkedIn=false;saveState();renderView();">다른 학생 출석</button>
-      </div>
-      <div style="margin-top:16px;">
-        <div class="panel pad" style="max-width:360px;margin:0 auto;">
-          <div style="font-weight:800;margin-bottom:8px;">&#x1F4F1; 학부모 알림 미리보기</div>
-          <div class="phone"><div class="phone-top">D.LAB 알림톡</div><div class="bubble">미래의 주커버그, ${s.name}이(가) 오늘 D.LAB에 입장했습니다.\n\n입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}\n오늘도 새로운 문제를 해결하러 왔습니다.</div></div>
+    const cls = classes.find(c => c.id === s.classId) || { name: "-", teacher: "-", content: "-", time: "" };
+    const now = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+    const toNext = 300 - (s.points % 300), lvlPct = Math.round((s.points % 300) / 300 * 100);
+    const ranked = [...leaderboard].sort((a, b) => b.points - a.points);
+    const rank = (ranked.findIndex(r => r.name === s.name) + 1) || ranked.length;
+    const rankRows = ranked.slice(0, 3).map((r, i) => {
+      const me = r.name === s.name;
+      return `<div class="lb-row kiosk${me ? ' me' : ''}"><div class="lb-rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : 'bronze'}">${i + 1}</div><div class="lb-name">${r.name}${me ? ' (나)' : ''}</div><div class="lb-pts">${me ? s.points : r.points}P</div></div>`;
+    }).join("") + (rank > 3 ? `<div class="lb-row kiosk me"><div class="lb-rank">${rank}</div><div class="lb-name">${s.name} (나)</div><div class="lb-pts">${s.points}P</div></div>` : "");
+    const shopRows = shopItems.map(it => {
+      const can = (s.balance || 0) >= it.cost;
+      return `<div class="shop-row"><div class="shop-ic">${it.icon}</div><div class="shop-info"><div class="shop-name">${it.name}</div><div class="shop-cost">${it.cost}P</div></div><button class="btn primary sm" onclick="buyReward('${it.id}')" ${can ? "" : "disabled"}>${can ? "교환" : "부족"}</button></div>`;
+    }).join("");
+
+    return `<div class="kiosk-stage celebrate-stage"><div class="celebrate celebrate-wide">
+      <div class="cel-col">
+        <div class="hero-card hero-compact">
+          <div class="hero-emoji">&#x1F389;</div>
+          <div>
+            <div class="hero-hi">${s.name}, 환영해요!</div>
+            <div class="hero-sub">${now} 입실 완료 &middot; 오늘도 화이팅! &#x1F680;</div>
+          </div>
+        </div>
+        <div class="grid cols-2" style="gap:12px;">
+          <div class="metric pt-card">
+            <div class="metric-label">사용 가능 포인트</div>
+            <div class="metric-value">${s.balance || 0}P</div>
+            <div class="earn-badge">&#x2B50; 방금 +30P</div>
+          </div>
+          <div class="metric pt-card">
+            <div class="metric-label">레벨 포인트</div>
+            <div class="metric-value">${s.points}P</div>
+            <div class="rank-badge">&#x1F3C6; Lv.${s.level} &middot; ${rank}위</div>
+          </div>
+        </div>
+        <div class="panel pad lesson-card">
+          <div class="metric-label">오늘의 수업</div>
+          <div class="lesson-big">${cls.name}</div>
+          <div class="lesson-meta">${cls.teacher} 선생님 &middot; ${cls.room ? (/^\d+$/.test(cls.room) ? cls.room + "호" : cls.room) + " &middot; " : ""}${cls.time || ""}</div>
+          <div class="mission-pill">&#x1F3AF; 「${cls.content}」 미션</div>
+          <div class="levelbar" style="margin-top:12px;"><span style="width:${lvlPct}%"></span></div>
+          <div class="lesson-meta" style="margin-top:5px;">다음 레벨까지 ${toNext}P</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn primary" style="flex:1;" onclick="state.checkedIn=false;state.digits='';saveState();renderView();">다른 친구 출석</button>
+          <button class="btn" style="flex:1;" onclick="showView('student-dashboard')">내 대시보드</button>
         </div>
       </div>
-    </div>`;
+
+      <div class="cel-col">
+        <div class="panel">
+          <div class="panel-head"><div><h2 class="panel-title">&#x1F3C6; 포인트 랭킹</h2></div></div>
+          ${rankRows}
+        </div>
+        <div class="panel">
+          <div class="shop-head"><h2 class="panel-title">&#x1F6CD;&#xFE0F; 포인트 상점</h2><span class="tag yellow">사용가능 ${s.balance || 0}P</span></div>
+          ${shopRows}
+        </div>
+      </div>
+    </div></div>`;
   }
 
   const matches = state.digits.length === 4 ? students.filter(s => s.phone === state.digits) : [];
-  return `<div class="kiosk">
-    <div>
-      <div class="panel pad">
-        <div style="text-align:center;margin-bottom:14px;"><span style="font-size:28px;">&#x1F4F1;</span><div style="font-weight:900;font-size:18px;margin-top:6px;">D.LAB 출석 체크</div><div style="color:var(--muted);font-size:13px;">전화번호 뒤 4자리를 입력하세요</div></div>
-        <div class="kiosk-display ${state.digits ? 'filled' : ''}">${state.digits || "_ _ _ _"}</div>
-        <div class="kiosk-pad">
-          ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="kiosk-key" onclick="setDigits('${n}')">${n}</button>`).join("")}
-          <button class="kiosk-key action" onclick="setDigits('clear')">C</button>
-          <button class="kiosk-key" onclick="setDigits('0')">0</button>
-          <button class="kiosk-key action" onclick="setDigits('back')">&larr;</button>
-        </div>
+  const side = matches.length > 0
+    ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 확인</h2><p class="panel-sub">본인이 맞으면 출석을 눌러요</p></div></div>${matches.map(s => {
+        const c = classes.find(x => x.id === s.classId) || { name: "" };
+        return `<div class="row-card"><div class="row-top"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar">${s.name.charAt(1) || s.name[0]}</div><div><div class="row-title">${s.name}</div><div class="row-copy">${c.name} &middot; Lv.${s.level} &middot; ${s.points}P</div></div></div><button class="btn primary" onclick="checkIn('${s.id}')">출석 확인</button></div></div>`;
+      }).join("")}</div>`
+    : state.digits.length === 4
+      ? `<div class="panel kiosk-hint"><div style="font-size:40px;">&#x1F605;</div><div class="h">일치하는 학생이 없어요</div><div class="lesson-meta">번호를 다시 확인해 주세요</div></div>`
+      : `<div class="panel kiosk-hint"><div class="wave">&#x1F44B;</div><div class="h">번호를 누르면<br>학생 정보가 여기에 나와요</div><div class="test"><b>1842</b><b>3074</b><b>9201</b></div></div>`;
+
+  return `<div class="kiosk-stage kiosk-input-stage">
+    <div class="panel pad keypad-card">
+      <div class="keypad-head"><div class="ic">&#x1F4F1;</div><div class="t">D.LAB 출석 체크</div><div class="s">전화번호 뒤 4자리를 눌러주세요</div></div>
+      <div class="kiosk-display ${state.digits ? 'filled' : ''}">${state.digits || "_ _ _ _"}</div>
+      <div class="kiosk-pad">
+        ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="kiosk-key" onclick="setDigits('${n}')">${n}</button>`).join("")}
+        <button class="kiosk-key action" onclick="setDigits('clear')">C</button>
+        <button class="kiosk-key" onclick="setDigits('0')">0</button>
+        <button class="kiosk-key action" onclick="setDigits('back')">&larr;</button>
       </div>
     </div>
-    <div>
-      ${matches.length > 0 ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 확인</h2></div></div>${matches.map(s =>
-        `<div class="row-card"><div class="row-top"><div><div class="row-title">${s.name}</div><div class="row-copy">${s.classId === "algo-a" ? "알고리즘 A" : s.classId === "python-b" ? "파이썬 기초 B" : "메이커 C"} &middot; Lv.${s.level} &middot; ${s.points}P</div></div><button class="btn primary" onclick="checkIn('${s.id}')">출석 확인</button></div></div>`
-      ).join("")}</div>` : state.digits.length === 4 ? `<div class="panel pad" style="text-align:center;padding:40px;"><div style="font-size:32px;margin-bottom:10px;">&#x1F614;</div><div style="font-weight:800;">일치하는 학생이 없습니다</div><div style="color:var(--muted);font-size:13px;margin-top:4px;">번호를 다시 확인해주세요</div></div>` : `<div class="panel pad" style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:40px;margin-bottom:10px;">&#x1F44B;</div><div style="font-weight:800;">전화번호 뒤 4자리를 입력하면<br>학생 정보가 표시됩니다</div><div style="margin-top:16px;font-size:13px;">테스트: 1842, 3074, 9201</div></div>`}
-    </div>
+    <div class="kiosk-side">${side}</div>
   </div>`;
 };
 
