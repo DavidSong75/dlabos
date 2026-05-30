@@ -527,11 +527,12 @@ const navConfig = {
     ["hq-content", "콘텐츠 검수", "&#x1F50E;"],
   ],
   market: [
-    ["market-browse", "콘텐츠 스토어", "&#x1F6D2;"],
-    ["market-detail", "콘텐츠 상세", "&#x1F4C4;"],
+    ["market-browse", "콘텐츠 마켓", "&#x1F6D2;"],
     ["market-register", "콘텐츠 등록", "&#x2795;"],
-    ["market-seller", "판매자 대시보드", "&#x1F4B0;"],
-    ["market-settlement", "정산 현황", "&#x1F4C3;"],
+    ["market-mine", "내가 만든 콘텐츠", "&#x1F4E6;"],
+    ["market-purchased", "내가 구매한 콘텐츠", "&#x1F4E5;"],
+    ["market-usage", "수업 사용 등록", "&#x1F4DD;"],
+    ["market-settlement", "정산 내역", "&#x1F4C3;"],
   ],
   admin: [
     ["admin-lms", "LMS 커리큘럼", "&#x1F4DA;"],
@@ -541,10 +542,10 @@ const navConfig = {
 };
 
 const campuses = [
-  { id: "pangyo", name: "판교 직영캠퍼스", type: "직영", students: 124, attendance: 94, reports: 91, recordings: 88, renewal: 86, revenue: 41300000, royaltyRate: 8 },
-  { id: "bundang", name: "분당 직영캠퍼스", type: "직영", students: 98, attendance: 91, reports: 85, recordings: 82, renewal: 83, revenue: 33200000, royaltyRate: 8 },
-  { id: "gangnam", name: "강남 우수가맹", type: "가맹", students: 78, attendance: 89, reports: 82, recordings: 79, renewal: 80, revenue: 26400000, royaltyRate: 10 },
-  { id: "songdo", name: "송도 가맹", type: "가맹", students: 52, attendance: 83, reports: 72, recordings: 68, renewal: 74, revenue: 17500000, royaltyRate: 10 },
+  { id: "pangyo", name: "판교 직영캠퍼스", type: "직영", students: 124, attendance: 94, reports: 91, recordings: 88, renewal: 86, revenue: 41300000, royaltyRate: 6 },
+  { id: "bundang", name: "분당 직영캠퍼스", type: "직영", students: 98, attendance: 91, reports: 85, recordings: 82, renewal: 83, revenue: 33200000, royaltyRate: 6 },
+  { id: "gangnam", name: "강남 우수가맹", type: "가맹", students: 78, attendance: 89, reports: 82, recordings: 79, renewal: 80, revenue: 26400000, royaltyRate: 6 },
+  { id: "songdo", name: "송도 가맹", type: "가맹", students: 52, attendance: 83, reports: 72, recordings: 68, renewal: 74, revenue: 17500000, royaltyRate: 6 },
 ];
 
 const classes = [
@@ -576,11 +577,13 @@ const shopItems = [
 
 // price = 학생 1인당 월 사용료. 실제 과금은 캠퍼스별로 사용한 학생 수 × 단가로 계산된다.
 const contentPackages = [
-  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, creator: "이수진 (분당)", status: "승인", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
-  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, creator: "김정현 (판교)", status: "검수 대기", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
-  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, creator: "박민호 (분당)", status: "승인", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
-  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, creator: "정하나 (강남)", status: "수정 요청", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
-  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, creator: "이수진 (분당)", status: "승인", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, creator: "이수진 (분당)", status: "Signature", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
+  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, creator: "김정현 (판교)", status: "Review", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
+  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, creator: "박민호 (분당)", status: "Verified", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
+  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, creator: "정하나 (강남)", status: "Revision", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
+  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, creator: "이수진 (분당)", status: "Popular", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+  { id: "c6", title: "AI 이미지 생성 워크숍", grade: "중등", difficulty: "중급", price: 26000, creator: "이수진 (분당)", status: "Draft", rating: 0, reviews: 0, desc: "생성형 AI로 나만의 이미지를 만드는 1회차 워크숍입니다. (작성 중)" },
+  { id: "c7", title: "엔트리 자율주행 만들기", grade: "초등 5~6", difficulty: "중급", price: 24000, creator: "박민호 (분당)", status: "Rejected", rating: 0, reviews: 0, desc: "저작권 확인이 필요하여 반려된 콘텐츠입니다." },
 ];
 
 // 콘텐츠 사용 기록: 어느 캠퍼스에서 몇 명의 학생이 해당 콘텐츠를 열었는가 → 과금/정산의 기준
@@ -595,7 +598,8 @@ const contentUsage = [
   { contentId: "c5", campusId: "gangnam", students: 9 },
   { contentId: "c5", campusId: "songdo",  students: 7 },
 ];
-const HQ_RATE = 0.3, CREATOR_RATE = 0.7; // 본사 30% / 제작자 70%
+const HQ_RATE = 0.3, CREATOR_RATE = 0.7; // 콘텐츠 정산: 본사 운영비 30% / 제작자 70%
+const ROYALTY_RATE = 0.06; // 가맹 로열티: 교육(수강료) 매출의 6% — 콘텐츠 사용료와 별개
 
 const invoices = [
   { student: "김민준", className: "알고리즘 A", amount: 330000, method: "자동결제", due: "2026-06-05", status: "완료" },
@@ -716,7 +720,7 @@ function studentById(id) { return students.find(s => s.id === (id || state.selec
 function classStudents(cid) { return students.filter(s => s.classId === (cid || state.selectedClassId)); }
 function qualityScore(c) { return Math.round(c.attendance * .30 + c.reports * .25 + c.recordings * .25 + c.renewal * .20); }
 
-// ===== 콘텐츠 사용량·정산 헬퍼 (1인당 단가 × 사용 학생 수 → 본사 30% / 제작자 70%) =====
+// ===== 콘텐츠 사용량·정산 헬퍼 (1인당 단가 × 사용 학생 수 → 본사 운영비 30% / 제작자 70%) =====
 function contentUsageFor(cid) { return contentUsage.filter(u => u.contentId === cid); }
 function contentStudents(cid) { return contentUsageFor(cid).reduce((a, u) => a + u.students, 0); }
 function contentCampuses(cid) { return contentUsageFor(cid).map(u => campusShort(u.campusId)).join(", ") || "-"; }
@@ -730,6 +734,21 @@ function campusContentBill(campusId) {
   });
 }
 function campusContentTotal(campusId) { return campusContentBill(campusId).reduce((a, b) => a + b.gross, 0); }
+
+// ===== 콘텐츠 등급 체계 (Draft→Verified→Popular→Signature). Verified 이상만 마켓 공개·구매 가능 =====
+const GRADES = {
+  Draft:     { label: "초안",   tag: "",       desc: "본사 검토 전 초안 — 다른 캠퍼스 비공개" },
+  Review:    { label: "검토중", tag: "blue",   desc: "본사 검수 진행 중" },
+  Revision:  { label: "보완요청", tag: "yellow", desc: "보완 후 재제출 필요" },
+  Rejected:  { label: "반려",   tag: "red",    desc: "디랩 기준 미달로 비공개" },
+  Verified:  { label: "승인",   tag: "green",  desc: "본사 승인 — 마켓 공개·구매 가능" },
+  Popular:   { label: "인기",   tag: "violet", desc: "다수 캠퍼스·학생이 사용한 인기 콘텐츠" },
+  Signature: { label: "대표",   tag: "orange", desc: "디랩 대표 콘텐츠" },
+};
+const PUBLIC_GRADES = ["Verified", "Popular", "Signature"];
+function isPublic(c) { return PUBLIC_GRADES.includes(c.status); }
+function gradeBadge(g) { const m = GRADES[g] || { label: g, tag: "" }; return `<span class="tag ${m.tag}">${g} · ${m.label}</span>`; }
+function contentCampusCount(cid) { return contentUsageFor(cid).length; }
 
 function statusTag(status) {
   const map = {
@@ -915,8 +934,9 @@ function toggleNotif(nid) {
 function approveContent(cid, newStatus) {
   const c = contentPackages.find(x => x.id === cid);
   if (c) c.status = newStatus;
-  renderView();
-  toast(`${c.title} - ${newStatus} 처리되었습니다.`);
+  saveState(); renderView();
+  const label = (GRADES[newStatus] || {}).label || newStatus;
+  toast(`${c.title} → ${newStatus}(${label}) 처리되었습니다.`);
 }
 
 // ==================== VIEW RENDERERS ====================
@@ -1366,7 +1386,7 @@ viewRenderers["teacher-content"] = () => {
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">나의 콘텐츠</h2></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠 등록</button></div>
     <div class="table-wrap"><table><thead><tr><th>제목</th><th>대상</th><th>단가</th><th>사용 학생</th><th>수익(70%)</th><th>상태</th></tr></thead>
-      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price*contentStudents(c.id)*.7)}</td><td>${statusTag(c.status)}</td></tr>`).join("")}</tbody>
+      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price*contentStudents(c.id)*.7)}</td><td>${gradeBadge(c.status)}</td></tr>`).join("")}</tbody>
     </table></div>
   </div>`;
 };
@@ -1435,16 +1455,29 @@ viewRenderers["director-attendance"] = () => {
 
 viewRenderers["director-finance"] = () => {
   const campusId = state.campusId || "bundang";
+  const cmp = campuses.find(x => x.id === campusId) || { revenue: 33200000, royaltyRate: 6 };
   const bill = campusContentBill(campusId);
   const contentCost = campusContentTotal(campusId);
+  const royalty = Math.round(cmp.revenue * ROYALTY_RATE);
+  const hqTotal = royalty + contentCost;
   return `<div class="grid cols-4">
-    ${metric("이번 달 매출", money(33200000), `${campusShort(campusId)}캠퍼스`)}
-    ${metric("수납 완료", money(27600000), "83% 수납")}
-    ${metric("미납", money(3300000), "2건")}
-    ${metric("콘텐츠 사용료", money(contentCost), `${bill.length}개 콘텐츠 · 본사 청구`)}
+    ${metric("교육 매출", money(cmp.revenue), `${campusShort(campusId)}캠퍼스`)}
+    ${metric("로열티 (6%)", money(royalty), "교육 매출의 6% · 본사 납부")}
+    ${metric("콘텐츠 사용료", money(contentCost), `${bill.length}개 콘텐츠 · 본사 납부`)}
+    ${metric("본사 납부 합계", money(hqTotal), "로열티 + 콘텐츠")}
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 사용료 청구</h2><p class="panel-sub">우리 캠퍼스 학생이 사용한 콘텐츠 = 사용 학생 수 × 1인 단가 (본사에 납부)</p></div><span class="tag yellow">합계 ${money(contentCost)}</span></div>
+    <div class="panel-head"><div><h2 class="panel-title">본사 정산 내역</h2><p class="panel-sub">로열티와 콘텐츠 사용료는 별개 항목으로 본사에 납부</p></div><span class="tag yellow">합계 ${money(hqTotal)}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>항목</th><th>기준</th><th>금액</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:800;">가맹 로열티</td><td>교육 매출 ${money(cmp.revenue)} × 6%</td><td style="font-weight:900;color:var(--brand);">${money(royalty)}</td></tr>
+        <tr><td style="font-weight:800;">콘텐츠 사용료</td><td>${bill.length}개 콘텐츠 · 사용 학생 수 × 1인 단가</td><td style="font-weight:900;">${money(contentCost)}</td></tr>
+        <tr><td colspan="2" style="text-align:right;font-weight:800;">본사 납부 합계</td><td style="font-weight:900;color:var(--brand);">${money(hqTotal)}</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 사용료 청구 상세</h2><p class="panel-sub">우리 캠퍼스 학생이 사용한 콘텐츠 = 사용 학생 수 × 1인 단가</p></div><span class="tag yellow">합계 ${money(contentCost)}</span></div>
     <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>제작자</th><th>사용 학생</th><th>1인 단가</th><th>청구액</th></tr></thead>
       <tbody>${bill.map(b => `<tr><td style="font-weight:800;">${b.content.title}</td><td style="font-size:12px;color:var(--muted);">${b.content.creator}</td><td>${b.students}명</td><td>${money(b.content.price)}</td><td style="font-weight:900;">${money(b.gross)}</td></tr>`).join("")}
       <tr><td colspan="4" style="text-align:right;font-weight:800;">합계</td><td style="font-weight:900;color:var(--brand);">${money(contentCost)}</td></tr></tbody>
@@ -1489,7 +1522,7 @@ viewRenderers["hq-dashboard"] = () => {
     ${metric("전체 학생", `${campuses.reduce((a,c)=>a+c.students,0)}명`, "직영 + 가맹")}
     ${metric("평균 출석률", pct(campuses.reduce((a,c)=>a+c.attendance,0)/campuses.length), "캠퍼스 평균")}
     ${metric("예상 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달")}
-    ${metric("검수 대기", `${contentPackages.filter(c=>c.status!=="승인").length}건`, "콘텐츠 승인 필요")}
+    ${metric("검수 대기", `${contentPackages.filter(c=>!isPublic(c)).length}건`, "콘텐츠 승인 필요")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 현황</h2></div><button class="btn sm" onclick="showView('hq-campuses')">상세 비교</button></div>
@@ -1509,7 +1542,7 @@ viewRenderers["hq-dashboard"] = () => {
       </div>
     </div>
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 대기</h2></div><button class="btn sm" onclick="showView('hq-content')">전체 보기</button></div>
-      ${contentPackages.filter(c=>c.status!=="승인").map(c => `<div class="row-card"><div class="row-top"><div class="row-title">${c.title}</div>${statusTag(c.status)}</div><div class="row-copy">${c.grade} &middot; ${c.creator}</div></div>`).join("") || '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
+      ${contentPackages.filter(c=>!isPublic(c)).map(c => `<div class="row-card"><div class="row-top"><div class="row-title">${c.title}</div>${gradeBadge(c.status)}</div><div class="row-copy">${c.grade} &middot; ${c.creator}</div></div>`).join("") || '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
     </div>
   </div>`;
 };
@@ -1548,28 +1581,40 @@ viewRenderers["hq-campus-detail"] = () => {
     </div>
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">재무 요약</h2></div></div>
       <div style="padding:16px;">
-        <div class="row-card"><div class="row-top"><span class="row-title">월 매출</span><span style="font-weight:900;">${money(c.revenue)}</span></div></div>
-        <div class="row-card"><div class="row-top"><span class="row-title">콘텐츠 사용료</span><span style="font-weight:900;">${money(Math.round(c.revenue * 0.03))}</span></div></div>
-        <div class="row-card"><div class="row-top"><span class="row-title">로열티 (${c.royaltyRate}%)</span><span style="font-weight:900;color:var(--blue);">${money(c.revenue * c.royaltyRate / 100)}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">교육 매출</span><span style="font-weight:900;">${money(c.revenue)}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">로열티 (${c.royaltyRate}%)</span><span style="font-weight:900;color:var(--brand);">${money(Math.round(c.revenue * ROYALTY_RATE))}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">콘텐츠 사용료</span><span style="font-weight:900;">${money(campusContentTotal(c.id))}</span></div></div>
       </div>
     </div>
   </div>`;
 };
 
 viewRenderers["hq-royalty"] = () => {
-  const approved = contentPackages.filter(c => c.status === "승인");
+  const approved = contentPackages.filter(isPublic);
   const totalGross = approved.reduce((a, c) => a + contentGross(c), 0);
+  const totalRoyalty = campuses.reduce((a, c) => a + c.revenue * ROYALTY_RATE, 0);
+  const totalRevenue = campuses.reduce((a, c) => a + c.revenue, 0);
   return `<div class="grid cols-3">
-    ${metric("콘텐츠 총 사용료", money(totalGross), "1인당 단가 × 사용 학생 수")}
-    ${metric("본사 수수료 (30%)", money(Math.round(totalGross * HQ_RATE)), "본사 정산 수익")}
-    ${metric("제작자 정산 (70%)", money(Math.round(totalGross * CREATOR_RATE)), "콘텐츠 제작자 지급액")}
+    ${metric("가맹 로열티 (6%)", money(Math.round(totalRoyalty)), "교육 매출의 6%")}
+    ${metric("콘텐츠 운영비 (본사 30%)", money(Math.round(totalGross * HQ_RATE)), "본사 운영비 (콘텐츠 30%)")}
+    ${metric("본사 총 수익", money(Math.round(totalRoyalty + totalGross * HQ_RATE)), "로열티 + 콘텐츠 운영비")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">가맹 로열티 정산 (교육 매출 6%)</h2><p class="panel-sub">각 캠퍼스 교육(수강료) 매출의 6%를 본사 로열티로 정산</p></div>
+      <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>교육 매출</th><th>로열티율</th><th>로열티 (6%)</th><th>정산</th></tr></thead>
+      <tbody>${campuses.map(c => `<tr><td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${money(c.revenue)}</td><td>${c.royaltyRate}%</td><td style="font-weight:900;color:var(--brand);">${money(Math.round(c.revenue * ROYALTY_RATE))}</td><td>${statusTag("완료")}</td></tr>`).join("")}
+      <tr><td colspan="2" style="text-align:right;font-weight:800;">합계</td><td>${money(totalRevenue)}</td><td>6%</td><td style="font-weight:900;color:var(--brand);">${money(Math.round(totalRoyalty))}</td><td></td></tr></tbody>
+    </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 콘텐츠 청구</h2><p class="panel-sub">각 캠퍼스가 사용한 학생 수 × 단가 = 해당 캠퍼스 원장 청구액</p></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>캠퍼스</th><th>유형</th><th>사용 콘텐츠</th><th>콘텐츠 청구액</th><th>본사 30%</th><th>제작자 70%</th><th>정산</th></tr></thead>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>사용 콘텐츠</th><th>콘텐츠 청구액</th><th>본사 운영비(30%)</th><th>제작자 70%</th><th>정산</th></tr></thead>
       <tbody>${campuses.map(c => {
         const total = campusContentTotal(c.id);
         return `<tr><td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${campusContentBill(c.id).length}건</td><td style="font-weight:900;">${money(total)}</td><td>${money(Math.round(total * HQ_RATE))}</td><td style="color:var(--green);">${money(Math.round(total * CREATOR_RATE))}</td><td>${statusTag("완료")}</td></tr>`;
@@ -1577,9 +1622,9 @@ viewRenderers["hq-royalty"] = () => {
     </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 × 캠퍼스 상세 정산</h2><p class="panel-sub">오픈한 학생 수 기준 자동 분할 — 본사 30% / 제작자 70%</p></div></div>
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 × 캠퍼스 상세 정산</h2><p class="panel-sub">오픈한 학생 수 기준 자동 분할 — 본사 운영비 30% / 제작자 70%</p></div></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>제작자</th><th>캠퍼스</th><th>학생 수</th><th>1인 단가</th><th>사용료</th><th>본사 30%</th><th>제작자 70%</th></tr></thead>
+      <thead><tr><th>콘텐츠</th><th>제작자</th><th>캠퍼스</th><th>학생 수</th><th>1인 단가</th><th>사용료</th><th>본사 운영비(30%)</th><th>제작자 70%</th></tr></thead>
       <tbody>${approved.flatMap(c => contentUsageFor(c.id).map(u => {
         const g = c.price * u.students;
         return `<tr><td style="font-weight:800;">${c.title}</td><td style="font-size:12px;color:var(--muted);">${c.creator}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g * HQ_RATE)}</td><td style="color:var(--green);">${money(g * CREATOR_RATE)}</td></tr>`;
@@ -1589,18 +1634,43 @@ viewRenderers["hq-royalty"] = () => {
 };
 
 viewRenderers["hq-content"] = () => {
-  return `<div class="panel">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 관리</h2><p class="panel-sub">본사 승인 없이 콘텐츠가 노출되지 않습니다</p></div></div>
-    <div class="tabs"><button class="tab active">전체</button><button class="tab">검수 대기</button><button class="tab">수정 요청</button><button class="tab">승인 완료</button></div>
+  const pending = contentPackages.filter(c => c.status === "Draft" || c.status === "Review" || c.status === "Revision");
+  const live = contentPackages.filter(isPublic);
+  const checklist = ["수업 가능성", "자료 완성도", "디랩 적합성", "학생 결과물", "난이도 적합성", "저작권 안정성"];
+  const card = c => `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${gradeBadge(c.status)}</div>
+    <div style="padding:14px;">
+      <div class="row-copy">${c.desc}</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);">학생당 ${money(c.price)} &middot; 사용 ${contentStudents(c.id)}명 / ${contentCampusCount(c.id)}캠퍼스</div>
+      ${!isPublic(c) ? `
+        <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;">${checklist.map(x => `<label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-soft);"><input type="checkbox" checked>${x}</label>`).join("")}</div>
+        <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn sm primary" onclick="approveContent('${c.id}','Verified')">Verified 승인</button>
+          <button class="btn sm" onclick="approveContent('${c.id}','Revision')">보완 요청</button>
+          <button class="btn sm red" onclick="approveContent('${c.id}','Rejected')">반려</button>
+        </div>`
+      : `<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag green">마켓 공개 중</span>
+          ${c.status==="Verified" ? `<button class="btn sm" onclick="approveContent('${c.id}','Popular')">Popular 승격</button>` : ""}
+          ${c.status==="Popular" ? `<button class="btn sm" onclick="approveContent('${c.id}','Signature')">Signature 지정</button>` : ""}
+        </div>`}
+    </div>
+  </div>`;
+  return `<div class="grid cols-3">
+    ${metric("검수 대기", `${pending.length}건`, "Draft · 검토중 · 보완요청")}
+    ${metric("마켓 공개", `${live.length}건`, "Verified 이상")}
+    ${metric("Signature", `${contentPackages.filter(c=>c.status==='Signature').length}건`, "디랩 대표 콘텐츠")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">검수 대기 (${pending.length})</h2><p class="panel-sub">본사 승인(Verified) 전에는 다른 캠퍼스에 노출되지 않습니다</p></div></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px;">
-      ${contentPackages.map(c => `<div class="panel">
-        <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${statusTag(c.status)}</div>
-        <div style="padding:12px;">
-          <div class="row-copy">${c.desc}</div>
-          <div style="margin-top:8px;"><span class="row-copy">학생당 ${money(c.price)} &middot; ${contentStudents(c.id)}명 사용 중</span></div>
-          ${c.status !== "승인" ? `<div style="margin-top:10px;display:flex;gap:6px;"><button class="btn sm primary" onclick="approveContent('${c.id}','승인')">승인</button><button class="btn sm red" onclick="approveContent('${c.id}','수정 요청')">수정 요청</button></div>` : '<div style="margin-top:8px;"><span class="tag green">승인 완료</span></div>'}
-        </div>
-      </div>`).join("")}
+      ${pending.length ? pending.map(card).join("") : '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">공개 콘텐츠 (${live.length})</h2><p class="panel-sub">사용량·만족도에 따라 Popular / Signature 승격</p></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px;">
+      ${live.map(card).join("")}
     </div>
   </div>`;
 };
@@ -1608,46 +1678,54 @@ viewRenderers["hq-content"] = () => {
 // ===== MARKET VIEWS =====
 
 viewRenderers["market-browse"] = () => {
-  return `<div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
-    <input class="input" placeholder="콘텐츠 검색..." style="width:300px;">
+  // 반려(Rejected) 외에는 모두 노출. Verified 이상만 구매·도입 가능, 검수 단계는 열람만.
+  const listed = contentPackages.filter(c => c.status !== "Rejected")
+    .sort((a, b) => (isPublic(b) ? 1 : 0) - (isPublic(a) ? 1 : 0));
+  return `<div class="drm-notice" style="margin-bottom:14px;">&#x2705; <b>Verified 이상</b>은 구매·도입할 수 있고, 검수 단계(Draft·검토중·보완요청) 콘텐츠는 <b>열람만</b> 가능합니다(구매 불가).</div>
+  <div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
+    <input class="input" placeholder="콘텐츠 검색..." style="width:280px;">
+    <select class="select"><option>전체 등급</option><option>Signature</option><option>Popular</option><option>Verified</option><option>검수 단계</option></select>
     <select class="select"><option>전체 학년</option><option>초등 1~2</option><option>초등 3~4</option><option>초등 5~6</option><option>중등</option></select>
     <select class="select"><option>전체 난이도</option><option>입문</option><option>중급</option><option>고급</option></select>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
-    ${contentPackages.filter(c=>c.status==="승인").map(c => `<div class="panel" style="cursor:pointer;" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">
-      <div style="height:120px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:40px;">&#x1F4DA;</div>
+    ${listed.map(c => { const ok = isPublic(c); return `<div class="panel" style="cursor:pointer;${ok ? '' : 'opacity:.66;'}" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">
+      <div style="height:120px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:40px;position:relative;${ok ? '' : 'filter:grayscale(.5);'}">&#x1F4DA;<div style="position:absolute;top:10px;left:10px;">${gradeBadge(c.status)}</div>${ok ? '' : '<div style="position:absolute;top:10px;right:10px;"><span class="tag red">&#x1F512; 구매 불가</span></div>'}</div>
       <div style="padding:14px;">
         <div style="font-weight:900;font-size:15px;">${c.title}</div>
         <div style="color:var(--muted);font-size:12px;margin-top:4px;">${c.grade} &middot; 난이도 ${c.difficulty}</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-          <div style="font-weight:900;color:var(--blue);">학생당 ${money(c.price)}</div>
-          <div style="font-size:12px;color:var(--muted);">&#x2B50; ${c.rating || '-'} (${c.reviews})</div>
+          ${ok
+            ? `<div style="font-weight:900;color:var(--brand);">학생당 ${money(c.price)}</div><div style="font-size:12px;color:var(--muted);">&#x2B50; ${c.rating || '-'} &middot; ${contentStudents(c.id)}명 &middot; ${contentCampusCount(c.id)}캠퍼스</div>`
+            : `<div style="font-size:12px;color:var(--muted);">검수 단계 &middot; 구매·사용 불가</div>`}
         </div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">${c.creator}</div>
       </div>
-    </div>`).join("")}
+    </div>`; }).join("")}
   </div>`;
 };
 
 viewRenderers["market-detail"] = () => {
   const c = contentPackages.find(x => x.id === state.selectedContentId) || contentPackages[0];
-  return `<div class="breadcrumb"><a onclick="showView('market-browse')">콘텐츠 스토어</a> &gt; <strong>${c.title}</strong></div>
+  const pubOk = isPublic(c);
+  return `<div class="breadcrumb"><a onclick="showView('market-browse')">콘텐츠 마켓</a> &gt; <strong>${c.title}</strong></div>
   <div class="grid cols-3">
     <div class="span-2">
       <div class="panel">
-        <div style="height:200px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:60px;">&#x1F4DA;</div>
+        <div style="height:200px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:60px;position:relative;">&#x1F4DA;<div style="position:absolute;top:14px;left:14px;">${gradeBadge(c.status)}</div></div>
         <div style="padding:20px;">
           <h2 style="margin:0 0 8px;font-size:22px;">${c.title}</h2>
-          <div style="display:flex;gap:8px;margin-bottom:14px;">
-            <span class="tag blue">${c.grade}</span><span class="tag">${c.difficulty}</span><span class="tag yellow">&#x2B50; ${c.rating}</span>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <span class="tag blue">${c.grade}</span><span class="tag">${c.difficulty}</span><span class="tag yellow">&#x2B50; ${c.rating || '-'}</span><span class="tag">${contentStudents(c.id)}명 수강</span><span class="tag">${contentCampusCount(c.id)}개 캠퍼스</span>
           </div>
           <p style="color:var(--slate);line-height:1.7;">${c.desc}</p>
           <div class="drm-notice" style="margin-top:14px;">&#x1F512; 1주일 미리보기 가능 &middot; 복사/캡처/개발자도구 차단 DRM 적용</div>
-          <div style="margin-top:16px;display:flex;gap:10px;">
+          ${pubOk ? `<div style="margin-top:16px;display:flex;gap:10px;">
             <button class="btn primary" onclick="adoptContent('${c.id}')">&#x2705; 우리 캠퍼스에 도입</button>
             <button class="btn" onclick="toast('미리보기를 시작합니다.')">&#x1F440; 미리보기</button>
           </div>
-          <div style="margin-top:10px;font-size:12px;color:var(--muted);">선결제 없이 도입 후, 학생이 사용한 만큼 <b style="color:var(--ink-soft);">매월 말 자동 정산</b>됩니다.</div>
+          <div style="margin-top:10px;font-size:12px;color:var(--muted);">선결제 없이 도입 후, 학생이 사용한 만큼 <b style="color:var(--ink-soft);">매월 말 자동 정산</b>됩니다.</div>`
+          : `<div class="drm-notice" style="margin-top:16px;background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.28);">&#x26A0;&#xFE0F; ${GRADES[c.status]?.label || c.status} 상태 — 본사 검수(Verified) 전이라 구매·사용할 수 없습니다.</div>`}
         </div>
       </div>
     </div>
@@ -1659,13 +1737,13 @@ viewRenderers["market-detail"] = () => {
         ).join("")}
       </div>
       <div class="panel pad" style="margin-top:14px;">
-        <div style="font-weight:900;margin-bottom:8px;">수익 분배 (학생 1인당)</div>
+        <div style="font-weight:900;margin-bottom:8px;">수익 분배 (학생 1인당) — 본사 운영비 30% / 제작자 70%</div>
         <div style="font-size:13px;line-height:1.7;">
-          <div style="display:flex;justify-content:space-between;"><span>본사 수수료 (30%)</span><span style="font-weight:800;">${money(c.price * HQ_RATE)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>본사 운영비 (30%)</span><span style="font-weight:800;">${money(c.price * HQ_RATE)}</span></div>
           <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * CREATOR_RATE)}</span></div>
         </div>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6;">
-          과금 방식: <b style="color:var(--ink-soft);">학생이 콘텐츠를 열 때마다</b> 1인 단가가 해당 캠퍼스에 청구되고, 본사 30% / 제작자 70%로 자동 분할됩니다.
+          과금 방식: <b style="color:var(--ink-soft);">학생이 콘텐츠를 열 때마다</b> 1인 단가가 해당 캠퍼스에 청구되고, 본사 운영비 30% / 제작자 70%로 자동 분할됩니다.
           <div style="margin-top:6px;">예: 한 캠퍼스에서 10명 사용 → ${money(c.price * 10)} (본사 ${money(c.price * 10 * HQ_RATE)} · 제작자 ${money(c.price * 10 * CREATOR_RATE)})</div>
         </div>
       </div>
@@ -1685,46 +1763,102 @@ viewRenderers["market-register"] = () => {
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">학생당 월 단가</label><input class="input" type="number" placeholder="15000"></div>
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠 설명</label><textarea class="textarea" placeholder="콘텐츠에 대한 상세 설명을 입력하세요."></textarea></div>
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">파일 업로드</label><div style="border:2px dashed var(--line);border-radius:8px;padding:30px;text-align:center;color:var(--muted);cursor:pointer;" onclick="toast('파일 업로드 대화상자가 열립니다.')">PDF, 코딩 환경 URL 또는 파일을 드래그하세요</div></div>
-      <div style="background:rgba(250,70,22,0.12);padding:12px;border-radius:8px;font-size:13px;">&#x1F4B0; 수익 분배: 본사 30% / 제작자 <strong>70%</strong></div>
+      <div style="background:rgba(250,70,22,0.12);padding:12px;border-radius:8px;font-size:13px;">&#x1F4B0; 수익 분배: 본사 운영비 30% / 제작자 <strong>70%</strong></div>
       <button class="btn primary" onclick="toast('콘텐츠가 등록되었습니다. 본사 검수를 기다려주세요.')">등록 신청</button>
     </div>
   </div>`;
 };
 
-viewRenderers["market-seller"] = () => {
-  const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
-  const totalEarnings = myContent.reduce((a, c) => a + c.price * contentStudents(c.id) * .7, 0);
+// 내가 만든 콘텐츠 — Draft~Signature 상태 확인 + 검토요청/재제출 + 수익(70%)
+viewRenderers["market-mine"] = () => {
+  const mine = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
+  const liveMine = mine.filter(isPublic);
+  const earnings = liveMine.reduce((a, c) => a + contentGross(c) * CREATOR_RATE, 0);
+  const action = c => {
+    if (c.status === "Draft") return `<button class="btn sm primary" onclick="approveContent('${c.id}','Review')">검토 요청</button>`;
+    if (c.status === "Revision") return `<button class="btn sm primary" onclick="approveContent('${c.id}','Review')">수정 후 재제출</button>`;
+    if (c.status === "Rejected") return `<button class="btn sm" onclick="toast('반려 사유를 확인하세요.')">반려 사유</button>`;
+    if (c.status === "Review") return `<span class="row-copy">본사 검수 대기 중</span>`;
+    return `<button class="btn sm" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">상세</button>`;
+  };
   return `<div class="grid cols-4">
-    ${metric("등록 콘텐츠", `${myContent.length}개`, "")}
-    ${metric("총 사용 학생", `${myContent.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "")}
-    ${metric("이번 달 수익", money(totalEarnings), "70% 정산")}
-    ${metric("누적 수익", money(totalEarnings * 3), "최근 3개월")}
+    ${metric("등록 콘텐츠", `${mine.length}개`, `공개 ${liveMine.length} · 검토중 ${mine.filter(c=>!isPublic(c)).length}`)}
+    ${metric("총 수강 학생", `${mine.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "공개 콘텐츠 합산")}
+    ${metric("이번 달 수익(70%)", money(earnings), "사용량 기반")}
+    ${metric("누적 수익", money(earnings * 3), "최근 3개월")}
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 수익</h2></div></div>
+    <div class="panel-head"><div><h2 class="panel-title">내 콘텐츠 상태</h2><p class="panel-sub">Draft는 검토 요청 시 본사 검수로 넘어갑니다</p></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠</button></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>학생 수</th><th>단가</th><th>총 사용료</th><th>HQ 30%</th><th>내 수익 70%</th><th>상태</th></tr></thead>
-      <tbody>${myContent.map(c => {
-        const gross = c.price * contentStudents(c.id);
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td style="font-weight:900;color:var(--green);">${money(gross*.7)}</td><td>${statusTag(c.status)}</td></tr>`;
-      }).join("")}</tbody>
+      <thead><tr><th>콘텐츠</th><th>등급</th><th>수강/캠퍼스</th><th>1인 단가</th><th>내 수익(70%)</th><th>관리</th></tr></thead>
+      <tbody>${mine.map(c => `<tr>
+        <td style="font-weight:800;">${c.title}</td><td>${gradeBadge(c.status)}</td><td>${contentStudents(c.id)}명 / ${contentCampusCount(c.id)}곳</td><td>${money(c.price)}</td>
+        <td style="font-weight:900;color:var(--green);">${isPublic(c) ? money(contentGross(c) * CREATOR_RATE) : "-"}</td><td>${action(c)}</td></tr>`).join("")}</tbody>
     </table></div>
+  </div>`;
+};
+
+// 내가 구매(도입)한 콘텐츠 — 우리 캠퍼스가 사용 중인 콘텐츠 자료 열람
+viewRenderers["market-purchased"] = () => {
+  const campusId = state.campusId || "bundang";
+  const bill = campusContentBill(campusId);
+  return `<div class="grid cols-3">
+    ${metric("도입 콘텐츠", `${bill.length}개`, `${campusShort(campusId)}캠퍼스 사용 중`)}
+    ${metric("이번 달 누적 사용", `${bill.reduce((a,b)=>a+b.students,0)}명`, "수강 학생 수")}
+    ${metric("이번 달 청구액", money(campusContentTotal(campusId)), "월말 자동 정산")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">우리 캠퍼스 도입 콘텐츠</h2><p class="panel-sub">선결제 없이 사용한 만큼 월말 정산</p></div></div>
+    ${bill.map(b => `<div class="row-card"><div class="row-top"><div><div class="row-title">${b.content.title} ${gradeBadge(b.content.status)}</div><div class="row-copy">${b.content.creator} &middot; 학생 ${b.students}명 사용 &middot; 청구 ${money(b.gross)}</div></div>
+      <div style="display:flex;gap:6px;"><button class="btn sm" onclick="toast('수업 자료를 엽니다 (DRM 보호).')">자료 열람</button><button class="btn sm primary" onclick="showView('market-usage')">사용 등록</button></div></div></div>`).join("")}
+  </div>`;
+};
+
+// 수업 사용 등록 — 반·날짜·강사·실제 수강 학생 수 입력 (정산/평가의 원천 데이터)
+viewRenderers["market-usage"] = () => {
+  const campusId = state.campusId || "bundang";
+  const bill = campusContentBill(campusId);
+  return `<div class="grid cols-2">
+    <div class="panel pad">
+      <div style="font-weight:900;margin-bottom:14px;">수업 사용 등록</div>
+      <div style="display:grid;gap:12px;">
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠</label><select class="select" style="width:100%;">${contentPackages.filter(isPublic).map(c=>`<option>${c.title}</option>`).join("")}</select></div>
+        <div class="grid cols-2">
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">반</label><select class="select" style="width:100%;">${classes.filter(x=>x.campusId===campusId).map(x=>`<option>${x.name}</option>`).join("")}</select></div>
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">수업 날짜</label><input class="input" type="date" value="2026-05-30"></div>
+        </div>
+        <div class="grid cols-2">
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">담당 강사</label><input class="input" placeholder="이수진"></div>
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">실제 수강 학생 수</label><input class="input" type="number" placeholder="12"></div>
+        </div>
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">강사 후기 / 결과물 메모</label><textarea class="textarea" placeholder="수업 운영 팁, 학생 결과물, 만족도 등"></textarea></div>
+        <div style="font-size:12px;color:var(--muted);">입력한 수강 학생 수가 정산·등급 평가에 누적 반영됩니다. (출결 데이터와 교차 검증)</div>
+        <button class="btn primary" onclick="toast('수업 사용이 등록되었습니다. 학생 수가 누적됩니다.')">사용 등록</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 class="panel-title">최근 사용 기록</h2><p class="panel-sub">${campusShort(campusId)}캠퍼스 누적</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>누적 학생</th><th>청구액</th></tr></thead>
+        <tbody>${bill.map(b => `<tr><td style="font-weight:800;">${b.content.title}</td><td>${b.students}명</td><td>${money(b.gross)}</td></tr>`).join("")}
+        <tr><td style="text-align:right;font-weight:800;">합계</td><td>${bill.reduce((a,b)=>a+b.students,0)}명</td><td style="font-weight:900;color:var(--brand);">${money(campusContentTotal(campusId))}</td></tr></tbody>
+      </table></div>
+    </div>
   </div>`;
 };
 
 viewRenderers["market-settlement"] = () => {
   return `<div class="grid cols-3">
-    ${metric("이번 달 정산", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id),0)), "전체 콘텐츠 거래")}
-    ${metric("HQ 수수료 (30%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id)*.3,0)), "")}
-    ${metric("제작자 정산 (70%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "")}
+    ${metric("이번 달 정산", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id),0)), "전체 콘텐츠 거래")}
+    ${metric("본사 운영비 (30%)", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id)*.3,0)), "")}
+    ${metric("제작자 정산 (70%)", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">정산 상세</h2></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 내보내기')">Excel</button><button class="btn sm" onclick="toast('PDF 내보내기')">PDF</button><button class="btn sm" onclick="toast('세금계산서 발행 화면으로 이동합니다.')">세금계산서 발행</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>1인 단가</th><th>사용료</th><th>HQ 30%</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
-      <tbody>${contentPackages.filter(c=>c.status==="승인").flatMap(c => contentUsageFor(c.id).map(u => {
+      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>1인 단가</th><th>사용료</th><th>본사 운영비(30%)</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
+      <tbody>${contentPackages.filter(isPublic).flatMap(c => contentUsageFor(c.id).map(u => {
         const g = c.price * u.students;
         return `<tr><td style="font-weight:800;">${c.title}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g*HQ_RATE)}</td><td style="color:var(--green);">${money(g*CREATOR_RATE)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
       })).join("")}</tbody>
