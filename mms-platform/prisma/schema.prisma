@@ -17,14 +17,17 @@ datasource db {
 // Role: creator | campus_director | hq_reviewer | hq_admin
 
 model Campus {
-  id        String   @id @default(cuid())
-  name      String
-  type      String   // 직영 | 가맹
-  revenue   Int      @default(0) // 월 교육(수강료) 매출 — 로열티 6% 기준
-  users     User[]
-  contents  Content[] @relation("CampusContents")
-  usages    Usage[]
-  createdAt DateTime @default(now())
+  id          String       @id @default(cuid())
+  name        String
+  type        String       // 직영 | 가맹
+  revenue     Int          @default(0) // 월 교육(수강료) 매출 — 로열티 6% 기준
+  deposit     Int          @default(0) // 선불 예치금(콘텐츠 사용료 차감용)
+  users       User[]
+  contents    Content[]    @relation("CampusContents")
+  usages      Usage[]
+  students    Student[]
+  classGroups ClassGroup[]
+  createdAt   DateTime     @default(now())
 }
 
 model User {
@@ -105,4 +108,115 @@ model ReviewLog {
   note       String  @default("")
   reviewer   String  @default("")
   createdAt DateTime @default(now())
+}
+
+// ===== 운영 도메인 확장 (출석 / 결제 / 알림톡 / LMS / AI) =====
+
+model ClassGroup {
+  id        String    @id @default(cuid())
+  name      String
+  campus    Campus    @relation(fields: [campusId], references: [id])
+  campusId  String
+  teacher   String    @default("")
+  room      String    @default("")
+  schedule  String    @default("") // 예: 월/수 15:30~17:00
+  students  Student[]
+  lessons   Lesson[]
+  createdAt DateTime  @default(now())
+}
+
+model Student {
+  id           String       @id @default(cuid())
+  name         String
+  phoneLast4   String       // 출석 키오스크 입력값(전화번호 뒤 4자리)
+  parentPhone  String       @default("")
+  campus       Campus       @relation(fields: [campusId], references: [id])
+  campusId     String
+  classGroup   ClassGroup?  @relation(fields: [classGroupId], references: [id])
+  classGroupId String?
+  points       Int          @default(0) // 누적(레벨/랭킹)
+  balance      Int          @default(0) // 사용 가능(상점)
+  level        Int          @default(1)
+  attendances  Attendance[]
+  payments     Payment[]
+  progresses   Progress[]
+  createdAt    DateTime     @default(now())
+}
+
+model Attendance {
+  id          String   @id @default(cuid())
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId   String
+  campusId    String
+  status      String   @default("present") // present | late | absent
+  points      Int      @default(0)
+  checkedInAt DateTime @default(now())
+}
+
+// 결제 (stub PG — 실제 결제 연동 자리만 마련)
+model Payment {
+  id        String   @id @default(cuid())
+  campusId  String
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
+  type      String   // tuition(수강료) | deposit(예치금 충전) | content(콘텐츠 사용료) | material(교재/재료비)
+  amount    Int
+  method    String   @default("card") // card | vbank | auto | point
+  status    String   @default("완료")  // 완료 | 대기 | 미납 | 실패
+  memo      String   @default("")
+  createdAt DateTime @default(now())
+}
+
+// 알림톡 (stub — 카카오 알림톡 발송 자리만 마련)
+model Notification {
+  id        String   @id @default(cuid())
+  channel   String   @default("kakao")
+  to        String
+  template  String   // attendance_in | attendance_out | report | payment | settlement
+  title     String   @default("")
+  body      String
+  status    String   @default("sent") // sent | failed
+  createdAt DateTime @default(now())
+}
+
+// LMS — 커리큘럼/진도
+model Curriculum {
+  id         String           @id @default(cuid())
+  name       String
+  totalWeeks Int
+  weeks      CurriculumWeek[]
+  progresses Progress[]
+  createdAt  DateTime         @default(now())
+}
+
+model CurriculumWeek {
+  id           String     @id @default(cuid())
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+  curriculumId String
+  week         Int
+  theme        String
+  topic        String
+  missions     Int        @default(0)
+}
+
+model Progress {
+  id           String     @id @default(cuid())
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId    String
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+  curriculumId String
+  currentWeek  Int        @default(1)
+  updatedAt    DateTime   @updatedAt
+}
+
+// 수업 기록 + AI 요약 (stub AI)
+model Lesson {
+  id           String     @id @default(cuid())
+  classGroup   ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+  classGroupId String
+  date         String     @default("")
+  transcript   String     @default("")
+  aiSummary    String     @default("")
+  reportSent   Boolean    @default(false)
+  createdAt    DateTime   @default(now())
 }

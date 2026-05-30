@@ -7,6 +7,11 @@ import { authRouter } from "./routes/auth.js";
 import { contentsRouter } from "./routes/contents.js";
 import { usageRouter } from "./routes/usage.js";
 import { settlementRouter } from "./routes/settlement.js";
+import { attendanceRouter } from "./routes/attendance.js";
+import { studentsRouter } from "./routes/students.js";
+import { paymentsRouter } from "./routes/payments.js";
+import { notificationsRouter } from "./routes/notifications.js";
+import { lmsRouter } from "./routes/lms.js";
 
 const app = express();
 
@@ -22,6 +27,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/contents", contentsRouter);
 app.use("/api/usage", usageRouter);
 app.use("/api/settlement", settlementRouter);
+app.use("/api/attendance", attendanceRouter);
+app.use("/api/students", studentsRouter);
+app.use("/api/payments", paymentsRouter);
+app.use("/api/notifications", notificationsRouter);
+app.use("/api/lms", lmsRouter);
 
 // 업로드 파일 정적 제공
 app.use("/uploads", express.static(UPLOAD_DIR));

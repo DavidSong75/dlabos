@@ -41,3 +41,14 @@ npm start         # http://localhost:4000
 - `POST /api/contents/:id/review` (본사 검수: Verified/Revision/Rejected/Popular/Signature)
 - `POST /api/usage` (수업 사용 등록), `GET /api/usage?campusId=`
 - `GET /api/settlement`, `GET /api/settlement/by-campus`
+
+## 확장 도메인 (출석 / 결제 / 알림톡 / LMS) + Stub 모듈
+운영 도메인을 백엔드로 확장했습니다. 결제·알림톡·AI는 **stub 서비스**(`src/services/`)로, 실제 PG/카카오/LLM 연동 자리만 마련해두고 지금은 시뮬레이션으로 동작합니다.
+
+- **출석** `POST /api/attendance/checkin {phoneLast4, campusId}` → 출석 처리 +30P, 동명이번호 선택, **학부모 알림톡 자동 발송(stub)**, 캠퍼스 랭킹 반환 · `POST /api/attendance/checkin/:studentId` · `GET /api/attendance?campusId=`
+- **학생** `GET /api/students?campusId=&classGroupId=`, `GET /api/students/:id`
+- **결제(stub PG)** `POST /api/payments {campusId,type,amount,...}` (tuition/deposit/content/material), `GET /api/payments?campusId=` · 예치금 충전 시 캠퍼스 잔액 증가, 수강료 결제 시 알림톡 발송
+- **알림톡(stub)** `GET /api/notifications`, `POST /api/notifications {to,template,vars}` — 발송 내역 DB 기록
+- **LMS** `GET /api/lms/curriculum`(주차 포함), `GET /api/lms/progress?studentId=`, `POST /api/lms/lessons {classGroupId,transcript}` → **AI 수업 요약(stub)**, `POST /api/lms/lessons/:id/send-report` → 반 학부모 리포트 알림톡
+
+> Stub 위치: `src/services/payment.ts`(PG), `src/services/notify.ts`(카카오 알림톡), `src/services/ai.ts`(수업 요약). 실연동 시 각 함수 본문만 교체.

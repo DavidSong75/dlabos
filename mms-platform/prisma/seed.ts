@@ -8,6 +8,15 @@ async function main() {
   await prisma.usage.deleteMany();
   await prisma.contentFile.deleteMany();
   await prisma.content.deleteMany();
+  await prisma.attendance.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.progress.deleteMany();
+  await prisma.lesson.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.curriculumWeek.deleteMany();
+  await prisma.curriculum.deleteMany();
+  await prisma.student.deleteMany();
+  await prisma.classGroup.deleteMany();
   await prisma.user.deleteMany();
   await prisma.campus.deleteMany();
 
@@ -50,7 +59,38 @@ async function main() {
   await usage(c5.id, gangnam.id, 9, "게임반", "정하나");
   await usage(c5.id, songdo.id, 7, "게임반", "강사");
 
-  console.log("✅ 시드 완료: 캠퍼스 4, 사용자 7, 콘텐츠 7, 사용기록 9");
+  // ===== 반(ClassGroup) =====
+  const algoA = await prisma.classGroup.create({ data: { name: "알고리즘 A", campusId: bundang.id, teacher: "이수진", room: "301", schedule: "월/수 15:30~17:00" } });
+  const pythonB = await prisma.classGroup.create({ data: { name: "파이썬 기초 B", campusId: bundang.id, teacher: "박민호", room: "302", schedule: "화/목 17:30~19:00" } });
+  const makerC = await prisma.classGroup.create({ data: { name: "메이커 C", campusId: bundang.id, teacher: "이수진", room: "Lab", schedule: "토 10:00~12:00" } });
+
+  // ===== 학생 (출석 키오스크 phoneLast4) =====
+  const st = (name: string, p: string, cg: string, points: number, balance: number, level: number, parent: string) =>
+    prisma.student.create({ data: { name, phoneLast4: p, classGroupId: cg, campusId: bundang.id, points, balance, level, parentPhone: parent } });
+  const minjun = await st("김민준", "1842", algoA.id, 620, 320, 3, "010-2345-1842");
+  await st("이서연", "3074", algoA.id, 480, 200, 2, "010-8877-3074");
+  await st("박하준", "5512", algoA.id, 310, 150, 2, "010-5566-5512");
+  await st("최유나", "9201", algoA.id, 750, 400, 3, "010-1234-9201");
+  await st("정도윤", "6688", algoA.id, 410, 180, 2, "010-9988-6688");
+  await st("강지우", "7733", pythonB.id, 550, 260, 3, "010-4455-7733");
+  await st("윤시우", "2211", pythonB.id, 200, 90, 1, "010-3322-2211");
+  await st("한소율", "4456", makerC.id, 880, 500, 4, "010-7788-4456");
+
+  // ===== LMS 커리큘럼 (11주) =====
+  const cur = await prisma.curriculum.create({ data: { name: "코딩 사고력 11주 과정", totalWeeks: 11 } });
+  const weeks = [
+    [1, "프로그래밍이란?", "컴퓨터와 대화하기", 2], [2, "순서와 반복", "순서도 & 반복문", 3],
+    [3, "조건문", "if/else 분기", 3], [4, "변수와 데이터", "정보를 담는 상자", 2],
+    [5, "함수", "나만의 명령어", 3], [6, "리스트", "데이터 여러 개 다루기", 3],
+    [7, "미니 프로젝트 1", "계산기 만들기", 4], [8, "파일 다루기", "파일 읽고 쓰기", 2],
+    [9, "API 기초", "외부 데이터 가져오기", 3], [10, "최종 프로젝트", "나만의 앱 개발", 5],
+    [11, "발표 & 회고", "프로젝트 발표", 1],
+  ];
+  for (const [week, theme, topic, missions] of weeks)
+    await prisma.curriculumWeek.create({ data: { curriculumId: cur.id, week: week as number, theme: theme as string, topic: topic as string, missions: missions as number } });
+  await prisma.progress.create({ data: { studentId: minjun.id, curriculumId: cur.id, currentWeek: 3 } });
+
+  console.log("✅ 시드 완료: 캠퍼스 4, 사용자 7, 콘텐츠 7, 사용기록 9, 반 3, 학생 8, 커리큘럼 11주");
 }
 
 main().then(() => prisma.$disconnect()).catch(async (e) => { console.error(e); await prisma.$disconnect(); process.exit(1); });
