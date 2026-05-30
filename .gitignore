@@ -3,3 +3,7 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# 내부 기획 자료 (저장소에 포함하지 않음)
+*.docx
+*.m4a

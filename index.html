@@ -6,115 +6,155 @@
   <title>D.LAB ONE - 통합 운영 플랫폼 프로토타입</title>
   <style>
     :root {
-      --ink: #172033;
-      --muted: #6b7280;
-      --line: #dfe4ec;
-      --panel: #ffffff;
-      --bg: #f5f7fb;
-      --brand: #ffd335;
-      --brand-ink: #594600;
-      --blue: #2563eb;
-      --cyan: #0891b2;
-      --green: #16a34a;
-      --red: #dc2626;
-      --violet: #7c3aed;
-      --orange: #ea580c;
-      --slate: #334155;
-      --shadow: 0 12px 32px rgba(23, 32, 51, .08);
+      /* ===== Apple-style dark palette ===== */
+      --bg: #000000;
+      --bg-elev: #0c0c0e;
+      --panel: #1c1c1e;
+      --panel-2: #2c2c2e;
+      --panel-3: #3a3a3c;
+      --ink: #f5f5f7;
+      --ink-soft: #d6d6db;
+      --muted: #98989f;
+      --faint: #6c6c70;
+      --line: rgba(255, 255, 255, .08);
+      --line-strong: rgba(255, 255, 255, .14);
+
+      --brand: #fa4616;
+      --brand-soft: rgba(250, 70, 22, .14);
+      --brand-ink: #ffffff;
+
+      --blue: #0a84ff;
+      --cyan: #64d2ff;
+      --green: #30d158;
+      --red: #ff453a;
+      --violet: #bf5af2;
+      --orange: #ff9f0a;
+      --slate: #c4c4cc;
+
+      --radius-xl: 22px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 9px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, .45);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+      --ease: cubic-bezier(.4, 0, .2, 1);
     }
 
     * { box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
     body {
       margin: 0; color: var(--ink);
-      background: linear-gradient(180deg, rgba(255,211,53,.18), rgba(255,255,255,0) 250px), var(--bg);
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(900px 480px at 78% -8%, rgba(250, 70, 22, .07), transparent 60%),
+        radial-gradient(760px 420px at 10% 0%, rgba(10, 132, 255, .06), transparent 55%),
+        var(--bg);
+      background-attachment: fixed;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+      font-size: 14px; line-height: 1.5; letter-spacing: -0.01em;
     }
-    button, input, select, textarea { font: inherit; }
+    button, input, select, textarea { font: inherit; letter-spacing: inherit; }
     button { cursor: pointer; }
+    ::selection { background: rgba(250, 70, 22, .28); }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .14); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .24); background-clip: padding-box; }
 
     /* ===== ROLE SELECT ===== */
     .role-select-screen {
       min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px;
     }
     .role-select-screen.hidden { display: none; }
-    .role-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-    .role-logo-mark { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 12px; background: var(--brand); font-weight: 900; font-size: 18px; border: 1px solid #e8c229; }
-    .role-logo-text { font-size: 28px; font-weight: 950; letter-spacing: -.5px; }
-    .role-subtitle { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
-    .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; max-width: 880px; width: 100%; }
+    .role-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .role-logo-mark { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 16px; background: var(--brand); color: var(--brand-ink); font-weight: 800; font-size: 22px; box-shadow: 0 8px 24px rgba(250, 70, 22, .25); }
+    .role-logo-text { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+    .role-subtitle { color: var(--muted); font-size: 16px; margin-bottom: 44px; letter-spacing: -0.01em; }
+    .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; max-width: 900px; width: 100%; }
     .role-card {
-      padding: 24px 20px; border: 2px solid var(--line); border-radius: 14px; background: white;
-      cursor: pointer; transition: all .2s; text-align: left;
+      padding: 24px 22px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .02));
+      cursor: pointer; transition: transform .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease); text-align: left;
     }
-    .role-card:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
-    .role-icon { font-size: 32px; margin-bottom: 12px; }
-    .role-card-title { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+    .role-card:hover { border-color: var(--line-strong); transform: translateY(-4px); background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03)); }
+    .role-icon { font-size: 30px; margin-bottom: 14px; }
+    .role-card-title { font-size: 17px; font-weight: 650; margin-bottom: 6px; letter-spacing: -0.02em; }
     .role-card-desc { color: var(--muted); font-size: 13px; line-height: 1.5; }
 
     /* ===== APP SHELL ===== */
-    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 248px 1fr; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 256px 1fr; }
     .app-shell.hidden { display: none; }
 
     .rail {
-      position: sticky; top: 0; height: 100vh; padding: 22px 16px;
-      border-right: 1px solid var(--line); background: rgba(255,255,255,.88);
-      backdrop-filter: blur(12px); overflow-y: auto;
+      position: sticky; top: 0; height: 100vh; padding: 22px 14px;
+      border-right: 1px solid var(--line); background: rgba(22, 22, 24, .72);
+      backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); overflow-y: auto;
     }
-    .brand { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
-    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #e8c229; border-radius: 8px; background: var(--brand); color: #151515; font-weight: 900; }
-    .brand-title { font-size: 17px; font-weight: 900; }
-    .brand-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .brand { display: flex; gap: 11px; align-items: center; margin-bottom: 16px; padding: 0 4px; }
+    .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--brand); color: var(--brand-ink); font-weight: 800; font-size: 18px; box-shadow: 0 4px 14px rgba(250, 70, 22, .22); }
+    .brand-title { font-size: 16px; font-weight: 650; letter-spacing: -0.02em; }
+    .brand-sub { color: var(--muted); font-size: 12px; margin-top: 1px; }
 
     .role-switch-btn {
-      width: 100%; padding: 8px 12px; margin-bottom: 14px; border: 1px solid var(--line);
-      border-radius: 8px; background: #f8fafc; color: var(--muted); font-size: 12px; font-weight: 700;
-      display: flex; align-items: center; gap: 6px;
+      width: 100%; padding: 9px 12px; margin-bottom: 16px; border: 1px solid var(--line);
+      border-radius: var(--radius-md); background: rgba(255, 255, 255, .04); color: var(--muted); font-size: 12.5px; font-weight: 600;
+      display: flex; align-items: center; gap: 7px; transition: background .2s var(--ease), color .2s var(--ease);
     }
-    .role-switch-btn:hover { background: #eef2f7; color: var(--ink); }
+    .role-switch-btn:hover { background: rgba(255, 255, 255, .08); color: var(--ink); }
 
-    .nav-group-label { margin: 18px 8px 8px; color: #8b93a1; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .nav-group-label { margin: 18px 10px 8px; color: var(--faint); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
     .nav-btn {
-      width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 11px; margin: 3px 0;
-      border: 1px solid transparent; border-radius: 8px; background: transparent;
-      color: var(--slate); text-align: left; font-weight: 750; font-size: 14px;
+      width: 100%; display: flex; align-items: center; gap: 11px; padding: 9px 11px; margin: 2px 0;
+      border: 1px solid transparent; border-radius: var(--radius-md); background: transparent;
+      color: var(--ink-soft); text-align: left; font-weight: 550; font-size: 14px; letter-spacing: -0.01em;
+      transition: background .18s var(--ease), color .18s var(--ease);
     }
-    .nav-btn:hover { background: #f1f5f9; }
-    .nav-btn.active { border-color: #e0bd28; background: #fff8d9; color: #201800; }
-    .nav-icon { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 7px; background: #eef2f7; font-size: 14px; font-weight: 900; }
+    .nav-btn:hover { background: rgba(255, 255, 255, .06); color: var(--ink); }
+    .nav-btn.active { background: rgba(255, 255, 255, .09); color: var(--ink); }
+    .nav-icon { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: rgba(255, 255, 255, .06); font-size: 14px; transition: background .18s var(--ease); }
     .active .nav-icon { background: var(--brand); }
 
     .main { min-width: 0; }
     .topbar {
       position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center;
-      gap: 16px; padding: 18px 28px; border-bottom: 1px solid rgba(223,228,236,.82);
-      background: rgba(245,247,251,.78); backdrop-filter: blur(12px);
+      gap: 16px; padding: 16px 30px; border-bottom: 1px solid var(--line);
+      background: rgba(10, 10, 12, .68); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
     }
-    .page-title { font-size: 23px; margin: 0; letter-spacing: 0; }
+    .page-title { font-size: 24px; margin: 0; letter-spacing: -0.03em; font-weight: 700; }
     .page-copy { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
     .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 
-    .content { padding: 24px 28px 48px; }
-    .view { display: none; }
+    .content { padding: 26px 30px 56px; max-width: 1320px; }
+    .view { display: none; animation: viewIn .4s var(--ease); }
     .view.active { display: block; }
+    @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
     /* ===== COMPONENTS ===== */
-    .select, .input, .textarea { border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); outline: none; }
-    .select { padding: 9px 10px; }
+    .select, .input, .textarea {
+      border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: rgba(255, 255, 255, .04);
+      color: var(--ink); outline: none; transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .select:focus, .input:focus, .textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+    .select { padding: 9px 11px; }
     .input { width: 100%; padding: 12px; }
-    .textarea { width: 100%; min-height: 104px; padding: 12px; resize: vertical; line-height: 1.5; }
+    .textarea { width: 100%; min-height: 104px; padding: 12px; resize: vertical; line-height: 1.55; }
+    ::placeholder { color: var(--faint); }
 
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      min-height: 38px; padding: 9px 13px; border: 1px solid var(--line); border-radius: 8px;
-      background: white; color: var(--ink); font-weight: 800; font-size: 13px;
+      min-height: 38px; padding: 9px 15px; border: 1px solid var(--line-strong); border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .06); color: var(--ink); font-weight: 600; font-size: 13px; letter-spacing: -0.01em;
+      transition: transform .14s var(--ease), background .18s var(--ease), border-color .18s var(--ease), opacity .18s var(--ease);
     }
-    .btn.primary { border-color: #d8b81e; background: var(--brand); color: #181300; }
-    .btn.dark { background: #172033; color: white; border-color: #172033; }
-    .btn.green { background: #dcfce7; color: #14532d; border-color: #b7ebc6; }
-    .btn.red { background: #fee2e2; color: #7f1d1d; border-color: #fecaca; }
-    .btn.blue { background: #dbeafe; color: #1e3a8a; border-color: #bfdbfe; }
-    .btn:disabled { opacity: .55; cursor: not-allowed; }
-    .btn.sm { min-height: 30px; padding: 5px 10px; font-size: 12px; }
+    .btn:hover { background: rgba(255, 255, 255, .1); }
+    .btn:active { transform: scale(.97); }
+    .btn.primary { border-color: transparent; background: var(--brand); color: var(--brand-ink); font-weight: 650; box-shadow: 0 4px 16px rgba(250, 70, 22, .22); }
+    .btn.primary:hover { background: #ff6a3d; }
+    .btn.dark { background: var(--ink); color: #1d1d1f; border-color: transparent; font-weight: 650; }
+    .btn.dark:hover { background: #ffffff; }
+    .btn.green { background: rgba(48, 209, 88, .16); color: #4ade80; border-color: rgba(48, 209, 88, .28); }
+    .btn.red { background: rgba(255, 69, 58, .16); color: #ff6b62; border-color: rgba(255, 69, 58, .28); }
+    .btn.blue { background: rgba(10, 132, 255, .18); color: #4da3ff; border-color: rgba(10, 132, 255, .3); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn.sm { min-height: 30px; padding: 5px 11px; font-size: 12px; border-radius: var(--radius-sm); }
 
     .grid { display: grid; gap: 14px; }
     .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -123,180 +163,274 @@
     .span-2 { grid-column: span 2; }
     .span-3 { grid-column: span 3; }
 
-    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
-    .panel.pad { padding: 16px; }
-    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 15px 16px; border-bottom: 1px solid var(--line); }
-    .panel-title { margin: 0; font-size: 15px; font-weight: 900; }
-    .panel-sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .panel {
+      border: 1px solid var(--line); border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012));
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .panel.pad { padding: 18px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .panel-title { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.02em; }
+    .panel-sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 
-    .metric { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: white; min-height: 110px; }
-    .metric-label { color: var(--muted); font-size: 12px; font-weight: 800; }
-    .metric-value { font-size: 28px; font-weight: 950; letter-spacing: 0; }
+    .metric {
+      display: grid; gap: 7px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .015)); min-height: 112px;
+      transition: transform .25s var(--ease), border-color .25s var(--ease);
+    }
+    .metric:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+    .metric-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .metric-value { font-size: 30px; font-weight: 700; letter-spacing: -0.035em; }
     .metric-note { color: var(--muted); font-size: 12px; line-height: 1.45; }
 
     .tag {
-      display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px;
-      border: 1px solid var(--line); background: #f8fafc; color: var(--slate); font-size: 12px; font-weight: 800; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px;
+      border: 1px solid var(--line-strong); background: rgba(255, 255, 255, .06); color: var(--slate); font-size: 12px; font-weight: 600; white-space: nowrap; letter-spacing: -0.01em;
     }
-    .tag.green { background: #dcfce7; color: #14532d; border-color: #b7ebc6; }
-    .tag.blue { background: #dbeafe; color: #1e3a8a; border-color: #bfdbfe; }
-    .tag.red { background: #fee2e2; color: #7f1d1d; border-color: #fecaca; }
-    .tag.yellow { background: #fff4bf; color: #594600; border-color: #ead77d; }
-    .tag.violet { background: #ede9fe; color: #4c1d95; border-color: #ddd6fe; }
-    .tag.orange { background: #ffedd5; color: #7c2d12; border-color: #fed7aa; }
+    .tag.green { background: rgba(48, 209, 88, .15); color: #4ade80; border-color: rgba(48, 209, 88, .28); }
+    .tag.blue { background: rgba(10, 132, 255, .16); color: #4da3ff; border-color: rgba(10, 132, 255, .3); }
+    .tag.red { background: rgba(255, 69, 58, .15); color: #ff6b62; border-color: rgba(255, 69, 58, .28); }
+    .tag.yellow { background: var(--brand-soft); color: var(--brand); border-color: rgba(250, 70, 22, .3); }
+    .tag.violet { background: rgba(191, 90, 242, .16); color: #d08bff; border-color: rgba(191, 90, 242, .3); }
+    .tag.orange { background: rgba(255, 159, 10, .16); color: #ffb340; border-color: rgba(255, 159, 10, .3); }
 
-    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); padding: 0 16px; overflow-x: auto; }
-    .tab { padding: 10px 14px; border: none; background: none; color: var(--muted); font-weight: 800; font-size: 13px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+    .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); padding: 0 16px; overflow-x: auto; }
+    .tab { padding: 12px 14px; border: none; background: none; color: var(--muted); font-weight: 600; font-size: 13px; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color .18s var(--ease); }
     .tab:hover { color: var(--ink); }
     .tab.active { color: var(--ink); border-bottom-color: var(--brand); }
 
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #edf1f6; }
-    th { font-weight: 800; color: var(--muted); font-size: 12px; background: #fafbfd; }
+    th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--line); }
+    th { font-weight: 600; color: var(--muted); font-size: 12px; background: rgba(255, 255, 255, .025); }
+    tbody tr { transition: background .15s var(--ease); }
+    tbody tr:hover { background: rgba(255, 255, 255, .03); }
     .table-wrap { overflow-x: auto; }
 
-    .row-card { padding: 14px 16px; border-bottom: 1px solid #edf1f6; }
+    .row-card { padding: 15px 18px; border-bottom: 1px solid var(--line); transition: background .15s var(--ease); }
     .row-card:last-child { border-bottom: 0; }
+    .row-card:hover { background: rgba(255, 255, 255, .025); }
     .row-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .row-title { font-weight: 850; font-size: 14px; }
+    .row-title { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
     .row-copy { color: var(--muted); font-size: 12px; margin-top: 4px; line-height: 1.5; }
 
     /* Score badge */
-    .score { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; padding: 3px 8px; border-radius: 6px; background: #dcfce7; color: #14532d; font-weight: 900; font-size: 13px; }
-    .score.warn { background: #fff4bf; color: #594600; }
-    .score.danger { background: #fee2e2; color: #7f1d1d; }
+    .score { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; padding: 3px 9px; border-radius: 8px; background: rgba(48, 209, 88, .16); color: #4ade80; font-weight: 700; font-size: 13px; }
+    .score.warn { background: var(--brand-soft); color: var(--brand); }
+    .score.danger { background: rgba(255, 69, 58, .16); color: #ff6b62; }
 
     /* Toast */
-    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: white; padding: 13px 22px; border-radius: 10px; font-weight: 800; font-size: 14px; z-index: 999; opacity: 0; transition: all .3s; pointer-events: none; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: rgba(44, 44, 46, .92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: var(--ink); padding: 14px 22px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; z-index: 999; opacity: 0; transition: all .35s var(--ease); pointer-events: none; border: 1px solid var(--line-strong); box-shadow: var(--shadow); }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Kiosk */
-    .kiosk { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; }
-    .kiosk-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app-shell.kiosk-mode { grid-template-columns: 1fr; }
+    .app-shell.kiosk-mode .rail { display: none; }
+    .app-shell.kiosk-mode .content { padding-top: 12px; padding-bottom: 14px; }
+    .kiosk { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 24px; align-items: start; }
+    .kiosk-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .kiosk-key {
-      aspect-ratio: 1.3; display: grid; place-items: center; border: 1px solid var(--line);
-      border-radius: 10px; background: white; font-size: 22px; font-weight: 900;
+      aspect-ratio: 1.3; display: grid; place-items: center; border: 1px solid var(--line-strong);
+      border-radius: var(--radius-md); background: rgba(255, 255, 255, .05); color: var(--ink); font-size: 22px; font-weight: 600;
+      transition: transform .12s var(--ease), background .15s var(--ease);
     }
-    .kiosk-key:hover { background: #f1f5f9; }
-    .kiosk-key.action { background: var(--brand); border-color: #e0bd28; font-size: 14px; }
+    .kiosk-key:hover { background: rgba(255, 255, 255, .1); }
+    .kiosk-key:active { transform: scale(.95); }
+    .kiosk-key.action { background: var(--brand); color: var(--brand-ink); border-color: transparent; font-size: 14px; font-weight: 650; }
     .kiosk-display {
-      text-align: center; padding: 20px; border: 1px solid var(--line); border-radius: 10px;
-      background: white; margin-bottom: 14px; letter-spacing: 12px; font-size: 32px; font-weight: 900;
-      min-height: 80px; display: flex; align-items: center; justify-content: center; color: var(--muted);
+      text-align: center; padding: 22px; border: 1px solid var(--line-strong); border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, .04); margin-bottom: 14px; letter-spacing: 14px; font-size: 34px; font-weight: 700;
+      min-height: 84px; display: flex; align-items: center; justify-content: center; color: var(--faint);
     }
     .kiosk-display.filled { color: var(--ink); }
     .kiosk-result { text-align: center; padding: 30px; }
-    .kiosk-result .name { font-size: 22px; font-weight: 950; margin-bottom: 8px; }
+    .kiosk-result .name { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+
+    /* Kiosk stage — center content, no dead whitespace */
+    .kiosk-stage { min-height: calc(100vh - 150px); display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+    .kiosk-stage .kiosk { width: 100%; max-width: 860px; }
+    /* keypad input — keypad stays centered & fixed; student info floats on the right (keypad never moves) */
+    .kiosk-input-stage { position: relative; }
+    .kiosk-input-stage .keypad-card { width: 372px; }
+    .kiosk-input-stage .kiosk-side { position: absolute; left: calc(50% + 202px); right: 24px; top: 50%; transform: translateY(-50%); }
+    @media (max-width: 820px) {
+      .kiosk-input-stage { flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14px; }
+      .kiosk-input-stage .keypad-card { width: 100%; max-width: 392px; }
+      .kiosk-input-stage .kiosk-side { position: static; transform: none; left: auto; right: auto; width: 100%; max-width: 392px; margin-top: 14px; }
+    }
+    .keypad-head { text-align: center; margin-bottom: 16px; }
+    .keypad-head .ic { font-size: 30px; }
+    .keypad-head .t { font-weight: 750; font-size: 19px; margin-top: 6px; letter-spacing: -0.02em; }
+    .keypad-head .s { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .kiosk-test { display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--muted); font-size: 13px; }
+    .kiosk-test b { padding: 4px 11px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-weight: 700; }
+    .kiosk-hint { display: grid; place-items: center; gap: 10px; text-align: center; padding: 30px 22px; }
+    .kiosk-hint .wave { font-size: 44px; animation: wave 1.8s var(--ease) infinite; transform-origin: 70% 80%; }
+    @keyframes wave { 0%,60%,100%{transform:rotate(0)} 15%{transform:rotate(16deg)} 30%{transform:rotate(-8deg)} 45%{transform:rotate(12deg)} }
+    .kiosk-hint .h { font-weight: 700; font-size: 16px; color: var(--ink); letter-spacing: -0.02em; }
+    .kiosk-hint .test { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .kiosk-hint .test b { padding: 4px 10px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 12px; font-weight: 700; }
+
+    /* Kiosk check-in celebration (gamified, kid-friendly) */
+    .celebrate { width: 100%; max-width: 720px; margin: 0 auto; animation: popIn .5s var(--ease); }
+    .hero-card { position: relative; overflow: hidden; border-radius: var(--radius-xl); padding: 30px 26px; text-align: center; color: #fff; background: linear-gradient(135deg, #fa4616 0%, #ff8a3d 100%); box-shadow: 0 20px 54px rgba(250, 70, 22, .38); }
+    .hero-card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(440px 220px at 50% -40%, rgba(255, 255, 255, .4), transparent 70%); pointer-events: none; }
+    .hero-emoji { font-size: 56px; line-height: 1; animation: bounce 1.5s var(--ease) infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    .hero-hi { font-size: 30px; font-weight: 800; letter-spacing: -0.035em; margin-top: 8px; }
+    .hero-sub { font-size: 14px; opacity: .94; margin-top: 6px; }
+    .hero-chips { display: flex; gap: 9px; justify-content: center; margin-top: 18px; flex-wrap: wrap; position: relative; z-index: 1; }
+    .hero-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 15px; border-radius: 999px; background: rgba(255, 255, 255, .24); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-weight: 700; font-size: 14px; }
+    .hero-chip.pop { background: #fff; color: #d6360f; animation: chipPop .6s var(--ease) both .2s; }
+    @keyframes chipPop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+    .lesson-big { font-size: 20px; font-weight: 750; letter-spacing: -0.02em; margin: 2px 0 2px; }
+    .lesson-meta { color: var(--muted); font-size: 13px; }
+    .mission-pill { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; padding: 9px 13px; border-radius: var(--radius-md); background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .26); color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+    .lvl-row { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 0; font-size: 12px; color: var(--muted); font-weight: 600; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 17px; background: var(--brand-soft); color: var(--brand); flex-shrink: 0; }
+    .lb-row.me { background: var(--brand-soft); }
+    .lb-row.me .lb-name { color: var(--brand); }
+    /* keep the 3 stat cards in a row even on narrow kiosk/portrait so the top stays compact */
+    .celebrate .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .celebrate .cols-3 .metric { min-height: 88px; padding: 14px; gap: 4px; }
+    .celebrate .cols-3 .metric-value { font-size: 23px; }
+
+    /* Kiosk check-in — landscape iPad optimized (single screen, two columns) */
+    .celebrate-stage { min-height: calc(100vh - 110px); display: flex; align-items: center; justify-content: center; padding: 2px 0; }
+    .celebrate-wide { width: 100%; max-width: 1060px; display: grid; grid-template-columns: 1.04fr .96fr; gap: 14px; animation: popIn .45s var(--ease); }
+    .cel-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .hero-compact { display: flex; align-items: center; gap: 16px; text-align: left; padding: 18px 22px; }
+    .hero-compact .hero-emoji { font-size: 44px; margin: 0; }
+    .hero-compact .hero-hi { font-size: 23px; margin: 0; }
+    .hero-compact .hero-sub { margin-top: 4px; font-size: 13px; }
+    .pt-card { gap: 5px; min-height: 0; padding: 15px 16px; }
+    .pt-card .metric-value { font-size: 27px; }
+    .earn-badge { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: rgba(48, 209, 88, .16); color: #4ade80; font-size: 12px; font-weight: 700; }
+    .rank-badge { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .28); color: var(--brand); font-size: 12px; font-weight: 700; }
+    .lesson-card { padding: 16px; }
+    .lesson-card .lesson-big { margin: 3px 0 2px; }
+    .shop-head { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .shop-row { display: flex; align-items: center; gap: 12px; padding: 7px 16px; border-bottom: 1px solid var(--line); }
+    .shop-row:last-child { border-bottom: 0; }
+    .shop-ic { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 10px; background: rgba(255, 255, 255, .06); font-size: 19px; flex-shrink: 0; }
+    .shop-info { flex: 1; min-width: 0; }
+    .shop-name { font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; }
+    .shop-cost { font-size: 12px; color: var(--brand); font-weight: 700; margin-top: 1px; }
+    .lb-row.kiosk { padding: 8px 16px; }
+    @media (max-width: 920px) {
+      .celebrate-wide { grid-template-columns: 1fr; max-width: 560px; }
+    }
 
     /* Phone preview */
-    .phone { max-width: 340px; margin: 0 auto; border: 2px solid var(--line); border-radius: 24px; background: white; overflow: hidden; }
-    .phone-top { padding: 14px 16px; font-weight: 900; font-size: 14px; border-bottom: 1px solid var(--line); background: #fafbfd; }
-    .bubble { margin: 16px; padding: 14px; background: #fff8d9; border-radius: 4px 14px 14px 14px; font-size: 13px; line-height: 1.65; white-space: pre-line; }
+    .phone { max-width: 340px; margin: 0 auto; border: 1px solid var(--line-strong); border-radius: 28px; background: var(--panel); overflow: hidden; box-shadow: var(--shadow); }
+    .phone-top { padding: 15px 16px; font-weight: 650; font-size: 14px; border-bottom: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
+    .bubble { margin: 16px; padding: 14px; background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .2); border-radius: 6px 16px 16px 16px; font-size: 13px; line-height: 1.65; white-space: pre-line; color: var(--ink-soft); }
 
     /* Progress ring */
     .progress-ring { position: relative; width: 120px; height: 120px; }
     .progress-ring svg { transform: rotate(-90deg); }
-    .progress-ring .label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 950; }
-    .progress-ring .label .level { font-size: 28px; }
-    .progress-ring .label .sub { font-size: 11px; color: var(--muted); }
+    .progress-ring .label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; }
+    .progress-ring .label .level { font-size: 28px; letter-spacing: -0.03em; }
+    .progress-ring .label .sub { font-size: 11px; color: var(--muted); font-weight: 600; }
 
     /* Bar chart (CSS) */
-    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 10px 0; }
-    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--blue); min-height: 4px; transition: height .3s; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 168px; padding: 10px 0; }
+    .bar-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+    .bar { width: 100%; flex-shrink: 0; border-radius: 6px 6px 2px 2px; background: var(--blue); min-height: 4px; transition: height .5s var(--ease); }
     .bar.brand { background: var(--brand); }
     .bar.green { background: var(--green); }
     .bar.cyan { background: var(--cyan); }
-    .bar-label { font-size: 11px; color: var(--muted); font-weight: 700; }
-    .bar-value { font-size: 11px; font-weight: 800; }
+    .bar-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .bar-value { font-size: 11px; font-weight: 700; }
 
     /* Heatmap */
-    .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-    .heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: #edf1f6; }
-    .heatmap-cell.l1 { background: #dcfce7; }
-    .heatmap-cell.l2 { background: #86efac; }
-    .heatmap-cell.l3 { background: #22c55e; }
-    .heatmap-cell.l4 { background: #15803d; }
+    .heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .heatmap-cell { aspect-ratio: 1; border-radius: 5px; background: rgba(255, 255, 255, .06); }
+    .heatmap-cell.l1 { background: rgba(48, 209, 88, .3); }
+    .heatmap-cell.l2 { background: rgba(48, 209, 88, .55); }
+    .heatmap-cell.l3 { background: rgba(48, 209, 88, .8); }
+    .heatmap-cell.l4 { background: #30d158; }
     .heatmap-cell.empty { background: transparent; }
-    .heatmap-legend { display: flex; gap: 4px; align-items: center; margin-top: 6px; font-size: 11px; color: var(--muted); }
-    .heatmap-legend span { width: 12px; height: 12px; border-radius: 2px; }
+    .heatmap-legend { display: flex; gap: 5px; align-items: center; margin-top: 8px; font-size: 11px; color: var(--muted); }
+    .heatmap-legend span { width: 12px; height: 12px; border-radius: 3px; }
 
     /* Badge */
-    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 16px; }
-    .badge-item { text-align: center; padding: 14px 8px; border: 1px solid var(--line); border-radius: 10px; background: white; }
-    .badge-item.locked { opacity: .4; }
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; padding: 18px; }
+    .badge-item { text-align: center; padding: 16px 8px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255, 255, 255, .035); transition: transform .2s var(--ease); }
+    .badge-item:hover { transform: translateY(-2px); }
+    .badge-item.locked { opacity: .32; }
     .badge-icon { font-size: 28px; margin-bottom: 6px; }
-    .badge-name { font-size: 11px; font-weight: 800; }
+    .badge-name { font-size: 11px; font-weight: 600; }
 
     /* Leaderboard */
-    .lb-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #edf1f6; }
-    .lb-rank { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-weight: 900; font-size: 13px; background: #eef2f7; }
-    .lb-rank.gold { background: #ffd335; color: #594600; }
-    .lb-rank.silver { background: #e2e8f0; color: #334155; }
-    .lb-rank.bronze { background: #fed7aa; color: #7c2d12; }
-    .lb-name { flex: 1; font-weight: 800; }
-    .lb-pts { font-weight: 900; color: var(--blue); }
+    .lb-row { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-bottom: 1px solid var(--line); }
+    .lb-row:last-child { border-bottom: 0; }
+    .lb-rank { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-weight: 700; font-size: 13px; background: rgba(255, 255, 255, .08); }
+    .lb-rank.gold { background: var(--brand); color: var(--brand-ink); }
+    .lb-rank.silver { background: #c4c4cc; color: #1d1d1f; }
+    .lb-rank.bronze { background: #cd7f32; color: #1d1d1f; }
+    .lb-name { flex: 1; font-weight: 600; }
+    .lb-pts { font-weight: 700; color: var(--brand); }
 
     /* Level bar */
-    .levelbar { height: 8px; background: #edf1f6; border-radius: 4px; overflow: hidden; margin-top: 6px; }
-    .levelbar span { display: block; height: 100%; background: var(--brand); border-radius: 4px; }
+    .levelbar { height: 8px; background: rgba(255, 255, 255, .08); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+    .levelbar span { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
 
     /* Schedule grid */
-    .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 2px; font-size: 12px; }
-    .schedule-cell { padding: 8px; background: white; border: 1px solid #edf1f6; min-height: 50px; }
-    .schedule-cell.header { background: #fafbfd; font-weight: 800; text-align: center; }
-    .schedule-cell.filled { background: #fff8d9; border-color: #ead77d; font-weight: 700; cursor: pointer; }
-    .schedule-cell.filled:hover { background: #fef3c7; }
+    .schedule-grid { display: grid; grid-template-columns: 80px repeat(5, 1fr); gap: 4px; font-size: 12px; }
+    .schedule-cell { padding: 9px; background: rgba(255, 255, 255, .03); border: 1px solid var(--line); border-radius: 8px; min-height: 52px; }
+    .schedule-cell.header { background: rgba(255, 255, 255, .05); font-weight: 600; text-align: center; }
+    .schedule-cell.filled { background: var(--brand-soft); border-color: rgba(250, 70, 22, .3); font-weight: 600; cursor: pointer; color: var(--ink); transition: background .15s var(--ease); }
+    .schedule-cell.filled:hover { background: rgba(250, 70, 22, .22); }
 
     /* Notification card */
-    .notif-card { padding: 14px 16px; border-bottom: 1px solid #edf1f6; cursor: pointer; }
-    .notif-card:hover { background: #fafbfd; }
-    .notif-card.unread { border-left: 3px solid var(--blue); }
-    .notif-time { font-size: 11px; color: var(--muted); font-weight: 700; }
-    .notif-title { font-weight: 850; margin: 4px 0; }
-    .notif-body { font-size: 13px; color: var(--muted); line-height: 1.5; display: none; }
+    .notif-card { padding: 15px 18px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background .15s var(--ease); }
+    .notif-card:hover { background: rgba(255, 255, 255, .03); }
+    .notif-card.unread { border-left: 3px solid var(--brand); }
+    .notif-time { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .notif-title { font-weight: 600; margin: 4px 0; letter-spacing: -0.01em; }
+    .notif-body { font-size: 13px; color: var(--muted); line-height: 1.55; display: none; }
     .notif-card.expanded .notif-body { display: block; }
 
     /* Recording indicator */
-    .rec-indicator { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; background: #fee2e2; }
-    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); animation: blink 1s infinite; }
-    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
-    .rec-timer { font-weight: 900; font-size: 18px; color: var(--red); }
+    .rec-indicator { display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: var(--radius-md); background: rgba(255, 69, 58, .16); border: 1px solid rgba(255, 69, 58, .28); }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); animation: blink 1.2s infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+    .rec-timer { font-weight: 700; font-size: 18px; color: #ff6b62; letter-spacing: -0.02em; }
 
     /* Checkin animation */
-    .checkin-success { text-align: center; padding: 40px; animation: popIn .4s ease-out; }
-    @keyframes popIn { 0% { transform: scale(.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .checkin-success { text-align: center; padding: 44px; animation: popIn .45s var(--ease); }
+    @keyframes popIn { 0% { transform: scale(.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     .checkin-emoji { font-size: 64px; margin-bottom: 16px; }
-    .checkin-name { font-size: 26px; font-weight: 950; margin-bottom: 8px; }
+    .checkin-name { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.03em; }
     .checkin-info { color: var(--muted); font-size: 14px; margin-bottom: 4px; }
-    .checkin-points { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: #fff8d9; font-weight: 900; margin-top: 12px; }
+    .checkin-points { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .25); color: var(--brand); font-weight: 700; margin-top: 14px; }
 
     /* Step indicator */
-    .steps { display: flex; align-items: center; gap: 0; margin-bottom: 20px; }
-    .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--muted); }
+    .steps { display: flex; align-items: center; gap: 0; margin-bottom: 22px; }
+    .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--muted); }
     .step.active { color: var(--ink); }
     .step.done { color: var(--green); }
-    .step-num { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #eef2f7; font-size: 12px; }
+    .step-num { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .08); font-size: 12px; }
     .step.active .step-num { background: var(--brand); color: var(--brand-ink); }
-    .step.done .step-num { background: #dcfce7; color: #14532d; }
-    .step-line { width: 32px; height: 2px; background: var(--line); margin: 0 4px; }
+    .step.done .step-num { background: rgba(48, 209, 88, .2); color: #4ade80; }
+    .step-line { width: 34px; height: 2px; background: var(--line-strong); margin: 0 6px; }
 
     /* Cart item */
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #edf1f6; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 18px; border-bottom: 1px solid var(--line); }
     .cart-item-info { flex: 1; }
-    .cart-item-price { font-weight: 900; text-align: right; }
+    .cart-item-price { font-weight: 700; text-align: right; letter-spacing: -0.02em; }
 
     /* DRM notice */
-    .drm-notice { padding: 12px 16px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .drm-notice { padding: 13px 16px; background: var(--brand-soft); border: 1px solid rgba(250, 70, 22, .28); border-radius: var(--radius-md); font-size: 13px; display: flex; align-items: center; gap: 8px; color: var(--ink-soft); }
 
     /* Breadcrumb */
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .breadcrumb a { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 700; }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .breadcrumb a { color: var(--blue); text-decoration: none; cursor: pointer; font-weight: 600; }
     .breadcrumb a:hover { text-decoration: underline; }
 
     /* Responsive */
     @media (max-width: 1080px) {
-      .app-shell { grid-template-columns: 200px 1fr; }
+      .app-shell { grid-template-columns: 212px 1fr; }
       .cols-4 { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 680px) {
@@ -304,6 +438,8 @@
       .rail { display: none; }
       .cols-2, .cols-3 { grid-template-columns: 1fr; }
       .kiosk { grid-template-columns: 1fr; }
+      .content { padding: 20px 16px 48px; }
+      .topbar { padding: 14px 16px; }
     }
   </style>
 </head>
@@ -391,12 +527,12 @@ const navConfig = {
     ["hq-content", "콘텐츠 검수", "&#x1F50E;"],
   ],
   market: [
-    ["market-browse", "콘텐츠 스토어", "&#x1F6D2;"],
-    ["market-detail", "콘텐츠 상세", "&#x1F4C4;"],
-    ["market-cart", "장바구니 & 구매", "&#x1F6D2;"],
+    ["market-browse", "콘텐츠 마켓", "&#x1F6D2;"],
     ["market-register", "콘텐츠 등록", "&#x2795;"],
-    ["market-seller", "판매자 대시보드", "&#x1F4B0;"],
-    ["market-settlement", "정산 현황", "&#x1F4C3;"],
+    ["market-mine", "내가 만든 콘텐츠", "&#x1F4E6;"],
+    ["market-purchased", "내가 구매한 콘텐츠", "&#x1F4E5;"],
+    ["market-usage", "수업 사용 등록", "&#x1F4DD;"],
+    ["market-settlement", "정산 내역", "&#x1F4C3;"],
   ],
   admin: [
     ["admin-lms", "LMS 커리큘럼", "&#x1F4DA;"],
@@ -406,10 +542,10 @@ const navConfig = {
 };
 
 const campuses = [
-  { id: "pangyo", name: "판교 직영캠퍼스", type: "직영", students: 124, attendance: 94, reports: 91, recordings: 88, renewal: 86, revenue: 41300000, royaltyRate: 8 },
-  { id: "bundang", name: "분당 직영캠퍼스", type: "직영", students: 98, attendance: 91, reports: 85, recordings: 82, renewal: 83, revenue: 33200000, royaltyRate: 8 },
-  { id: "gangnam", name: "강남 우수가맹", type: "가맹", students: 78, attendance: 89, reports: 82, recordings: 79, renewal: 80, revenue: 26400000, royaltyRate: 10 },
-  { id: "songdo", name: "송도 가맹", type: "가맹", students: 52, attendance: 83, reports: 72, recordings: 68, renewal: 74, revenue: 17500000, royaltyRate: 10 },
+  { id: "pangyo", name: "판교 직영캠퍼스", type: "직영", students: 124, attendance: 94, reports: 91, recordings: 88, renewal: 86, revenue: 41300000, royaltyRate: 6 },
+  { id: "bundang", name: "분당 직영캠퍼스", type: "직영", students: 98, attendance: 91, reports: 85, recordings: 82, renewal: 83, revenue: 33200000, royaltyRate: 6 },
+  { id: "gangnam", name: "강남 우수가맹", type: "가맹", students: 78, attendance: 89, reports: 82, recordings: 79, renewal: 80, revenue: 26400000, royaltyRate: 6 },
+  { id: "songdo", name: "송도 가맹", type: "가맹", students: 52, attendance: 83, reports: 72, recordings: 68, renewal: 74, revenue: 17500000, royaltyRate: 6 },
 ];
 
 const classes = [
@@ -421,23 +557,49 @@ const classes = [
 ];
 
 const students = [
-  { id: "s1", name: "김민준", phone: "1842", classId: "algo-a", campusId: "bundang", parentPhone: "010-2345-1842", status: "scheduled", points: 620, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
-  { id: "s2", name: "이서연", phone: "3074", classId: "algo-a", campusId: "bundang", parentPhone: "010-8877-3074", status: "scheduled", points: 480, level: 2, absences: 1, homework: true, participation: 3, risk: "low" },
-  { id: "s3", name: "박하준", phone: "5512", classId: "algo-a", campusId: "bundang", parentPhone: "010-5566-5512", status: "scheduled", points: 310, level: 2, absences: 3, homework: false, participation: 2, risk: "high" },
-  { id: "s4", name: "최유나", phone: "9201", classId: "algo-a", campusId: "bundang", parentPhone: "010-1234-9201", status: "scheduled", points: 750, level: 3, absences: 0, homework: true, participation: 5, risk: "low" },
-  { id: "s5", name: "정도윤", phone: "6688", classId: "algo-a", campusId: "bundang", parentPhone: "010-9988-6688", status: "scheduled", points: 410, level: 2, absences: 2, homework: false, participation: 3, risk: "medium" },
-  { id: "s6", name: "강지우", phone: "7733", classId: "python-b", campusId: "bundang", parentPhone: "010-4455-7733", status: "scheduled", points: 550, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
-  { id: "s7", name: "윤시우", phone: "2211", classId: "python-b", campusId: "bundang", parentPhone: "010-3322-2211", status: "scheduled", points: 200, level: 1, absences: 1, homework: true, participation: 3, risk: "low" },
-  { id: "s8", name: "한소율", phone: "4456", classId: "maker-c", campusId: "bundang", parentPhone: "010-7788-4456", status: "scheduled", points: 880, level: 4, absences: 0, homework: true, participation: 5, risk: "low" },
+  { id: "s1", name: "김민준", phone: "1842", classId: "algo-a", campusId: "bundang", parentPhone: "010-2345-1842", status: "scheduled", points: 620, balance: 320, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s2", name: "이서연", phone: "3074", classId: "algo-a", campusId: "bundang", parentPhone: "010-8877-3074", status: "scheduled", points: 480, balance: 200, level: 2, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s3", name: "박하준", phone: "5512", classId: "algo-a", campusId: "bundang", parentPhone: "010-5566-5512", status: "scheduled", points: 310, balance: 150, level: 2, absences: 3, homework: false, participation: 2, risk: "high" },
+  { id: "s4", name: "최유나", phone: "9201", classId: "algo-a", campusId: "bundang", parentPhone: "010-1234-9201", status: "scheduled", points: 750, balance: 400, level: 3, absences: 0, homework: true, participation: 5, risk: "low" },
+  { id: "s5", name: "정도윤", phone: "6688", classId: "algo-a", campusId: "bundang", parentPhone: "010-9988-6688", status: "scheduled", points: 410, balance: 180, level: 2, absences: 2, homework: false, participation: 3, risk: "medium" },
+  { id: "s6", name: "강지우", phone: "7733", classId: "python-b", campusId: "bundang", parentPhone: "010-4455-7733", status: "scheduled", points: 550, balance: 260, level: 3, absences: 0, homework: true, participation: 4, risk: "low" },
+  { id: "s7", name: "윤시우", phone: "2211", classId: "python-b", campusId: "bundang", parentPhone: "010-3322-2211", status: "scheduled", points: 200, balance: 90, level: 1, absences: 1, homework: true, participation: 3, risk: "low" },
+  { id: "s8", name: "한소율", phone: "4456", classId: "maker-c", campusId: "bundang", parentPhone: "010-7788-4456", status: "scheduled", points: 880, balance: 500, level: 4, absences: 0, homework: true, participation: 5, risk: "low" },
 ];
 
-const contentPackages = [
-  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, studentCount: 34, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
-  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, studentCount: 18, campus: "판교/강남", creator: "김정현 (판교)", status: "검수 대기", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
-  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, studentCount: 12, campus: "분당", creator: "박민호 (분당)", status: "승인", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
-  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, studentCount: 8, campus: "강남", creator: "정하나 (강남)", status: "수정 요청", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
-  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, studentCount: 42, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+const shopItems = [
+  { id: "sh1", icon: "&#x1F36D;", name: "간식 교환권", cost: 200 },
+  { id: "sh2", icon: "&#x1F3AE;", name: "게임 시간 30분", cost: 300 },
+  { id: "sh3", icon: "&#x1F4D3;", name: "디랩 노트", cost: 150 },
+  { id: "sh4", icon: "&#x1F3C6;", name: "특별 수업 참가권", cost: 500 },
+  { id: "sh5", icon: "&#x1F381;", name: "디랩 굿즈 키트", cost: 800 },
 ];
+
+// price = 학생 1인당 월 사용료. 실제 과금은 캠퍼스별로 사용한 학생 수 × 단가로 계산된다.
+const contentPackages = [
+  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, creator: "이수진 (분당)", status: "Signature", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
+  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, creator: "김정현 (판교)", status: "Review", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
+  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, creator: "박민호 (분당)", status: "Verified", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
+  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, creator: "정하나 (강남)", status: "Revision", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
+  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, creator: "이수진 (분당)", status: "Popular", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+  { id: "c6", title: "AI 이미지 생성 워크숍", grade: "중등", difficulty: "중급", price: 26000, creator: "이수진 (분당)", status: "Draft", rating: 0, reviews: 0, desc: "생성형 AI로 나만의 이미지를 만드는 1회차 워크숍입니다. (작성 중)" },
+  { id: "c7", title: "엔트리 자율주행 만들기", grade: "초등 5~6", difficulty: "중급", price: 24000, creator: "박민호 (분당)", status: "Rejected", rating: 0, reviews: 0, desc: "저작권 확인이 필요하여 반려된 콘텐츠입니다." },
+];
+
+// 콘텐츠 사용 기록: 어느 캠퍼스에서 몇 명의 학생이 해당 콘텐츠를 열었는가 → 과금/정산의 기준
+const contentUsage = [
+  { contentId: "c1", campusId: "pangyo",  students: 10 },
+  { contentId: "c1", campusId: "bundang", students: 12 },
+  { contentId: "c1", campusId: "gangnam", students: 7 },
+  { contentId: "c1", campusId: "songdo",  students: 5 },
+  { contentId: "c3", campusId: "bundang", students: 12 },
+  { contentId: "c5", campusId: "pangyo",  students: 12 },
+  { contentId: "c5", campusId: "bundang", students: 14 },
+  { contentId: "c5", campusId: "gangnam", students: 9 },
+  { contentId: "c5", campusId: "songdo",  students: 7 },
+];
+const HQ_RATE = 0.3, CREATOR_RATE = 0.7; // 콘텐츠 정산: 본사 운영비 30% / 제작자 70%
+const ROYALTY_RATE = 0.06; // 가맹 로열티: 교육(수강료) 매출의 6% — 콘텐츠 사용료와 별개
 
 const invoices = [
   { student: "김민준", className: "알고리즘 A", amount: 330000, method: "자동결제", due: "2026-06-05", status: "완료" },
@@ -537,8 +699,6 @@ const defaultState = {
   recording: false,
   recordingDone: false,
   reportsSent: false,
-  cart: [],
-  purchased: false,
   expandedNotif: null,
 };
 
@@ -559,6 +719,36 @@ function pct(n) { return Math.round(n) + "%"; }
 function studentById(id) { return students.find(s => s.id === (id || state.selectedStudentId)) || students[0]; }
 function classStudents(cid) { return students.filter(s => s.classId === (cid || state.selectedClassId)); }
 function qualityScore(c) { return Math.round(c.attendance * .30 + c.reports * .25 + c.recordings * .25 + c.renewal * .20); }
+
+// ===== 콘텐츠 사용량·정산 헬퍼 (1인당 단가 × 사용 학생 수 → 본사 운영비 30% / 제작자 70%) =====
+function contentUsageFor(cid) { return contentUsage.filter(u => u.contentId === cid); }
+function contentStudents(cid) { return contentUsageFor(cid).reduce((a, u) => a + u.students, 0); }
+function contentCampuses(cid) { return contentUsageFor(cid).map(u => campusShort(u.campusId)).join(", ") || "-"; }
+function campusShort(id) { return ((campuses.find(c => c.id === id) || {}).name || id).replace(/\s*(직영캠퍼스|캠퍼스|우수가맹|가맹)\s*/g, "").trim() || id; }
+function contentGross(c) { return c.price * contentStudents(c.id); } // 콘텐츠 전체 사용료
+// 한 캠퍼스가 사용한 콘텐츠별 청구 내역 [{content, students, gross}]
+function campusContentBill(campusId) {
+  return contentUsage.filter(u => u.campusId === campusId).map(u => {
+    const c = contentPackages.find(x => x.id === u.contentId) || { price: 0 };
+    return { content: c, students: u.students, gross: c.price * u.students };
+  });
+}
+function campusContentTotal(campusId) { return campusContentBill(campusId).reduce((a, b) => a + b.gross, 0); }
+
+// ===== 콘텐츠 등급 체계 (Draft→Verified→Popular→Signature). Verified 이상만 마켓 공개·구매 가능 =====
+const GRADES = {
+  Draft:     { label: "초안",   tag: "",       desc: "본사 검토 전 초안 — 다른 캠퍼스 비공개" },
+  Review:    { label: "검토중", tag: "blue",   desc: "본사 검수 진행 중" },
+  Revision:  { label: "보완요청", tag: "yellow", desc: "보완 후 재제출 필요" },
+  Rejected:  { label: "반려",   tag: "red",    desc: "디랩 기준 미달로 비공개" },
+  Verified:  { label: "승인",   tag: "green",  desc: "본사 승인 — 마켓 공개·구매 가능" },
+  Popular:   { label: "인기",   tag: "violet", desc: "다수 캠퍼스·학생이 사용한 인기 콘텐츠" },
+  Signature: { label: "대표",   tag: "orange", desc: "디랩 대표 콘텐츠" },
+};
+const PUBLIC_GRADES = ["Verified", "Popular", "Signature"];
+function isPublic(c) { return PUBLIC_GRADES.includes(c.status); }
+function gradeBadge(g) { const m = GRADES[g] || { label: g, tag: "" }; return `<span class="tag ${m.tag}">${g} · ${m.label}</span>`; }
+function contentCampusCount(cid) { return contentUsageFor(cid).length; }
 
 function statusTag(status) {
   const map = {
@@ -583,7 +773,7 @@ function metric(label, value, note) {
 
 function progressRing(pctVal, lvl) {
   const r = 50, c = 2 * Math.PI * r, offset = c - (pctVal / 100) * c;
-  return `<div class="progress-ring"><svg width="120" height="120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="#edf1f6" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="#ffd335" stroke-width="10" stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round"/></svg><div class="label"><div class="level">Lv.${lvl}</div><div class="sub">${pctVal}%</div></div></div>`;
+  return `<div class="progress-ring"><svg width="120" height="120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="#fa4616" stroke-width="10" stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round"/></svg><div class="label"><div class="level">Lv.${lvl}</div><div class="sub">${pctVal}%</div></div></div>`;
 }
 
 function barChart(data, key, color) {
@@ -598,7 +788,7 @@ function heatmapMonth() {
     const lvl = d % 7 === 0 ? "" : d % 3 === 0 ? "l1" : d % 5 === 0 ? "l3" : "l2";
     cells.push(`<div class="heatmap-cell ${lvl}"></div>`);
   }
-  return `<div class="heatmap">${cells.join("")}</div><div class="heatmap-legend"><span style="background:#edf1f6"></span>없음 <span style="background:#dcfce7"></span>1회 <span style="background:#86efac"></span>2회 <span style="background:#22c55e"></span>3회+ </div>`;
+  return `<div class="heatmap">${cells.join("")}</div><div class="heatmap-legend"><span style="background:var(--line)"></span>없음 <span style="background:rgba(48,209,88,0.3)"></span>1회 <span style="background:rgba(48,209,88,0.55)"></span>2회 <span style="background:#30d158"></span>3회+ </div>`;
 }
 
 // ==================== NAVIGATION ====================
@@ -640,6 +830,7 @@ function renderApp() {
 
   roleScreen.classList.add("hidden");
   appShell.classList.remove("hidden");
+  appShell.classList.toggle("kiosk-mode", state.view === "student-kiosk");
   renderNav();
   renderShell();
   renderView();
@@ -668,7 +859,8 @@ function renderShell() {
   const item = items.find(n => n[0] === state.view) || items[0] || ["", "D.LAB ONE", ""];
   document.getElementById("pageTitle").textContent = item[1];
   document.getElementById("pageCopy").textContent = "";
-  document.getElementById("topToolbar").innerHTML = `<button class="btn" onclick="resetDemo()">&#x1F504; 데모 초기화</button>`;
+  const kioskExit = state.view === "student-kiosk" ? `<button class="btn" onclick="switchRole()">&#x21C4; 역할 전환</button>` : "";
+  document.getElementById("topToolbar").innerHTML = `${kioskExit}<button class="btn" onclick="resetDemo()">&#x1F504; 데모 초기화</button>`;
 }
 
 function renderView() {
@@ -688,12 +880,24 @@ function setDigits(v) {
 
 function checkIn(sid) {
   const s = students.find(x => x.id === sid);
-  if (s) { s.status = "present"; s.points += 30; }
+  // 출석 보상: 누적 포인트(랭킹·레벨)와 사용 가능 포인트(상점) 모두 +30
+  if (s) { s.status = "present"; s.points += 30; s.balance = (s.balance || 0) + 30; }
   state.checkedIn = true;
   state.selectedStudentId = sid;
   state.digits = "";
   saveState(); renderView();
   toast(`${s.name} 학생 출석 완료! 학부모 알림이 발송되었습니다.`);
+}
+
+function buyReward(itemId) {
+  const item = shopItems.find(i => i.id === itemId);
+  const s = studentById();
+  if (!item || !s) return;
+  if ((s.balance || 0) < item.cost) { toast("사용 가능 포인트가 부족해요."); return; }
+  // 사용 가능 포인트만 차감 — 누적 포인트(랭킹)는 그대로 유지
+  s.balance -= item.cost;
+  saveState(); renderView();
+  toast(`${item.name} 교환 완료! 사용 가능 포인트 ${s.balance}P`);
 }
 
 function toggleRecording() {
@@ -709,21 +913,10 @@ function sendReports() {
   toast("학부모 리포트가 발송되었습니다.");
 }
 
-function addToCart(cid) {
-  if (!state.cart.includes(cid)) { state.cart.push(cid); saveState(); }
-  toast("장바구니에 추가되었습니다.");
-}
-
-function removeFromCart(cid) {
-  state.cart = state.cart.filter(x => x !== cid);
-  saveState(); renderView();
-}
-
-function purchaseCart() {
-  state.purchased = true;
-  state.cart = [];
-  saveState(); renderView();
-  toast("구매가 완료되었습니다!");
+// 선구매가 아니라 사용량 기반 후정산: 도입하면 학생 사용분이 월말에 자동 청구된다.
+function adoptContent(cid) {
+  const c = contentPackages.find(x => x.id === cid) || {};
+  toast(`${c.title} 도입 완료 — 학생이 사용한 만큼 월말에 자동 정산됩니다.`);
 }
 
 function resetDemo() {
@@ -741,8 +934,9 @@ function toggleNotif(nid) {
 function approveContent(cid, newStatus) {
   const c = contentPackages.find(x => x.id === cid);
   if (c) c.status = newStatus;
-  renderView();
-  toast(`${c.title} - ${newStatus} 처리되었습니다.`);
+  saveState(); renderView();
+  const label = (GRADES[newStatus] || {}).label || newStatus;
+  toast(`${c.title} → ${newStatus}(${label}) 처리되었습니다.`);
 }
 
 // ==================== VIEW RENDERERS ====================
@@ -754,44 +948,90 @@ const viewRenderers = {};
 viewRenderers["student-kiosk"] = () => {
   if (state.checkedIn) {
     const s = studentById();
-    return `<div class="checkin-success">
-      <div class="checkin-emoji">&#x1F389;</div>
-      <div class="checkin-name">${s.name} 학생, 환영합니다!</div>
-      <div class="checkin-info">입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}</div>
-      <div class="checkin-info">Lv.${s.level} &middot; ${s.points}P</div>
-      <div class="checkin-points">&#x2B50; 출석 포인트 +30P 획득!</div>
-      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center;">
-        <button class="btn primary" onclick="showView('student-dashboard')">대시보드 보기</button>
-        <button class="btn" onclick="state.checkedIn=false;saveState();renderView();">다른 학생 출석</button>
-      </div>
-      <div style="margin-top:16px;">
-        <div class="panel pad" style="max-width:360px;margin:0 auto;">
-          <div style="font-weight:800;margin-bottom:8px;">&#x1F4F1; 학부모 알림 미리보기</div>
-          <div class="phone"><div class="phone-top">D.LAB 알림톡</div><div class="bubble">미래의 주커버그, ${s.name}이(가) 오늘 D.LAB에 입장했습니다.\n\n입실 시간: ${new Date().toLocaleTimeString("ko-KR", {hour:"2-digit",minute:"2-digit"})}\n오늘도 새로운 문제를 해결하러 왔습니다.</div></div>
+    const cls = classes.find(c => c.id === s.classId) || { name: "-", teacher: "-", content: "-", time: "" };
+    const now = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+    const toNext = 300 - (s.points % 300), lvlPct = Math.round((s.points % 300) / 300 * 100);
+    const ranked = [...leaderboard].sort((a, b) => b.points - a.points);
+    const rank = (ranked.findIndex(r => r.name === s.name) + 1) || ranked.length;
+    const rankRows = ranked.slice(0, 3).map((r, i) => {
+      const me = r.name === s.name;
+      return `<div class="lb-row kiosk${me ? ' me' : ''}"><div class="lb-rank ${i === 0 ? 'gold' : i === 1 ? 'silver' : 'bronze'}">${i + 1}</div><div class="lb-name">${r.name}${me ? ' (나)' : ''}</div><div class="lb-pts">${me ? s.points : r.points}P</div></div>`;
+    }).join("") + (rank > 3 ? `<div class="lb-row kiosk me"><div class="lb-rank">${rank}</div><div class="lb-name">${s.name} (나)</div><div class="lb-pts">${s.points}P</div></div>` : "");
+    const shopRows = shopItems.map(it => {
+      const can = (s.balance || 0) >= it.cost;
+      return `<div class="shop-row"><div class="shop-ic">${it.icon}</div><div class="shop-info"><div class="shop-name">${it.name}</div><div class="shop-cost">${it.cost}P</div></div><button class="btn primary sm" onclick="buyReward('${it.id}')" ${can ? "" : "disabled"}>${can ? "교환" : "부족"}</button></div>`;
+    }).join("");
+
+    return `<div class="kiosk-stage celebrate-stage"><div class="celebrate celebrate-wide">
+      <div class="cel-col">
+        <div class="hero-card hero-compact">
+          <div class="hero-emoji">&#x1F389;</div>
+          <div>
+            <div class="hero-hi">${s.name}, 환영해요!</div>
+            <div class="hero-sub">${now} 입실 완료 &middot; 오늘도 화이팅! &#x1F680;</div>
+          </div>
+        </div>
+        <div class="grid cols-2" style="gap:12px;">
+          <div class="metric pt-card">
+            <div class="metric-label">사용 가능 포인트</div>
+            <div class="metric-value">${s.balance || 0}P</div>
+            <div class="earn-badge">&#x2B50; 방금 +30P</div>
+          </div>
+          <div class="metric pt-card">
+            <div class="metric-label">레벨 포인트</div>
+            <div class="metric-value">${s.points}P</div>
+            <div class="rank-badge">&#x1F3C6; Lv.${s.level} &middot; ${rank}위</div>
+          </div>
+        </div>
+        <div class="panel pad lesson-card">
+          <div class="metric-label">오늘의 수업</div>
+          <div class="lesson-big">${cls.name}</div>
+          <div class="lesson-meta">${cls.teacher} 선생님 &middot; ${cls.room ? (/^\d+$/.test(cls.room) ? cls.room + "호" : cls.room) + " &middot; " : ""}${cls.time || ""}</div>
+          <div class="mission-pill">&#x1F3AF; 「${cls.content}」 미션</div>
+          <div class="levelbar" style="margin-top:12px;"><span style="width:${lvlPct}%"></span></div>
+          <div class="lesson-meta" style="margin-top:5px;">다음 레벨까지 ${toNext}P</div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn primary" style="flex:1;" onclick="state.checkedIn=false;state.digits='';saveState();renderView();">다른 친구 출석</button>
+          <button class="btn" style="flex:1;" onclick="showView('student-dashboard')">내 대시보드</button>
         </div>
       </div>
-    </div>`;
+
+      <div class="cel-col">
+        <div class="panel">
+          <div class="panel-head"><div><h2 class="panel-title">&#x1F3C6; 포인트 랭킹</h2></div></div>
+          ${rankRows}
+        </div>
+        <div class="panel">
+          <div class="shop-head"><h2 class="panel-title">&#x1F6CD;&#xFE0F; 포인트 상점</h2><span class="tag yellow">사용가능 ${s.balance || 0}P</span></div>
+          ${shopRows}
+        </div>
+      </div>
+    </div></div>`;
   }
 
   const matches = state.digits.length === 4 ? students.filter(s => s.phone === state.digits) : [];
-  return `<div class="kiosk">
-    <div>
-      <div class="panel pad">
-        <div style="text-align:center;margin-bottom:14px;"><span style="font-size:28px;">&#x1F4F1;</span><div style="font-weight:900;font-size:18px;margin-top:6px;">D.LAB 출석 체크</div><div style="color:var(--muted);font-size:13px;">전화번호 뒤 4자리를 입력하세요</div></div>
-        <div class="kiosk-display ${state.digits ? 'filled' : ''}">${state.digits || "_ _ _ _"}</div>
-        <div class="kiosk-pad">
-          ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="kiosk-key" onclick="setDigits('${n}')">${n}</button>`).join("")}
-          <button class="kiosk-key action" onclick="setDigits('clear')">C</button>
-          <button class="kiosk-key" onclick="setDigits('0')">0</button>
-          <button class="kiosk-key action" onclick="setDigits('back')">&larr;</button>
-        </div>
+  const side = matches.length > 0
+    ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 확인</h2><p class="panel-sub">본인이 맞으면 출석을 눌러요</p></div></div>${matches.map(s => {
+        const c = classes.find(x => x.id === s.classId) || { name: "" };
+        return `<div class="row-card"><div class="row-top"><div style="display:flex;align-items:center;gap:12px;"><div class="avatar">${s.name.charAt(1) || s.name[0]}</div><div><div class="row-title">${s.name}</div><div class="row-copy">${c.name} &middot; Lv.${s.level} &middot; ${s.points}P</div></div></div><button class="btn primary" onclick="checkIn('${s.id}')">출석 확인</button></div></div>`;
+      }).join("")}</div>`
+    : state.digits.length === 4
+      ? `<div class="panel kiosk-hint"><div style="font-size:40px;">&#x1F605;</div><div class="h">일치하는 학생이 없어요</div><div class="lesson-meta">번호를 다시 확인해 주세요</div></div>`
+      : `<div class="panel kiosk-hint"><div class="wave">&#x1F44B;</div><div class="h">번호를 누르면<br>학생 정보가 여기에 나와요</div><div class="test"><b>1842</b><b>3074</b><b>9201</b></div></div>`;
+
+  return `<div class="kiosk-stage kiosk-input-stage">
+    <div class="panel pad keypad-card">
+      <div class="keypad-head"><div class="ic">&#x1F4F1;</div><div class="t">D.LAB 출석 체크</div><div class="s">전화번호 뒤 4자리를 눌러주세요</div></div>
+      <div class="kiosk-display ${state.digits ? 'filled' : ''}">${state.digits || "_ _ _ _"}</div>
+      <div class="kiosk-pad">
+        ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="kiosk-key" onclick="setDigits('${n}')">${n}</button>`).join("")}
+        <button class="kiosk-key action" onclick="setDigits('clear')">C</button>
+        <button class="kiosk-key" onclick="setDigits('0')">0</button>
+        <button class="kiosk-key action" onclick="setDigits('back')">&larr;</button>
       </div>
     </div>
-    <div>
-      ${matches.length > 0 ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 확인</h2></div></div>${matches.map(s =>
-        `<div class="row-card"><div class="row-top"><div><div class="row-title">${s.name}</div><div class="row-copy">${s.classId === "algo-a" ? "알고리즘 A" : s.classId === "python-b" ? "파이썬 기초 B" : "메이커 C"} &middot; Lv.${s.level} &middot; ${s.points}P</div></div><button class="btn primary" onclick="checkIn('${s.id}')">출석 확인</button></div></div>`
-      ).join("")}</div>` : state.digits.length === 4 ? `<div class="panel pad" style="text-align:center;padding:40px;"><div style="font-size:32px;margin-bottom:10px;">&#x1F614;</div><div style="font-weight:800;">일치하는 학생이 없습니다</div><div style="color:var(--muted);font-size:13px;margin-top:4px;">번호를 다시 확인해주세요</div></div>` : `<div class="panel pad" style="text-align:center;padding:40px;color:var(--muted);"><div style="font-size:40px;margin-bottom:10px;">&#x1F44B;</div><div style="font-weight:800;">전화번호 뒤 4자리를 입력하면<br>학생 정보가 표시됩니다</div><div style="margin-top:16px;font-size:13px;">테스트: 1842, 3074, 9201</div></div>`}
-    </div>
+    <div class="kiosk-side">${side}</div>
   </div>`;
 };
 
@@ -888,7 +1128,7 @@ viewRenderers["student-growth"] = () => {
   </div>
   <div class="panel" style="margin-top:14px;"><div class="panel-head"><div><h2 class="panel-title">커리큘럼 진도</h2></div></div>
     <div style="padding:16px;">
-      ${curriculum.slice(0, 6).map((w, i) => `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #edf1f6;"><div style="width:60px;font-weight:800;font-size:13px;color:var(--muted);">${w.week}주차</div><div style="flex:1;"><div style="font-weight:800;">${w.theme}</div><div style="font-size:12px;color:var(--muted);">${w.topic}</div></div>${i < 3 ? '<span class="tag green">완료</span>' : i === 3 ? '<span class="tag yellow">진행 중</span>' : '<span class="tag">예정</span>'}</div>`).join("")}
+      ${curriculum.slice(0, 6).map((w, i) => `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);"><div style="width:60px;font-weight:800;font-size:13px;color:var(--muted);">${w.week}주차</div><div style="flex:1;"><div style="font-weight:800;">${w.theme}</div><div style="font-size:12px;color:var(--muted);">${w.topic}</div></div>${i < 3 ? '<span class="tag green">완료</span>' : i === 3 ? '<span class="tag yellow">진행 중</span>' : '<span class="tag">예정</span>'}</div>`).join("")}
     </div>
   </div>`;
 };
@@ -940,7 +1180,7 @@ viewRenderers["parent-reports"] = () => {
   return `<div class="grid cols-2">
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">최근 수업 리포트</h2></div></div>
       <div style="padding:16px;">
-        <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:12px;">
+        <div style="background:var(--panel-2);border-radius:8px;padding:16px;margin-bottom:12px;">
           <div style="font-weight:900;margin-bottom:8px;">2026-05-27 알고리즘 A</div>
           <div style="font-size:13px;line-height:1.7;color:var(--slate);">
             <strong>1. 오늘 배운 내용</strong><br>조건문의 흐름을 순서도로 정리했습니다.<br><br>
@@ -1089,7 +1329,7 @@ viewRenderers["teacher-review"] = () => {
     <div class="panel-head"><div><h2 class="panel-title">AI 리포트 검수</h2><p class="panel-sub">교사 확인 없이 자동 발송되지 않습니다</p></div></div>
     <div class="tabs">${roster.map(st => `<button class="tab ${state.selectedStudentId===st.id?'active':''}" onclick="state.selectedStudentId='${st.id}';saveState();renderView();">${st.name}</button>`).join("")}</div>
     <div style="padding:16px;">
-      <div style="background:#f8fafc;border-radius:8px;padding:16px;margin-bottom:12px;">
+      <div style="background:var(--panel-2);border-radius:8px;padding:16px;margin-bottom:12px;">
         <div style="font-weight:900;margin-bottom:8px;">${s.name} 학생 AI 리포트</div>
         <textarea class="textarea" style="min-height:200px;">[D.LAB 수업 리포트]
 ${s.name} 학생의 오늘 수업 기록입니다.
@@ -1140,13 +1380,13 @@ viewRenderers["teacher-content"] = () => {
   const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
   return `<div class="grid cols-3">
     ${metric("등록 콘텐츠", `${myContent.length}개`, "내가 제작한 콘텐츠")}
-    ${metric("사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "전체 캠퍼스 합산")}
-    ${metric("이번 달 수익", money(myContent.reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "70% 제작자 정산")}
+    ${metric("사용 학생", `${myContent.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "전체 캠퍼스 합산")}
+    ${metric("이번 달 수익", money(myContent.reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "70% 제작자 정산")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">나의 콘텐츠</h2></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠 등록</button></div>
     <div class="table-wrap"><table><thead><tr><th>제목</th><th>대상</th><th>단가</th><th>사용 학생</th><th>수익(70%)</th><th>상태</th></tr></thead>
-      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${c.studentCount}명</td><td>${money(c.price*c.studentCount*.7)}</td><td>${statusTag(c.status)}</td></tr>`).join("")}</tbody>
+      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price*contentStudents(c.id)*.7)}</td><td>${gradeBadge(c.status)}</td></tr>`).join("")}</tbody>
     </table></div>
   </div>`;
 };
@@ -1214,11 +1454,34 @@ viewRenderers["director-attendance"] = () => {
 };
 
 viewRenderers["director-finance"] = () => {
+  const campusId = state.campusId || "bundang";
+  const cmp = campuses.find(x => x.id === campusId) || { revenue: 33200000, royaltyRate: 6 };
+  const bill = campusContentBill(campusId);
+  const contentCost = campusContentTotal(campusId);
+  const royalty = Math.round(cmp.revenue * ROYALTY_RATE);
+  const hqTotal = royalty + contentCost;
   return `<div class="grid cols-4">
-    ${metric("이번 달 매출", money(33200000), "분당캠퍼스")}
-    ${metric("수납 완료", money(27600000), "83% 수납")}
-    ${metric("미납", money(3300000), "2건")}
-    ${metric("콘텐츠 비용", money(1200000), "콘텐츠 사용료")}
+    ${metric("교육 매출", money(cmp.revenue), `${campusShort(campusId)}캠퍼스`)}
+    ${metric("로열티 (6%)", money(royalty), "교육 매출의 6% · 본사 납부")}
+    ${metric("콘텐츠 사용료", money(contentCost), `${bill.length}개 콘텐츠 · 본사 납부`)}
+    ${metric("본사 납부 합계", money(hqTotal), "로열티 + 콘텐츠")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">본사 정산 내역</h2><p class="panel-sub">로열티와 콘텐츠 사용료는 별개 항목으로 본사에 납부</p></div><span class="tag yellow">합계 ${money(hqTotal)}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>항목</th><th>기준</th><th>금액</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:800;">가맹 로열티</td><td>교육 매출 ${money(cmp.revenue)} × 6%</td><td style="font-weight:900;color:var(--brand);">${money(royalty)}</td></tr>
+        <tr><td style="font-weight:800;">콘텐츠 사용료</td><td>${bill.length}개 콘텐츠 · 사용 학생 수 × 1인 단가</td><td style="font-weight:900;">${money(contentCost)}</td></tr>
+        <tr><td colspan="2" style="text-align:right;font-weight:800;">본사 납부 합계</td><td style="font-weight:900;color:var(--brand);">${money(hqTotal)}</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 사용료 청구 상세</h2><p class="panel-sub">우리 캠퍼스 학생이 사용한 콘텐츠 = 사용 학생 수 × 1인 단가</p></div><span class="tag yellow">합계 ${money(contentCost)}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>제작자</th><th>사용 학생</th><th>1인 단가</th><th>청구액</th></tr></thead>
+      <tbody>${bill.map(b => `<tr><td style="font-weight:800;">${b.content.title}</td><td style="font-size:12px;color:var(--muted);">${b.content.creator}</td><td>${b.students}명</td><td>${money(b.content.price)}</td><td style="font-weight:900;">${money(b.gross)}</td></tr>`).join("")}
+      <tr><td colspan="4" style="text-align:right;font-weight:800;">합계</td><td style="font-weight:900;color:var(--brand);">${money(contentCost)}</td></tr></tbody>
+    </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">결제/미납 현황</h2></div></div>
@@ -1259,7 +1522,7 @@ viewRenderers["hq-dashboard"] = () => {
     ${metric("전체 학생", `${campuses.reduce((a,c)=>a+c.students,0)}명`, "직영 + 가맹")}
     ${metric("평균 출석률", pct(campuses.reduce((a,c)=>a+c.attendance,0)/campuses.length), "캠퍼스 평균")}
     ${metric("예상 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달")}
-    ${metric("검수 대기", `${contentPackages.filter(c=>c.status!=="승인").length}건`, "콘텐츠 승인 필요")}
+    ${metric("검수 대기", `${contentPackages.filter(c=>!isPublic(c)).length}건`, "콘텐츠 승인 필요")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 현황</h2></div><button class="btn sm" onclick="showView('hq-campuses')">상세 비교</button></div>
@@ -1279,7 +1542,7 @@ viewRenderers["hq-dashboard"] = () => {
       </div>
     </div>
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 대기</h2></div><button class="btn sm" onclick="showView('hq-content')">전체 보기</button></div>
-      ${contentPackages.filter(c=>c.status!=="승인").map(c => `<div class="row-card"><div class="row-top"><div class="row-title">${c.title}</div>${statusTag(c.status)}</div><div class="row-copy">${c.grade} &middot; ${c.creator}</div></div>`).join("") || '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
+      ${contentPackages.filter(c=>!isPublic(c)).map(c => `<div class="row-card"><div class="row-top"><div class="row-title">${c.title}</div>${gradeBadge(c.status)}</div><div class="row-copy">${c.grade} &middot; ${c.creator}</div></div>`).join("") || '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
     </div>
   </div>`;
 };
@@ -1318,56 +1581,96 @@ viewRenderers["hq-campus-detail"] = () => {
     </div>
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">재무 요약</h2></div></div>
       <div style="padding:16px;">
-        <div class="row-card"><div class="row-top"><span class="row-title">월 매출</span><span style="font-weight:900;">${money(c.revenue)}</span></div></div>
-        <div class="row-card"><div class="row-top"><span class="row-title">콘텐츠 사용료</span><span style="font-weight:900;">${money(Math.round(c.revenue * 0.03))}</span></div></div>
-        <div class="row-card"><div class="row-top"><span class="row-title">로열티 (${c.royaltyRate}%)</span><span style="font-weight:900;color:var(--blue);">${money(c.revenue * c.royaltyRate / 100)}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">교육 매출</span><span style="font-weight:900;">${money(c.revenue)}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">로열티 (${c.royaltyRate}%)</span><span style="font-weight:900;color:var(--brand);">${money(Math.round(c.revenue * ROYALTY_RATE))}</span></div></div>
+        <div class="row-card"><div class="row-top"><span class="row-title">콘텐츠 사용료</span><span style="font-weight:900;">${money(campusContentTotal(c.id))}</span></div></div>
       </div>
     </div>
   </div>`;
 };
 
 viewRenderers["hq-royalty"] = () => {
+  const approved = contentPackages.filter(isPublic);
+  const totalGross = approved.reduce((a, c) => a + contentGross(c), 0);
+  const totalRoyalty = campuses.reduce((a, c) => a + c.revenue * ROYALTY_RATE, 0);
+  const totalRevenue = campuses.reduce((a, c) => a + c.revenue, 0);
   return `<div class="grid cols-3">
-    ${metric("총 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달 예상")}
-    ${metric("콘텐츠 수수료", money(contentPackages.reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "30% HQ 수수료")}
-    ${metric("프랜차이즈 수", `${campuses.length}개`, "직영 2 + 가맹 2")}
+    ${metric("가맹 로열티 (6%)", money(Math.round(totalRoyalty)), "교육 매출의 6%")}
+    ${metric("콘텐츠 운영비 (본사 30%)", money(Math.round(totalGross * HQ_RATE)), "본사 운영비 (콘텐츠 30%)")}
+    ${metric("본사 총 수익", money(Math.round(totalRoyalty + totalGross * HQ_RATE)), "로열티 + 콘텐츠 운영비")}
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">월 정산 테이블</h2></div>
+    <div class="panel-head"><div><h2 class="panel-title">가맹 로열티 정산 (교육 매출 6%)</h2><p class="panel-sub">각 캠퍼스 교육(수강료) 매출의 6%를 본사 로열티로 정산</p></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>캠퍼스</th><th>월 매출</th><th>콘텐츠 비용</th><th>로열티율</th><th>로열티 금액</th><th>정산 상태</th></tr></thead>
-      <tbody>${campuses.map(c => `<tr>
-        <td style="font-weight:800;">${c.name}</td><td>${money(c.revenue)}</td><td>${money(Math.round(c.revenue*0.03))}</td><td>${c.royaltyRate}%</td><td style="font-weight:900;color:var(--blue);">${money(c.revenue*c.royaltyRate/100)}</td><td>${statusTag("완료")}</td>
-      </tr>`).join("")}</tbody>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>교육 매출</th><th>로열티율</th><th>로열티 (6%)</th><th>정산</th></tr></thead>
+      <tbody>${campuses.map(c => `<tr><td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${money(c.revenue)}</td><td>${c.royaltyRate}%</td><td style="font-weight:900;color:var(--brand);">${money(Math.round(c.revenue * ROYALTY_RATE))}</td><td>${statusTag("완료")}</td></tr>`).join("")}
+      <tr><td colspan="2" style="text-align:right;font-weight:800;">합계</td><td>${money(totalRevenue)}</td><td>6%</td><td style="font-weight:900;color:var(--brand);">${money(Math.round(totalRoyalty))}</td><td></td></tr></tbody>
     </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 정산</h2></div></div>
+    <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 콘텐츠 청구</h2><p class="panel-sub">각 캠퍼스가 사용한 학생 수 × 단가 = 해당 캠퍼스 원장 청구액</p></div>
+      <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
+    </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생 수</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th></tr></thead>
-      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
-        const gross = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td>${money(gross*.7)}</td></tr>`;
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>사용 콘텐츠</th><th>콘텐츠 청구액</th><th>본사 운영비(30%)</th><th>제작자 70%</th><th>정산</th></tr></thead>
+      <tbody>${campuses.map(c => {
+        const total = campusContentTotal(c.id);
+        return `<tr><td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${campusContentBill(c.id).length}건</td><td style="font-weight:900;">${money(total)}</td><td>${money(Math.round(total * HQ_RATE))}</td><td style="color:var(--green);">${money(Math.round(total * CREATOR_RATE))}</td><td>${statusTag("완료")}</td></tr>`;
       }).join("")}</tbody>
+    </table></div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 × 캠퍼스 상세 정산</h2><p class="panel-sub">오픈한 학생 수 기준 자동 분할 — 본사 운영비 30% / 제작자 70%</p></div></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>콘텐츠</th><th>제작자</th><th>캠퍼스</th><th>학생 수</th><th>1인 단가</th><th>사용료</th><th>본사 운영비(30%)</th><th>제작자 70%</th></tr></thead>
+      <tbody>${approved.flatMap(c => contentUsageFor(c.id).map(u => {
+        const g = c.price * u.students;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td style="font-size:12px;color:var(--muted);">${c.creator}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g * HQ_RATE)}</td><td style="color:var(--green);">${money(g * CREATOR_RATE)}</td></tr>`;
+      })).join("")}</tbody>
     </table></div>
   </div>`;
 };
 
 viewRenderers["hq-content"] = () => {
-  return `<div class="panel">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 검수 관리</h2><p class="panel-sub">본사 승인 없이 콘텐츠가 노출되지 않습니다</p></div></div>
-    <div class="tabs"><button class="tab active">전체</button><button class="tab">검수 대기</button><button class="tab">수정 요청</button><button class="tab">승인 완료</button></div>
+  const pending = contentPackages.filter(c => c.status === "Draft" || c.status === "Review" || c.status === "Revision");
+  const live = contentPackages.filter(isPublic);
+  const checklist = ["수업 가능성", "자료 완성도", "디랩 적합성", "학생 결과물", "난이도 적합성", "저작권 안정성"];
+  const card = c => `<div class="panel">
+    <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${gradeBadge(c.status)}</div>
+    <div style="padding:14px;">
+      <div class="row-copy">${c.desc}</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);">학생당 ${money(c.price)} &middot; 사용 ${contentStudents(c.id)}명 / ${contentCampusCount(c.id)}캠퍼스</div>
+      ${!isPublic(c) ? `
+        <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;">${checklist.map(x => `<label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-soft);"><input type="checkbox" checked>${x}</label>`).join("")}</div>
+        <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn sm primary" onclick="approveContent('${c.id}','Verified')">Verified 승인</button>
+          <button class="btn sm" onclick="approveContent('${c.id}','Revision')">보완 요청</button>
+          <button class="btn sm red" onclick="approveContent('${c.id}','Rejected')">반려</button>
+        </div>`
+      : `<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag green">마켓 공개 중</span>
+          ${c.status==="Verified" ? `<button class="btn sm" onclick="approveContent('${c.id}','Popular')">Popular 승격</button>` : ""}
+          ${c.status==="Popular" ? `<button class="btn sm" onclick="approveContent('${c.id}','Signature')">Signature 지정</button>` : ""}
+        </div>`}
+    </div>
+  </div>`;
+  return `<div class="grid cols-3">
+    ${metric("검수 대기", `${pending.length}건`, "Draft · 검토중 · 보완요청")}
+    ${metric("마켓 공개", `${live.length}건`, "Verified 이상")}
+    ${metric("Signature", `${contentPackages.filter(c=>c.status==='Signature').length}건`, "디랩 대표 콘텐츠")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">검수 대기 (${pending.length})</h2><p class="panel-sub">본사 승인(Verified) 전에는 다른 캠퍼스에 노출되지 않습니다</p></div></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px;">
-      ${contentPackages.map(c => `<div class="panel">
-        <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${statusTag(c.status)}</div>
-        <div style="padding:12px;">
-          <div class="row-copy">${c.desc}</div>
-          <div style="margin-top:8px;"><span class="row-copy">학생당 ${money(c.price)} &middot; ${c.studentCount}명 사용 중</span></div>
-          ${c.status !== "승인" ? `<div style="margin-top:10px;display:flex;gap:6px;"><button class="btn sm primary" onclick="approveContent('${c.id}','승인')">승인</button><button class="btn sm red" onclick="approveContent('${c.id}','수정 요청')">수정 요청</button></div>` : '<div style="margin-top:8px;"><span class="tag green">승인 완료</span></div>'}
-        </div>
-      </div>`).join("")}
+      ${pending.length ? pending.map(card).join("") : '<div style="padding:20px;text-align:center;color:var(--muted);">검수 대기 콘텐츠가 없습니다.</div>'}
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">공개 콘텐츠 (${live.length})</h2><p class="panel-sub">사용량·만족도에 따라 Popular / Signature 승격</p></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px;">
+      ${live.map(card).join("")}
     </div>
   </div>`;
 };
@@ -1375,110 +1678,75 @@ viewRenderers["hq-content"] = () => {
 // ===== MARKET VIEWS =====
 
 viewRenderers["market-browse"] = () => {
-  return `<div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
-    <input class="input" placeholder="콘텐츠 검색..." style="width:300px;">
+  // 반려(Rejected) 외에는 모두 노출. Verified 이상만 구매·도입 가능, 검수 단계는 열람만.
+  const listed = contentPackages.filter(c => c.status !== "Rejected")
+    .sort((a, b) => (isPublic(b) ? 1 : 0) - (isPublic(a) ? 1 : 0));
+  return `<div class="drm-notice" style="margin-bottom:14px;">&#x2705; <b>Verified 이상</b>은 구매·도입할 수 있고, 검수 단계(Draft·검토중·보완요청) 콘텐츠는 <b>열람만</b> 가능합니다(구매 불가).</div>
+  <div style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;">
+    <input class="input" placeholder="콘텐츠 검색..." style="width:280px;">
+    <select class="select"><option>전체 등급</option><option>Signature</option><option>Popular</option><option>Verified</option><option>검수 단계</option></select>
     <select class="select"><option>전체 학년</option><option>초등 1~2</option><option>초등 3~4</option><option>초등 5~6</option><option>중등</option></select>
     <select class="select"><option>전체 난이도</option><option>입문</option><option>중급</option><option>고급</option></select>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
-    ${contentPackages.filter(c=>c.status==="승인").map(c => `<div class="panel" style="cursor:pointer;" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">
-      <div style="height:120px;background:linear-gradient(135deg,#ffd335,#f59e0b);display:grid;place-items:center;font-size:40px;">&#x1F4DA;</div>
+    ${listed.map(c => { const ok = isPublic(c); return `<div class="panel" style="cursor:pointer;${ok ? '' : 'opacity:.66;'}" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">
+      <div style="height:120px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:40px;position:relative;${ok ? '' : 'filter:grayscale(.5);'}">&#x1F4DA;<div style="position:absolute;top:10px;left:10px;">${gradeBadge(c.status)}</div>${ok ? '' : '<div style="position:absolute;top:10px;right:10px;"><span class="tag red">&#x1F512; 구매 불가</span></div>'}</div>
       <div style="padding:14px;">
         <div style="font-weight:900;font-size:15px;">${c.title}</div>
         <div style="color:var(--muted);font-size:12px;margin-top:4px;">${c.grade} &middot; 난이도 ${c.difficulty}</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-          <div style="font-weight:900;color:var(--blue);">학생당 ${money(c.price)}</div>
-          <div style="font-size:12px;color:var(--muted);">&#x2B50; ${c.rating || '-'} (${c.reviews})</div>
+          ${ok
+            ? `<div style="font-weight:900;color:var(--brand);">학생당 ${money(c.price)}</div><div style="font-size:12px;color:var(--muted);">&#x2B50; ${c.rating || '-'} &middot; ${contentStudents(c.id)}명 &middot; ${contentCampusCount(c.id)}캠퍼스</div>`
+            : `<div style="font-size:12px;color:var(--muted);">검수 단계 &middot; 구매·사용 불가</div>`}
         </div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px;">${c.creator}</div>
       </div>
-    </div>`).join("")}
+    </div>`; }).join("")}
   </div>`;
 };
 
 viewRenderers["market-detail"] = () => {
   const c = contentPackages.find(x => x.id === state.selectedContentId) || contentPackages[0];
-  return `<div class="breadcrumb"><a onclick="showView('market-browse')">콘텐츠 스토어</a> &gt; <strong>${c.title}</strong></div>
+  const pubOk = isPublic(c);
+  return `<div class="breadcrumb"><a onclick="showView('market-browse')">콘텐츠 마켓</a> &gt; <strong>${c.title}</strong></div>
   <div class="grid cols-3">
     <div class="span-2">
       <div class="panel">
-        <div style="height:200px;background:linear-gradient(135deg,#ffd335,#f59e0b);display:grid;place-items:center;font-size:60px;">&#x1F4DA;</div>
+        <div style="height:200px;background:linear-gradient(135deg,#fa4616,#ff8a3d);display:grid;place-items:center;font-size:60px;position:relative;">&#x1F4DA;<div style="position:absolute;top:14px;left:14px;">${gradeBadge(c.status)}</div></div>
         <div style="padding:20px;">
           <h2 style="margin:0 0 8px;font-size:22px;">${c.title}</h2>
-          <div style="display:flex;gap:8px;margin-bottom:14px;">
-            <span class="tag blue">${c.grade}</span><span class="tag">${c.difficulty}</span><span class="tag yellow">&#x2B50; ${c.rating}</span>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <span class="tag blue">${c.grade}</span><span class="tag">${c.difficulty}</span><span class="tag yellow">&#x2B50; ${c.rating || '-'}</span><span class="tag">${contentStudents(c.id)}명 수강</span><span class="tag">${contentCampusCount(c.id)}개 캠퍼스</span>
           </div>
           <p style="color:var(--slate);line-height:1.7;">${c.desc}</p>
           <div class="drm-notice" style="margin-top:14px;">&#x1F512; 1주일 미리보기 가능 &middot; 복사/캡처/개발자도구 차단 DRM 적용</div>
-          <div style="margin-top:16px;display:flex;gap:10px;">
-            <button class="btn primary" onclick="addToCart('${c.id}');showView('market-cart');">&#x1F6D2; 장바구니 담기</button>
+          ${pubOk ? `<div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn primary" onclick="adoptContent('${c.id}')">&#x2705; 우리 캠퍼스에 도입</button>
             <button class="btn" onclick="toast('미리보기를 시작합니다.')">&#x1F440; 미리보기</button>
           </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--muted);">선결제 없이 도입 후, 학생이 사용한 만큼 <b style="color:var(--ink-soft);">매월 말 자동 정산</b>됩니다.</div>`
+          : `<div class="drm-notice" style="margin-top:16px;background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.28);">&#x26A0;&#xFE0F; ${GRADES[c.status]?.label || c.status} 상태 — 본사 검수(Verified) 전이라 구매·사용할 수 없습니다.</div>`}
         </div>
       </div>
     </div>
     <div>
       <div class="panel pad">
         <div style="font-weight:900;margin-bottom:12px;">콘텐츠 정보</div>
-        ${[["제작자", c.creator],["학생당 단가", money(c.price)],["대상 학년", c.grade],["난이도", c.difficulty],["사용 학생", `${c.studentCount}명`],["리뷰", `${c.reviews}개`]].map(([k,v]) =>
-          `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #edf1f6;font-size:13px;"><span style="color:var(--muted);">${k}</span><span style="font-weight:800;">${v}</span></div>`
+        ${[["제작자", c.creator],["학생당 단가", money(c.price)],["대상 학년", c.grade],["난이도", c.difficulty],["사용 학생", `${contentStudents(c.id)}명`],["리뷰", `${c.reviews}개`]].map(([k,v]) =>
+          `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;"><span style="color:var(--muted);">${k}</span><span style="font-weight:800;">${v}</span></div>`
         ).join("")}
       </div>
       <div class="panel pad" style="margin-top:14px;">
-        <div style="font-weight:900;margin-bottom:8px;">수익 분배</div>
+        <div style="font-weight:900;margin-bottom:8px;">수익 분배 (학생 1인당) — 본사 운영비 30% / 제작자 70%</div>
         <div style="font-size:13px;line-height:1.7;">
-          <div style="display:flex;justify-content:space-between;"><span>본사 수수료 (30%)</span><span style="font-weight:800;">${money(c.price * .3)}</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * .7)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>본사 운영비 (30%)</span><span style="font-weight:800;">${money(c.price * HQ_RATE)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * CREATOR_RATE)}</span></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6;">
+          과금 방식: <b style="color:var(--ink-soft);">학생이 콘텐츠를 열 때마다</b> 1인 단가가 해당 캠퍼스에 청구되고, 본사 운영비 30% / 제작자 70%로 자동 분할됩니다.
+          <div style="margin-top:6px;">예: 한 캠퍼스에서 10명 사용 → ${money(c.price * 10)} (본사 ${money(c.price * 10 * HQ_RATE)} · 제작자 ${money(c.price * 10 * CREATOR_RATE)})</div>
         </div>
       </div>
-    </div>
-  </div>`;
-};
-
-viewRenderers["market-cart"] = () => {
-  if (state.purchased) {
-    return `<div class="checkin-success">
-      <div class="checkin-emoji">&#x2705;</div>
-      <div class="checkin-name">구매가 완료되었습니다!</div>
-      <div class="checkin-info">콘텐츠가 캠퍼스에 등록되었습니다.</div>
-      <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;">
-        <button class="btn primary" onclick="showView('market-browse')">스토어로 돌아가기</button>
-        <button class="btn" onclick="showView('market-settlement')">정산 현황 보기</button>
-      </div>
-    </div>`;
-  }
-
-  const items = state.cart.map(cid => contentPackages.find(c => c.id === cid)).filter(Boolean);
-  const studentCount = 10;
-  const total = items.reduce((a, c) => a + c.price * studentCount, 0);
-
-  if (!items.length) {
-    return `<div style="text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:16px;">&#x1F6D2;</div><div style="font-weight:900;font-size:18px;">장바구니가 비어있습니다</div><div style="color:var(--muted);margin-top:8px;"><button class="btn primary" style="margin-top:12px;" onclick="showView('market-browse')">콘텐츠 스토어 가기</button></div></div>`;
-  }
-
-  return `<div class="steps">
-    <div class="step done"><div class="step-num">1</div>콘텐츠 선택</div><div class="step-line"></div>
-    <div class="step active"><div class="step-num">2</div>결제 확인</div><div class="step-line"></div>
-    <div class="step"><div class="step-num">3</div>완료</div>
-  </div>
-  <div class="grid cols-3">
-    <div class="span-2">
-      <div class="panel">
-        <div class="panel-head"><div><h2 class="panel-title">장바구니</h2></div></div>
-        ${items.map(c => `<div class="cart-item">
-          <div class="cart-item-info"><div style="font-weight:800;">${c.title}</div><div style="font-size:12px;color:var(--muted);">${c.grade} &middot; ${c.difficulty} &middot; 학생 ${studentCount}명 적용</div></div>
-          <div class="cart-item-price">${money(c.price * studentCount)}<br><button class="btn sm red" style="margin-top:4px;" onclick="removeFromCart('${c.id}')">삭제</button></div>
-        </div>`).join("")}
-      </div>
-    </div>
-    <div class="panel pad">
-      <div style="font-weight:900;margin-bottom:14px;">주문 요약</div>
-      <div style="font-size:13px;">
-        ${items.map(c => `<div style="display:flex;justify-content:space-between;padding:6px 0;"><span>${c.title}</span><span>${money(c.price * studentCount)}</span></div>`).join("")}
-        <div style="border-top:2px solid var(--ink);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:900;font-size:16px;"><span>합계</span><span>${money(total)}</span></div>
-        <div style="margin-top:6px;font-size:12px;color:var(--muted);">학생 ${studentCount}명 &times; ${items.length}개 콘텐츠</div>
-      </div>
-      <button class="btn primary" style="width:100%;margin-top:16px;" onclick="purchaseCart()">&#x1F4B3; 프리페이드 포인트로 구매</button>
     </div>
   </div>`;
 };
@@ -1495,49 +1763,105 @@ viewRenderers["market-register"] = () => {
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">학생당 월 단가</label><input class="input" type="number" placeholder="15000"></div>
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠 설명</label><textarea class="textarea" placeholder="콘텐츠에 대한 상세 설명을 입력하세요."></textarea></div>
       <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">파일 업로드</label><div style="border:2px dashed var(--line);border-radius:8px;padding:30px;text-align:center;color:var(--muted);cursor:pointer;" onclick="toast('파일 업로드 대화상자가 열립니다.')">PDF, 코딩 환경 URL 또는 파일을 드래그하세요</div></div>
-      <div style="background:#fef3c7;padding:12px;border-radius:8px;font-size:13px;">&#x1F4B0; 수익 분배: 본사 30% / 제작자 <strong>70%</strong></div>
+      <div style="background:rgba(250,70,22,0.12);padding:12px;border-radius:8px;font-size:13px;">&#x1F4B0; 수익 분배: 본사 운영비 30% / 제작자 <strong>70%</strong></div>
       <button class="btn primary" onclick="toast('콘텐츠가 등록되었습니다. 본사 검수를 기다려주세요.')">등록 신청</button>
     </div>
   </div>`;
 };
 
-viewRenderers["market-seller"] = () => {
-  const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
-  const totalEarnings = myContent.reduce((a, c) => a + c.price * c.studentCount * .7, 0);
+// 내가 만든 콘텐츠 — Draft~Signature 상태 확인 + 검토요청/재제출 + 수익(70%)
+viewRenderers["market-mine"] = () => {
+  const mine = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
+  const liveMine = mine.filter(isPublic);
+  const earnings = liveMine.reduce((a, c) => a + contentGross(c) * CREATOR_RATE, 0);
+  const action = c => {
+    if (c.status === "Draft") return `<button class="btn sm primary" onclick="approveContent('${c.id}','Review')">검토 요청</button>`;
+    if (c.status === "Revision") return `<button class="btn sm primary" onclick="approveContent('${c.id}','Review')">수정 후 재제출</button>`;
+    if (c.status === "Rejected") return `<button class="btn sm" onclick="toast('반려 사유를 확인하세요.')">반려 사유</button>`;
+    if (c.status === "Review") return `<span class="row-copy">본사 검수 대기 중</span>`;
+    return `<button class="btn sm" onclick="state.selectedContentId='${c.id}';saveState();showView('market-detail');">상세</button>`;
+  };
   return `<div class="grid cols-4">
-    ${metric("등록 콘텐츠", `${myContent.length}개`, "")}
-    ${metric("총 사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "")}
-    ${metric("이번 달 수익", money(totalEarnings), "70% 정산")}
-    ${metric("누적 수익", money(totalEarnings * 3), "최근 3개월")}
+    ${metric("등록 콘텐츠", `${mine.length}개`, `공개 ${liveMine.length} · 검토중 ${mine.filter(c=>!isPublic(c)).length}`)}
+    ${metric("총 수강 학생", `${mine.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "공개 콘텐츠 합산")}
+    ${metric("이번 달 수익(70%)", money(earnings), "사용량 기반")}
+    ${metric("누적 수익", money(earnings * 3), "최근 3개월")}
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 수익</h2></div></div>
+    <div class="panel-head"><div><h2 class="panel-title">내 콘텐츠 상태</h2><p class="panel-sub">Draft는 검토 요청 시 본사 검수로 넘어갑니다</p></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠</button></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>학생 수</th><th>단가</th><th>총 사용료</th><th>HQ 30%</th><th>내 수익 70%</th><th>상태</th></tr></thead>
-      <tbody>${myContent.map(c => {
-        const gross = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td style="font-weight:900;color:var(--green);">${money(gross*.7)}</td><td>${statusTag(c.status)}</td></tr>`;
-      }).join("")}</tbody>
+      <thead><tr><th>콘텐츠</th><th>등급</th><th>수강/캠퍼스</th><th>1인 단가</th><th>내 수익(70%)</th><th>관리</th></tr></thead>
+      <tbody>${mine.map(c => `<tr>
+        <td style="font-weight:800;">${c.title}</td><td>${gradeBadge(c.status)}</td><td>${contentStudents(c.id)}명 / ${contentCampusCount(c.id)}곳</td><td>${money(c.price)}</td>
+        <td style="font-weight:900;color:var(--green);">${isPublic(c) ? money(contentGross(c) * CREATOR_RATE) : "-"}</td><td>${action(c)}</td></tr>`).join("")}</tbody>
     </table></div>
+  </div>`;
+};
+
+// 내가 구매(도입)한 콘텐츠 — 우리 캠퍼스가 사용 중인 콘텐츠 자료 열람
+viewRenderers["market-purchased"] = () => {
+  const campusId = state.campusId || "bundang";
+  const bill = campusContentBill(campusId);
+  return `<div class="grid cols-3">
+    ${metric("도입 콘텐츠", `${bill.length}개`, `${campusShort(campusId)}캠퍼스 사용 중`)}
+    ${metric("이번 달 누적 사용", `${bill.reduce((a,b)=>a+b.students,0)}명`, "수강 학생 수")}
+    ${metric("이번 달 청구액", money(campusContentTotal(campusId)), "월말 자동 정산")}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">우리 캠퍼스 도입 콘텐츠</h2><p class="panel-sub">선결제 없이 사용한 만큼 월말 정산</p></div></div>
+    ${bill.map(b => `<div class="row-card"><div class="row-top"><div><div class="row-title">${b.content.title} ${gradeBadge(b.content.status)}</div><div class="row-copy">${b.content.creator} &middot; 학생 ${b.students}명 사용 &middot; 청구 ${money(b.gross)}</div></div>
+      <div style="display:flex;gap:6px;"><button class="btn sm" onclick="toast('수업 자료를 엽니다 (DRM 보호).')">자료 열람</button><button class="btn sm primary" onclick="showView('market-usage')">사용 등록</button></div></div></div>`).join("")}
+  </div>`;
+};
+
+// 수업 사용 등록 — 반·날짜·강사·실제 수강 학생 수 입력 (정산/평가의 원천 데이터)
+viewRenderers["market-usage"] = () => {
+  const campusId = state.campusId || "bundang";
+  const bill = campusContentBill(campusId);
+  return `<div class="grid cols-2">
+    <div class="panel pad">
+      <div style="font-weight:900;margin-bottom:14px;">수업 사용 등록</div>
+      <div style="display:grid;gap:12px;">
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">콘텐츠</label><select class="select" style="width:100%;">${contentPackages.filter(isPublic).map(c=>`<option>${c.title}</option>`).join("")}</select></div>
+        <div class="grid cols-2">
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">반</label><select class="select" style="width:100%;">${classes.filter(x=>x.campusId===campusId).map(x=>`<option>${x.name}</option>`).join("")}</select></div>
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">수업 날짜</label><input class="input" type="date" value="2026-05-30"></div>
+        </div>
+        <div class="grid cols-2">
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">담당 강사</label><input class="input" placeholder="이수진"></div>
+          <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">실제 수강 학생 수</label><input class="input" type="number" placeholder="12"></div>
+        </div>
+        <div><label style="font-weight:800;font-size:13px;display:block;margin-bottom:6px;">강사 후기 / 결과물 메모</label><textarea class="textarea" placeholder="수업 운영 팁, 학생 결과물, 만족도 등"></textarea></div>
+        <div style="font-size:12px;color:var(--muted);">입력한 수강 학생 수가 정산·등급 평가에 누적 반영됩니다. (출결 데이터와 교차 검증)</div>
+        <button class="btn primary" onclick="toast('수업 사용이 등록되었습니다. 학생 수가 누적됩니다.')">사용 등록</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 class="panel-title">최근 사용 기록</h2><p class="panel-sub">${campusShort(campusId)}캠퍼스 누적</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>누적 학생</th><th>청구액</th></tr></thead>
+        <tbody>${bill.map(b => `<tr><td style="font-weight:800;">${b.content.title}</td><td>${b.students}명</td><td>${money(b.gross)}</td></tr>`).join("")}
+        <tr><td style="text-align:right;font-weight:800;">합계</td><td>${bill.reduce((a,b)=>a+b.students,0)}명</td><td style="font-weight:900;color:var(--brand);">${money(campusContentTotal(campusId))}</td></tr></tbody>
+      </table></div>
+    </div>
   </div>`;
 };
 
 viewRenderers["market-settlement"] = () => {
   return `<div class="grid cols-3">
-    ${metric("이번 달 정산", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount,0)), "전체 콘텐츠 거래")}
-    ${metric("HQ 수수료 (30%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "")}
-    ${metric("제작자 정산 (70%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "")}
+    ${metric("이번 달 정산", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id),0)), "전체 콘텐츠 거래")}
+    ${metric("본사 운영비 (30%)", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id)*.3,0)), "")}
+    ${metric("제작자 정산 (70%)", money(contentPackages.filter(isPublic).reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">정산 상세</h2></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 내보내기')">Excel</button><button class="btn sm" onclick="toast('PDF 내보내기')">PDF</button><button class="btn sm" onclick="toast('세금계산서 발행 화면으로 이동합니다.')">세금계산서 발행</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
-      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
-        const g = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(g)}</td><td>${money(g*.3)}</td><td>${money(g*.7)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
-      }).join("")}</tbody>
+      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>1인 단가</th><th>사용료</th><th>본사 운영비(30%)</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
+      <tbody>${contentPackages.filter(isPublic).flatMap(c => contentUsageFor(c.id).map(u => {
+        const g = c.price * u.students;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g*HQ_RATE)}</td><td style="color:var(--green);">${money(g*CREATOR_RATE)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
+      })).join("")}</tbody>
     </table></div>
   </div>`;
 };
@@ -1548,8 +1872,8 @@ viewRenderers["admin-lms"] = () => {
   return `<div class="panel">
     <div class="panel-head"><div><h2 class="panel-title">11주 커리큘럼</h2><p class="panel-sub">코딩 사고력 과정 (초등 3~4)</p></div></div>
     <div style="padding:16px;">
-      ${curriculum.map((w, i) => `<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #edf1f6;">
-        <div style="width:50px;height:50px;border-radius:10px;background:${i<3?'#dcfce7':i===3?'#fff4bf':'#eef2f7'};display:grid;place-items:center;font-weight:900;font-size:16px;">${w.week}</div>
+      ${curriculum.map((w, i) => `<div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);">
+        <div style="width:50px;height:50px;border-radius:10px;background:${i<3?'rgba(48,209,88,0.3)':i===3?'rgba(250,70,22,0.18)':'rgba(255,255,255,0.06)'};display:grid;place-items:center;font-weight:900;font-size:16px;">${w.week}</div>
         <div style="flex:1;">
           <div style="font-weight:900;">${w.theme}</div>
           <div style="font-size:13px;color:var(--muted);">${w.topic}</div>
@@ -1569,7 +1893,7 @@ viewRenderers["admin-consent"] = () => {
   return `<div class="grid cols-2">
     <div class="panel"><div class="panel-head"><div><h2 class="panel-title">통합 동의서 항목</h2><p class="panel-sub">홍보 활용은 선택 동의로 분리</p></div></div>
       <div style="padding:16px;">
-        ${items.map((x, i) => `<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #edf1f6;cursor:pointer;"><input type="checkbox" ${i<7?'checked':''}><div><div style="font-weight:800;font-size:14px;">${x}</div><div style="font-size:12px;color:var(--muted);">${i===7?'선택 동의':'운영 필수 동의'}</div></div></label>`).join("")}
+        ${items.map((x, i) => `<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;"><input type="checkbox" ${i<7?'checked':''}><div><div style="font-weight:800;font-size:14px;">${x}</div><div style="font-size:12px;color:var(--muted);">${i===7?'선택 동의':'운영 필수 동의'}</div></div></label>`).join("")}
         <button class="btn primary" style="margin-top:14px;" onclick="toast('동의서가 저장되었습니다.')">서명 저장</button>
       </div>
     </div>
