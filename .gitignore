@@ -3,3 +3,16 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# 내부 기획 자료 (저장소에 포함하지 않음)
+*.docx
+*.m4a
+
+# MMS 백엔드
+mms-platform/node_modules/
+mms-platform/.env
+mms-platform/uploads/*
+!mms-platform/uploads/.gitkeep
+mms-platform/prisma/*.db
+mms-platform/prisma/*.db-journal
+mms-platform/dist/

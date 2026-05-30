@@ -1,0 +1,36 @@
+{
+  "name": "dlab-mms-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "D.LAB MMS 콘텐츠 마켓 — 업로드·본사 검수·사용·정산 풀스택 (Express + Prisma + SQLite)",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "seed": "tsx prisma/seed.ts",
+    "db:push": "prisma db push",
+    "db:reset": "prisma db push --force-reset && npm run seed",
+    "setup": "prisma generate && prisma db push && npm run seed"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.2",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
