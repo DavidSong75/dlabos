@@ -529,7 +529,6 @@ const navConfig = {
   market: [
     ["market-browse", "콘텐츠 스토어", "&#x1F6D2;"],
     ["market-detail", "콘텐츠 상세", "&#x1F4C4;"],
-    ["market-cart", "장바구니 & 구매", "&#x1F6D2;"],
     ["market-register", "콘텐츠 등록", "&#x2795;"],
     ["market-seller", "판매자 대시보드", "&#x1F4B0;"],
     ["market-settlement", "정산 현황", "&#x1F4C3;"],
@@ -575,13 +574,28 @@ const shopItems = [
   { id: "sh5", icon: "&#x1F381;", name: "디랩 굿즈 키트", cost: 800 },
 ];
 
+// price = 학생 1인당 월 사용료. 실제 과금은 캠퍼스별로 사용한 학생 수 × 단가로 계산된다.
 const contentPackages = [
-  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, studentCount: 34, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
-  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, studentCount: 18, campus: "판교/강남", creator: "김정현 (판교)", status: "검수 대기", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
-  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, studentCount: 12, campus: "분당", creator: "박민호 (분당)", status: "승인", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
-  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, studentCount: 8, campus: "강남", creator: "정하나 (강남)", status: "수정 요청", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
-  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, studentCount: 42, campus: "전체", creator: "이수진 (분당)", status: "승인", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
+  { id: "c1", title: "코딩 사고력: 순서도와 조건문", grade: "초등 3~4", difficulty: "입문", price: 15000, creator: "이수진 (분당)", status: "승인", rating: 4.8, reviews: 12, desc: "순서도 기반으로 조건문의 논리 구조를 학습합니다." },
+  { id: "c2", title: "파이썬 데이터 분석 기초", grade: "중등", difficulty: "중급", price: 22000, creator: "김정현 (판교)", status: "검수 대기", rating: 0, reviews: 0, desc: "판다스와 matplotlib을 활용한 데이터 시각화 입문 과정입니다." },
+  { id: "c3", title: "아두이노 IoT 프로젝트", grade: "초등 5~6", difficulty: "중급", price: 28000, creator: "박민호 (분당)", status: "승인", rating: 4.5, reviews: 8, desc: "센서와 액추에이터를 활용한 IoT 프로젝트 기반 수업입니다." },
+  { id: "c4", title: "AI 챗봇 만들기", grade: "중등", difficulty: "고급", price: 35000, creator: "정하나 (강남)", status: "수정 요청", rating: 0, reviews: 0, desc: "OpenAI API를 활용한 챗봇 제작 프로젝트입니다." },
+  { id: "c5", title: "스크래치 게임 개발", grade: "초등 1~2", difficulty: "입문", price: 12000, creator: "이수진 (분당)", status: "승인", rating: 4.9, reviews: 22, desc: "블록 코딩으로 나만의 게임을 만들어봅니다." },
 ];
+
+// 콘텐츠 사용 기록: 어느 캠퍼스에서 몇 명의 학생이 해당 콘텐츠를 열었는가 → 과금/정산의 기준
+const contentUsage = [
+  { contentId: "c1", campusId: "pangyo",  students: 10 },
+  { contentId: "c1", campusId: "bundang", students: 12 },
+  { contentId: "c1", campusId: "gangnam", students: 7 },
+  { contentId: "c1", campusId: "songdo",  students: 5 },
+  { contentId: "c3", campusId: "bundang", students: 12 },
+  { contentId: "c5", campusId: "pangyo",  students: 12 },
+  { contentId: "c5", campusId: "bundang", students: 14 },
+  { contentId: "c5", campusId: "gangnam", students: 9 },
+  { contentId: "c5", campusId: "songdo",  students: 7 },
+];
+const HQ_RATE = 0.3, CREATOR_RATE = 0.7; // 본사 30% / 제작자 70%
 
 const invoices = [
   { student: "김민준", className: "알고리즘 A", amount: 330000, method: "자동결제", due: "2026-06-05", status: "완료" },
@@ -681,8 +695,6 @@ const defaultState = {
   recording: false,
   recordingDone: false,
   reportsSent: false,
-  cart: [],
-  purchased: false,
   expandedNotif: null,
 };
 
@@ -703,6 +715,21 @@ function pct(n) { return Math.round(n) + "%"; }
 function studentById(id) { return students.find(s => s.id === (id || state.selectedStudentId)) || students[0]; }
 function classStudents(cid) { return students.filter(s => s.classId === (cid || state.selectedClassId)); }
 function qualityScore(c) { return Math.round(c.attendance * .30 + c.reports * .25 + c.recordings * .25 + c.renewal * .20); }
+
+// ===== 콘텐츠 사용량·정산 헬퍼 (1인당 단가 × 사용 학생 수 → 본사 30% / 제작자 70%) =====
+function contentUsageFor(cid) { return contentUsage.filter(u => u.contentId === cid); }
+function contentStudents(cid) { return contentUsageFor(cid).reduce((a, u) => a + u.students, 0); }
+function contentCampuses(cid) { return contentUsageFor(cid).map(u => campusShort(u.campusId)).join(", ") || "-"; }
+function campusShort(id) { return ((campuses.find(c => c.id === id) || {}).name || id).replace(/\s*(직영캠퍼스|캠퍼스|우수가맹|가맹)\s*/g, "").trim() || id; }
+function contentGross(c) { return c.price * contentStudents(c.id); } // 콘텐츠 전체 사용료
+// 한 캠퍼스가 사용한 콘텐츠별 청구 내역 [{content, students, gross}]
+function campusContentBill(campusId) {
+  return contentUsage.filter(u => u.campusId === campusId).map(u => {
+    const c = contentPackages.find(x => x.id === u.contentId) || { price: 0 };
+    return { content: c, students: u.students, gross: c.price * u.students };
+  });
+}
+function campusContentTotal(campusId) { return campusContentBill(campusId).reduce((a, b) => a + b.gross, 0); }
 
 function statusTag(status) {
   const map = {
@@ -867,21 +894,10 @@ function sendReports() {
   toast("학부모 리포트가 발송되었습니다.");
 }
 
-function addToCart(cid) {
-  if (!state.cart.includes(cid)) { state.cart.push(cid); saveState(); }
-  toast("장바구니에 추가되었습니다.");
-}
-
-function removeFromCart(cid) {
-  state.cart = state.cart.filter(x => x !== cid);
-  saveState(); renderView();
-}
-
-function purchaseCart() {
-  state.purchased = true;
-  state.cart = [];
-  saveState(); renderView();
-  toast("구매가 완료되었습니다!");
+// 선구매가 아니라 사용량 기반 후정산: 도입하면 학생 사용분이 월말에 자동 청구된다.
+function adoptContent(cid) {
+  const c = contentPackages.find(x => x.id === cid) || {};
+  toast(`${c.title} 도입 완료 — 학생이 사용한 만큼 월말에 자동 정산됩니다.`);
 }
 
 function resetDemo() {
@@ -1344,13 +1360,13 @@ viewRenderers["teacher-content"] = () => {
   const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
   return `<div class="grid cols-3">
     ${metric("등록 콘텐츠", `${myContent.length}개`, "내가 제작한 콘텐츠")}
-    ${metric("사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "전체 캠퍼스 합산")}
-    ${metric("이번 달 수익", money(myContent.reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "70% 제작자 정산")}
+    ${metric("사용 학생", `${myContent.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "전체 캠퍼스 합산")}
+    ${metric("이번 달 수익", money(myContent.reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "70% 제작자 정산")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">나의 콘텐츠</h2></div><button class="btn primary sm" onclick="showView('market-register')">+ 새 콘텐츠 등록</button></div>
     <div class="table-wrap"><table><thead><tr><th>제목</th><th>대상</th><th>단가</th><th>사용 학생</th><th>수익(70%)</th><th>상태</th></tr></thead>
-      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${c.studentCount}명</td><td>${money(c.price*c.studentCount*.7)}</td><td>${statusTag(c.status)}</td></tr>`).join("")}</tbody>
+      <tbody>${myContent.map(c => `<tr><td style="font-weight:800;">${c.title}</td><td>${c.grade}</td><td>${money(c.price)}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price*contentStudents(c.id)*.7)}</td><td>${statusTag(c.status)}</td></tr>`).join("")}</tbody>
     </table></div>
   </div>`;
 };
@@ -1418,11 +1434,21 @@ viewRenderers["director-attendance"] = () => {
 };
 
 viewRenderers["director-finance"] = () => {
+  const campusId = state.campusId || "bundang";
+  const bill = campusContentBill(campusId);
+  const contentCost = campusContentTotal(campusId);
   return `<div class="grid cols-4">
-    ${metric("이번 달 매출", money(33200000), "분당캠퍼스")}
+    ${metric("이번 달 매출", money(33200000), `${campusShort(campusId)}캠퍼스`)}
     ${metric("수납 완료", money(27600000), "83% 수납")}
     ${metric("미납", money(3300000), "2건")}
-    ${metric("콘텐츠 비용", money(1200000), "콘텐츠 사용료")}
+    ${metric("콘텐츠 사용료", money(contentCost), `${bill.length}개 콘텐츠 · 본사 청구`)}
+  </div>
+  <div class="panel" style="margin-top:14px;">
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 사용료 청구</h2><p class="panel-sub">우리 캠퍼스 학생이 사용한 콘텐츠 = 사용 학생 수 × 1인 단가 (본사에 납부)</p></div><span class="tag yellow">합계 ${money(contentCost)}</span></div>
+    <div class="table-wrap"><table><thead><tr><th>콘텐츠</th><th>제작자</th><th>사용 학생</th><th>1인 단가</th><th>청구액</th></tr></thead>
+      <tbody>${bill.map(b => `<tr><td style="font-weight:800;">${b.content.title}</td><td style="font-size:12px;color:var(--muted);">${b.content.creator}</td><td>${b.students}명</td><td>${money(b.content.price)}</td><td style="font-weight:900;">${money(b.gross)}</td></tr>`).join("")}
+      <tr><td colspan="4" style="text-align:right;font-weight:800;">합계</td><td style="font-weight:900;color:var(--brand);">${money(contentCost)}</td></tr></tbody>
+    </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">결제/미납 현황</h2></div></div>
@@ -1531,30 +1557,33 @@ viewRenderers["hq-campus-detail"] = () => {
 };
 
 viewRenderers["hq-royalty"] = () => {
+  const approved = contentPackages.filter(c => c.status === "승인");
+  const totalGross = approved.reduce((a, c) => a + contentGross(c), 0);
   return `<div class="grid cols-3">
-    ${metric("총 로열티", money(campuses.reduce((a,c)=>a+c.revenue*c.royaltyRate/100,0)), "이번 달 예상")}
-    ${metric("콘텐츠 수수료", money(contentPackages.reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "30% HQ 수수료")}
-    ${metric("프랜차이즈 수", `${campuses.length}개`, "직영 2 + 가맹 2")}
+    ${metric("콘텐츠 총 사용료", money(totalGross), "1인당 단가 × 사용 학생 수")}
+    ${metric("본사 수수료 (30%)", money(Math.round(totalGross * HQ_RATE)), "본사 정산 수익")}
+    ${metric("제작자 정산 (70%)", money(Math.round(totalGross * CREATOR_RATE)), "콘텐츠 제작자 지급액")}
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">월 정산 테이블</h2></div>
+    <div class="panel-head"><div><h2 class="panel-title">캠퍼스별 콘텐츠 청구</h2><p class="panel-sub">각 캠퍼스가 사용한 학생 수 × 단가 = 해당 캠퍼스 원장 청구액</p></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 파일을 내보냅니다.')">Excel</button><button class="btn sm" onclick="toast('PDF를 내보냅니다.')">PDF</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>캠퍼스</th><th>월 매출</th><th>콘텐츠 비용</th><th>로열티율</th><th>로열티 금액</th><th>정산 상태</th></tr></thead>
-      <tbody>${campuses.map(c => `<tr>
-        <td style="font-weight:800;">${c.name}</td><td>${money(c.revenue)}</td><td>${money(Math.round(c.revenue*0.03))}</td><td>${c.royaltyRate}%</td><td style="font-weight:900;color:var(--blue);">${money(c.revenue*c.royaltyRate/100)}</td><td>${statusTag("완료")}</td>
-      </tr>`).join("")}</tbody>
+      <thead><tr><th>캠퍼스</th><th>유형</th><th>사용 콘텐츠</th><th>콘텐츠 청구액</th><th>본사 30%</th><th>제작자 70%</th><th>정산</th></tr></thead>
+      <tbody>${campuses.map(c => {
+        const total = campusContentTotal(c.id);
+        return `<tr><td style="font-weight:800;">${c.name}</td><td>${c.type}</td><td>${campusContentBill(c.id).length}건</td><td style="font-weight:900;">${money(total)}</td><td>${money(Math.round(total * HQ_RATE))}</td><td style="color:var(--green);">${money(Math.round(total * CREATOR_RATE))}</td><td>${statusTag("완료")}</td></tr>`;
+      }).join("")}</tbody>
     </table></div>
   </div>
   <div class="panel" style="margin-top:14px;">
-    <div class="panel-head"><div><h2 class="panel-title">콘텐츠별 정산</h2></div></div>
+    <div class="panel-head"><div><h2 class="panel-title">콘텐츠 × 캠퍼스 상세 정산</h2><p class="panel-sub">오픈한 학생 수 기준 자동 분할 — 본사 30% / 제작자 70%</p></div></div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생 수</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th></tr></thead>
-      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
-        const gross = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td>${money(gross*.7)}</td></tr>`;
-      }).join("")}</tbody>
+      <thead><tr><th>콘텐츠</th><th>제작자</th><th>캠퍼스</th><th>학생 수</th><th>1인 단가</th><th>사용료</th><th>본사 30%</th><th>제작자 70%</th></tr></thead>
+      <tbody>${approved.flatMap(c => contentUsageFor(c.id).map(u => {
+        const g = c.price * u.students;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td style="font-size:12px;color:var(--muted);">${c.creator}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g * HQ_RATE)}</td><td style="color:var(--green);">${money(g * CREATOR_RATE)}</td></tr>`;
+      })).join("")}</tbody>
     </table></div>
   </div>`;
 };
@@ -1568,7 +1597,7 @@ viewRenderers["hq-content"] = () => {
         <div class="panel-head"><div><h2 class="panel-title">${c.title}</h2><p class="panel-sub">${c.grade} &middot; 난이도 ${c.difficulty} &middot; ${c.creator}</p></div>${statusTag(c.status)}</div>
         <div style="padding:12px;">
           <div class="row-copy">${c.desc}</div>
-          <div style="margin-top:8px;"><span class="row-copy">학생당 ${money(c.price)} &middot; ${c.studentCount}명 사용 중</span></div>
+          <div style="margin-top:8px;"><span class="row-copy">학생당 ${money(c.price)} &middot; ${contentStudents(c.id)}명 사용 중</span></div>
           ${c.status !== "승인" ? `<div style="margin-top:10px;display:flex;gap:6px;"><button class="btn sm primary" onclick="approveContent('${c.id}','승인')">승인</button><button class="btn sm red" onclick="approveContent('${c.id}','수정 요청')">수정 요청</button></div>` : '<div style="margin-top:8px;"><span class="tag green">승인 완료</span></div>'}
         </div>
       </div>`).join("")}
@@ -1615,74 +1644,31 @@ viewRenderers["market-detail"] = () => {
           <p style="color:var(--slate);line-height:1.7;">${c.desc}</p>
           <div class="drm-notice" style="margin-top:14px;">&#x1F512; 1주일 미리보기 가능 &middot; 복사/캡처/개발자도구 차단 DRM 적용</div>
           <div style="margin-top:16px;display:flex;gap:10px;">
-            <button class="btn primary" onclick="addToCart('${c.id}');showView('market-cart');">&#x1F6D2; 장바구니 담기</button>
+            <button class="btn primary" onclick="adoptContent('${c.id}')">&#x2705; 우리 캠퍼스에 도입</button>
             <button class="btn" onclick="toast('미리보기를 시작합니다.')">&#x1F440; 미리보기</button>
           </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--muted);">선결제 없이 도입 후, 학생이 사용한 만큼 <b style="color:var(--ink-soft);">매월 말 자동 정산</b>됩니다.</div>
         </div>
       </div>
     </div>
     <div>
       <div class="panel pad">
         <div style="font-weight:900;margin-bottom:12px;">콘텐츠 정보</div>
-        ${[["제작자", c.creator],["학생당 단가", money(c.price)],["대상 학년", c.grade],["난이도", c.difficulty],["사용 학생", `${c.studentCount}명`],["리뷰", `${c.reviews}개`]].map(([k,v]) =>
+        ${[["제작자", c.creator],["학생당 단가", money(c.price)],["대상 학년", c.grade],["난이도", c.difficulty],["사용 학생", `${contentStudents(c.id)}명`],["리뷰", `${c.reviews}개`]].map(([k,v]) =>
           `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;"><span style="color:var(--muted);">${k}</span><span style="font-weight:800;">${v}</span></div>`
         ).join("")}
       </div>
       <div class="panel pad" style="margin-top:14px;">
-        <div style="font-weight:900;margin-bottom:8px;">수익 분배</div>
+        <div style="font-weight:900;margin-bottom:8px;">수익 분배 (학생 1인당)</div>
         <div style="font-size:13px;line-height:1.7;">
-          <div style="display:flex;justify-content:space-between;"><span>본사 수수료 (30%)</span><span style="font-weight:800;">${money(c.price * .3)}</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * .7)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>본사 수수료 (30%)</span><span style="font-weight:800;">${money(c.price * HQ_RATE)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>제작자 정산 (70%)</span><span style="font-weight:800;color:var(--green);">${money(c.price * CREATOR_RATE)}</span></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6;">
+          과금 방식: <b style="color:var(--ink-soft);">학생이 콘텐츠를 열 때마다</b> 1인 단가가 해당 캠퍼스에 청구되고, 본사 30% / 제작자 70%로 자동 분할됩니다.
+          <div style="margin-top:6px;">예: 한 캠퍼스에서 10명 사용 → ${money(c.price * 10)} (본사 ${money(c.price * 10 * HQ_RATE)} · 제작자 ${money(c.price * 10 * CREATOR_RATE)})</div>
         </div>
       </div>
-    </div>
-  </div>`;
-};
-
-viewRenderers["market-cart"] = () => {
-  if (state.purchased) {
-    return `<div class="checkin-success">
-      <div class="checkin-emoji">&#x2705;</div>
-      <div class="checkin-name">구매가 완료되었습니다!</div>
-      <div class="checkin-info">콘텐츠가 캠퍼스에 등록되었습니다.</div>
-      <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;">
-        <button class="btn primary" onclick="showView('market-browse')">스토어로 돌아가기</button>
-        <button class="btn" onclick="showView('market-settlement')">정산 현황 보기</button>
-      </div>
-    </div>`;
-  }
-
-  const items = state.cart.map(cid => contentPackages.find(c => c.id === cid)).filter(Boolean);
-  const studentCount = 10;
-  const total = items.reduce((a, c) => a + c.price * studentCount, 0);
-
-  if (!items.length) {
-    return `<div style="text-align:center;padding:60px;"><div style="font-size:48px;margin-bottom:16px;">&#x1F6D2;</div><div style="font-weight:900;font-size:18px;">장바구니가 비어있습니다</div><div style="color:var(--muted);margin-top:8px;"><button class="btn primary" style="margin-top:12px;" onclick="showView('market-browse')">콘텐츠 스토어 가기</button></div></div>`;
-  }
-
-  return `<div class="steps">
-    <div class="step done"><div class="step-num">1</div>콘텐츠 선택</div><div class="step-line"></div>
-    <div class="step active"><div class="step-num">2</div>결제 확인</div><div class="step-line"></div>
-    <div class="step"><div class="step-num">3</div>완료</div>
-  </div>
-  <div class="grid cols-3">
-    <div class="span-2">
-      <div class="panel">
-        <div class="panel-head"><div><h2 class="panel-title">장바구니</h2></div></div>
-        ${items.map(c => `<div class="cart-item">
-          <div class="cart-item-info"><div style="font-weight:800;">${c.title}</div><div style="font-size:12px;color:var(--muted);">${c.grade} &middot; ${c.difficulty} &middot; 학생 ${studentCount}명 적용</div></div>
-          <div class="cart-item-price">${money(c.price * studentCount)}<br><button class="btn sm red" style="margin-top:4px;" onclick="removeFromCart('${c.id}')">삭제</button></div>
-        </div>`).join("")}
-      </div>
-    </div>
-    <div class="panel pad">
-      <div style="font-weight:900;margin-bottom:14px;">주문 요약</div>
-      <div style="font-size:13px;">
-        ${items.map(c => `<div style="display:flex;justify-content:space-between;padding:6px 0;"><span>${c.title}</span><span>${money(c.price * studentCount)}</span></div>`).join("")}
-        <div style="border-top:2px solid var(--ink);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:900;font-size:16px;"><span>합계</span><span>${money(total)}</span></div>
-        <div style="margin-top:6px;font-size:12px;color:var(--muted);">학생 ${studentCount}명 &times; ${items.length}개 콘텐츠</div>
-      </div>
-      <button class="btn primary" style="width:100%;margin-top:16px;" onclick="purchaseCart()">&#x1F4B3; 프리페이드 포인트로 구매</button>
     </div>
   </div>`;
 };
@@ -1707,10 +1693,10 @@ viewRenderers["market-register"] = () => {
 
 viewRenderers["market-seller"] = () => {
   const myContent = contentPackages.filter(c => c.creator.includes("이수진") || c.creator.includes("분당"));
-  const totalEarnings = myContent.reduce((a, c) => a + c.price * c.studentCount * .7, 0);
+  const totalEarnings = myContent.reduce((a, c) => a + c.price * contentStudents(c.id) * .7, 0);
   return `<div class="grid cols-4">
     ${metric("등록 콘텐츠", `${myContent.length}개`, "")}
-    ${metric("총 사용 학생", `${myContent.reduce((a,c)=>a+c.studentCount,0)}명`, "")}
+    ${metric("총 사용 학생", `${myContent.reduce((a,c)=>a+contentStudents(c.id),0)}명`, "")}
     ${metric("이번 달 수익", money(totalEarnings), "70% 정산")}
     ${metric("누적 수익", money(totalEarnings * 3), "최근 3개월")}
   </div>
@@ -1719,8 +1705,8 @@ viewRenderers["market-seller"] = () => {
     <div class="table-wrap"><table>
       <thead><tr><th>콘텐츠</th><th>학생 수</th><th>단가</th><th>총 사용료</th><th>HQ 30%</th><th>내 수익 70%</th><th>상태</th></tr></thead>
       <tbody>${myContent.map(c => {
-        const gross = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td style="font-weight:900;color:var(--green);">${money(gross*.7)}</td><td>${statusTag(c.status)}</td></tr>`;
+        const gross = c.price * contentStudents(c.id);
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${contentStudents(c.id)}명</td><td>${money(c.price)}</td><td>${money(gross)}</td><td>${money(gross*.3)}</td><td style="font-weight:900;color:var(--green);">${money(gross*.7)}</td><td>${statusTag(c.status)}</td></tr>`;
       }).join("")}</tbody>
     </table></div>
   </div>`;
@@ -1728,20 +1714,20 @@ viewRenderers["market-seller"] = () => {
 
 viewRenderers["market-settlement"] = () => {
   return `<div class="grid cols-3">
-    ${metric("이번 달 정산", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount,0)), "전체 콘텐츠 거래")}
-    ${metric("HQ 수수료 (30%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.3,0)), "")}
-    ${metric("제작자 정산 (70%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*c.studentCount*.7,0)), "")}
+    ${metric("이번 달 정산", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id),0)), "전체 콘텐츠 거래")}
+    ${metric("HQ 수수료 (30%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id)*.3,0)), "")}
+    ${metric("제작자 정산 (70%)", money(contentPackages.filter(c=>c.status==="승인").reduce((a,c)=>a+c.price*contentStudents(c.id)*.7,0)), "")}
   </div>
   <div class="panel" style="margin-top:14px;">
     <div class="panel-head"><div><h2 class="panel-title">정산 상세</h2></div>
       <div style="display:flex;gap:8px;"><button class="btn sm" onclick="toast('Excel 내보내기')">Excel</button><button class="btn sm" onclick="toast('PDF 내보내기')">PDF</button><button class="btn sm" onclick="toast('세금계산서 발행 화면으로 이동합니다.')">세금계산서 발행</button></div>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>단가</th><th>총액</th><th>HQ 30%</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
-      <tbody>${contentPackages.filter(c=>c.status==="승인").map(c => {
-        const g = c.price * c.studentCount;
-        return `<tr><td style="font-weight:800;">${c.title}</td><td>${c.campus}</td><td>${c.studentCount}명</td><td>${money(c.price)}</td><td>${money(g)}</td><td>${money(g*.3)}</td><td>${money(g*.7)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
-      }).join("")}</tbody>
+      <thead><tr><th>콘텐츠</th><th>캠퍼스</th><th>학생</th><th>1인 단가</th><th>사용료</th><th>HQ 30%</th><th>제작자 70%</th><th>세금계산서</th></tr></thead>
+      <tbody>${contentPackages.filter(c=>c.status==="승인").flatMap(c => contentUsageFor(c.id).map(u => {
+        const g = c.price * u.students;
+        return `<tr><td style="font-weight:800;">${c.title}</td><td>${campusShort(u.campusId)}</td><td>${u.students}명</td><td>${money(c.price)}</td><td style="font-weight:800;">${money(g)}</td><td>${money(g*HQ_RATE)}</td><td style="color:var(--green);">${money(g*CREATOR_RATE)}</td><td><button class="btn sm" onclick="toast('세금계산서 발행 완료')">발행</button></td></tr>`;
+      })).join("")}</tbody>
     </table></div>
   </div>`;
 };
