@@ -1,7 +1,7 @@
 import { prisma } from "../db.js";
 
-// 카카오 알림톡 stub — 실제 발송 대신 DB에 기록하고 콘솔 로그.
-// 실제 연동 시 이 함수 본문만 알림톡 API 호출로 교체하면 됨.
+// 카카오 알림톡 — 실연동 + stub 폴백.
+// KAKAO_API_KEY + KAKAO_SENDER 가 설정되면 실제 발송(provider HTTP)을 시도하고, 없으면 stub(DB 기록).
 type Vars = Record<string, string | number>;
 
 const TEMPLATES: Record<string, (v: Vars) => { title: string; body: string }> = {
@@ -21,9 +21,31 @@ const TEMPLATES: Record<string, (v: Vars) => { title: string; body: string }> = 
 
 export async function sendKakao(to: string, template: string, vars: Vars = {}) {
   const t = TEMPLATES[template]?.(vars) ?? { title: "", body: String(vars.body ?? "") };
-  const n = await prisma.notification.create({
-    data: { channel: "kakao", to, template, title: t.title, body: t.body, status: "sent" },
+  let status = "sent";
+  if (process.env.KAKAO_API_KEY && process.env.KAKAO_SENDER) {
+    try {
+      await liveSend(to, t.title, t.body);
+    } catch (e) {
+      status = "failed";
+      console.error("[알림톡] 실발송 실패:", (e as Error).message);
+    }
+  } else {
+    console.log(`[알림톡 stub] → ${to} (${template}): ${t.body.split("\n")[0]}`);
+  }
+  return prisma.notification.create({
+    data: { channel: "kakao", to, template, title: t.title, body: t.body, status },
   });
-  console.log(`[알림톡 stub] → ${to} (${template}): ${t.body.split("\n")[0]}`);
-  return n;
+}
+
+// 실제 알림톡 발송 자리 — 카카오 비즈메시지/대행사(API 키·발신프로필) 연동.
+// provider 별 엔드포인트/페이로드가 다르므로 계약 후 본문을 맞춰 구현.
+async function liveSend(to: string, title: string, body: string) {
+  const url = process.env.KAKAO_API_URL;
+  if (!url) throw new Error("KAKAO_API_URL 미설정");
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", Authorization: `Bearer ${process.env.KAKAO_API_KEY}` },
+    body: JSON.stringify({ from: process.env.KAKAO_SENDER, to, title, text: body }),
+  });
+  if (!res.ok) throw new Error("KAKAO HTTP " + res.status);
 }

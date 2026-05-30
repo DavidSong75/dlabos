@@ -119,3 +119,21 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:rgba(255,69,58,.5)}
 @media(max-width:760px){.shell{grid-template-columns:1fr}.rail{display:none}.cols-2,.cols-3,.cols-4{grid-template-columns:1fr}}
+
+/* 출석 키오스크 키패드 */
+.kdisp{text-align:center;padding:18px;border:1px solid var(--line2);border-radius:var(--r-md);background:rgba(255,255,255,.04);margin-bottom:14px;letter-spacing:12px;font-size:30px;font-weight:700;color:var(--ink)}
+.kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpad button{aspect-ratio:1.4;border:1px solid var(--line2);border-radius:var(--r-md);background:rgba(255,255,255,.05);color:var(--ink);font-size:22px;font-weight:600}
+.kpad button:hover{background:rgba(255,255,255,.1)}
+.kpad button:active{transform:scale(.95)}
+.kpad button.act{background:var(--brand);color:#fff;border-color:transparent;font-size:16px;font-weight:650}
+.hero{border-radius:var(--r-lg);padding:24px;text-align:center;color:#fff;background:linear-gradient(135deg,#fa4616,#ff8a3d);box-shadow:0 14px 40px rgba(250,70,22,.3)}
+.hero .hi{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.hero .sub{font-size:13px;opacity:.94;margin-top:4px}
+.hero .chips{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.hero .chip{padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.24);font-weight:700;font-size:13px}
+.lb{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line)}
+.lb .rk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;background:rgba(255,255,255,.08)}
+.lb .rk.g{background:var(--brand);color:#fff}
+.lb .nm{flex:1;font-weight:600}
+.lb .pt{font-weight:700;color:var(--brand)}

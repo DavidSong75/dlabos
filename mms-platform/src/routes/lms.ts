@@ -35,7 +35,7 @@ lmsRouter.post("/lessons", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: "수업 정보를 확인하세요." });
   const cls = await prisma.classGroup.findUnique({ where: { id: parsed.data.classGroupId }, include: { students: true } });
   if (!cls) return res.status(404).json({ error: "반을 찾을 수 없습니다." });
-  const ai = summarizeLesson(parsed.data.transcript, { students: cls.students.map((s) => s.name) });
+  const ai = await summarizeLesson(parsed.data.transcript, { students: cls.students.map((s) => s.name) });
   const lesson = await prisma.lesson.create({
     data: { classGroupId: cls.id, date: parsed.data.date ?? "", transcript: parsed.data.transcript, aiSummary: ai.summary },
   });

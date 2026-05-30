@@ -32,9 +32,9 @@ const ROLE_LABEL = { creator:"콘텐츠 제작자", campus_director:"캠퍼스�
 // ---- nav by role ----
 function navFor(role){
   const market = ["market","🛒 콘텐츠 마켓"];
-  if(role==="creator") return [market,["register","➕ 콘텐츠 등록"],["mine","📦 내가 만든 콘텐츠"]];
-  if(role==="campus_director") return [market,["usage","📝 수업 사용 등록"],["settlement","📃 정산 내역"]];
-  return [market,["review","🔎 본사 검수"],["settlement","📃 정산 내역"]]; // hq_reviewer / hq_admin
+  if(role==="creator") return [market,["register","➕ 콘텐츠 등록"],["mine","📦 내가 만든 콘텐츠"],["lessons","🎙️ 수업 기록·AI"]];
+  if(role==="campus_director") return [market,["kiosk","📲 출석 키오스크"],["usage","📝 수업 사용 등록"],["payments","💳 결제 관리"],["settlement","📃 정산 내역"]];
+  return [market,["review","🔎 본사 검수"],["settlement","📃 정산 내역"],["notifications","🔔 알림톡 로그"],["curriculum","📚 커리큘럼"]]; // hq
 }
 
 // ===== render root =====
@@ -101,6 +101,11 @@ async function renderView(){
     if(S.view==="review") return await viewReview(el);
     if(S.view==="usage") return await viewUsage(el);
     if(S.view==="settlement") return await viewSettlement(el);
+    if(S.view==="kiosk") return await viewKiosk(el);
+    if(S.view==="payments") return await viewPayments(el);
+    if(S.view==="lessons") return await viewLessons(el);
+    if(S.view==="notifications") return await viewNotifications(el);
+    if(S.view==="curriculum") return await viewCurriculum(el);
   }catch(e){ el.innerHTML=`<div class="notice" style="background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.28)">오류: ${esc(e.message)}</div>`; }
 }
 
@@ -331,5 +336,128 @@ async function viewSettlement(el){
 }
 
 function metric(l,v,n){ return `<div class="metric"><div class="l">${l}</div><div class="v">${v}</div><div class="n">${n||""}</div></div>`; }
+
+// --- 출석 키오스크 ---
+let kioskDigits = "";
+async function viewKiosk(el){
+  setTitle("출석 키오스크","전화번호 뒤 4자리로 출석 · 학부모 알림톡 자동 발송");
+  kioskDigits=""; el.innerHTML = `<div id="k"></div>`; renderKiosk();
+}
+function renderKiosk(result, multi){
+  const k=document.getElementById("k"); if(!k)return;
+  if(result){
+    const s=result.student;
+    k.innerHTML = `<div style="max-width:680px;margin:0 auto;display:grid;gap:14px">
+      <div class="hero"><div style="font-size:46px">🎉</div><div class="hi">${esc(s.name)}, 환영해요!</div><div class="sub">${result.checkinTime} 입실 · ${esc(s.className||"")} · Lv.${s.level} · ${s.rank}위</div>
+        <div class="chips"><span class="chip">⭐ +${s.earned}P</span><span class="chip">🎮 ${s.points}P</span><span class="chip">🏆 ${s.rank}위</span></div></div>
+      <div class="panel"><div class="panel-head"><div><h2 class="panel-title">🏆 포인트 랭킹</h2></div></div>${result.leaderboard.map((r,i)=>`<div class="lb"><div class="rk ${i===0?'g':''}">${i+1}</div><div class="nm">${esc(r.name)}${r.id===s.id?' (나)':''}</div><div class="pt">${r.points}P</div></div>`).join("")}</div>
+      <div class="notice">📱 학부모님께 알림톡 발송: ${esc(result.notification.body.split("\n")[0])}</div>
+      <button class="btn primary" data-again>다른 학생 출석</button>
+    </div>`;
+    k.querySelector("[data-again]").onclick=()=>{kioskDigits="";renderKiosk();};
+    return;
+  }
+  const sideHtml = multi
+    ? `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">학생 선택</h2><p class="panel-sub">동일 번호 학생이 여러 명입니다</p></div></div>${multi.map(m=>`<div class="row"><div class="row-top"><div><div class="rt">${esc(m.name)}</div><div class="rc">${esc(m.className||"")}</div></div><button class="btn primary sm" data-pick="${m.id}">출석</button></div></div>`).join("")}</div>`
+    : `<div class="panel pad" style="display:grid;place-items:center;text-align:center;min-height:200px"><div style="font-size:40px">👋</div><div style="font-weight:700;margin-top:8px">번호를 누르면 정보가 나와요</div><div class="rc" style="color:var(--muted);margin-top:6px">테스트: 1842 · 3074 · 9201 · 4456</div></div>`;
+  k.innerHTML = `<div class="grid cols-2">
+    <div class="panel pad" style="max-width:420px">
+      <div style="text-align:center;margin-bottom:14px"><div style="font-size:30px">📲</div><div style="font-weight:750;font-size:18px">D.LAB 출석 체크</div><div style="color:var(--muted);font-size:13px">전화번호 뒤 4자리</div></div>
+      <div class="kdisp">${(kioskDigits||"").padEnd(4,"·").split("").join(" ")}</div>
+      <div class="kpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-key="${n}">${n}</button>`).join("")}<button data-key="c" class="act">C</button><button data-key="0">0</button><button data-key="back" class="act">←</button></div>
+    </div>
+    <div>${sideHtml}</div>
+  </div>`;
+  k.querySelectorAll("[data-key]").forEach(b=>b.onclick=()=>press(b.dataset.key));
+  k.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>checkinStudent(b.dataset.pick));
+}
+async function press(key){
+  if(key==="c") kioskDigits="";
+  else if(key==="back") kioskDigits=kioskDigits.slice(0,-1);
+  else if(kioskDigits.length<4) kioskDigits+=key;
+  if(kioskDigits.length===4){
+    try{ const r=await api("/attendance/checkin",{method:"POST",body:{phoneLast4:kioskDigits,campusId:S.user.campusId}});
+      if(r.multiple){ renderKiosk(null,r.students); } else { renderKiosk(r); }
+    }catch(e){ toast(e.message,true); kioskDigits=""; renderKiosk(); }
+  } else renderKiosk();
+}
+async function checkinStudent(id){ try{ const r=await api("/attendance/checkin/"+id,{method:"POST"}); renderKiosk(r); }catch(e){toast(e.message,true);} }
+
+// --- 결제 관리 ---
+async function viewPayments(el){
+  setTitle("결제 관리","수강료·예치금 결제 (stub PG) · 수강료 결제 시 학부모 알림톡");
+  const campusId=S.user.campusId;
+  const data = await api("/payments?campusId="+campusId);
+  const students = await api("/students?campusId="+campusId);
+  el.innerHTML = `
+    <div class="grid cols-3">
+      ${metric("수납 완료",won(data.summary.완료),`${data.summary.count}건`)}
+      ${metric("미납",won(data.summary.미납),"")}
+      ${metric("건수",data.summary.count+"건","최근 100건")}
+    </div>
+    <div class="grid cols-2" style="margin-top:14px">
+      <div class="panel pad"><div style="font-weight:800;margin-bottom:14px">새 결제 / 충전</div>
+        <label class="fld"><span class="lab">유형</span><select class="select" id="p-type"><option value="tuition">수강료</option><option value="deposit">예치금 충전</option><option value="material">교재/재료비</option></select></label>
+        <label class="fld"><span class="lab">학생(수강료 시)</span><select class="select" id="p-student"><option value="">— 없음 —</option>${students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label>
+        <label class="fld"><span class="lab">금액(원)</span><input class="input" id="p-amount" type="number" placeholder="330000"></label>
+        <label class="fld"><span class="lab">결제 수단</span><select class="select" id="p-method"><option>card</option><option>auto</option><option>vbank</option></select></label>
+        <button class="btn primary" id="p-save">결제 처리</button>
+      </div>
+      <div class="panel"><div class="panel-head"><div><h2 class="panel-title">결제 내역</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>유형</th><th>학생</th><th>금액</th><th>수단</th><th>상태</th></tr></thead>
+        <tbody>${data.rows.length?data.rows.map(p=>`<tr><td>${({tuition:"수강료",deposit:"예치금",content:"콘텐츠",material:"교재"})[p.type]||p.type}</td><td>${esc(p.studentName||"-")}</td><td>${won(p.amount)}</td><td>${esc(p.method)}</td><td><span class="tag ${p.status==="완료"?"green":p.status==="미납"?"red":""}">${p.status}</span></td></tr>`).join(""):'<tr><td colspan="5" style="color:var(--muted)">내역이 없습니다.</td></tr>'}</tbody></table></div>
+      </div>
+    </div>`;
+  document.getElementById("p-save").onclick=async()=>{
+    const body={campusId,type:document.getElementById("p-type").value,studentId:document.getElementById("p-student").value||undefined,amount:document.getElementById("p-amount").value,method:document.getElementById("p-method").value};
+    if(!body.amount){toast("금액을 입력하세요.",true);return;}
+    try{ await api("/payments",{method:"POST",body}); toast("결제 처리 완료."); renderView(); }catch(e){toast(e.message,true);}
+  };
+}
+
+// --- 수업 기록 · AI ---
+async function viewLessons(el){
+  setTitle("수업 기록 · AI 요약","녹취 입력 → AI 요약 생성 → 학부모 리포트 발송");
+  const lessons = await api("/lessons");
+  // 반 목록은 학생 API로 유추 (campus 기준)
+  el.innerHTML = `
+    <div class="grid cols-2">
+      <div class="panel pad"><div style="font-weight:800;margin-bottom:14px">새 수업 기록</div>
+        <label class="fld"><span class="lab">반 ID</span><input class="input" id="l-cg" placeholder="반 ID (관리자에게 문의 또는 시드값)"></label>
+        <label class="fld"><span class="lab">수업 날짜</span><input class="input" id="l-date" type="date" value="2026-05-30"></label>
+        <label class="fld"><span class="lab">수업 녹취 (STT 결과)</span><textarea class="textarea" id="l-tr" placeholder="오늘은 조건문을 배웠어요.&#10;if 안에 if 넣어도 되나요?&#10;네, 중첩 조건문이라고 해요."></textarea></label>
+        <button class="btn primary" id="l-save">AI 요약 생성</button>
+        <div id="l-result" style="margin-top:12px"></div>
+      </div>
+      <div class="panel"><div class="panel-head"><div><h2 class="panel-title">수업 기록</h2></div></div>
+        ${lessons.length?lessons.map(l=>`<div class="row"><div class="rt">${esc(l.classGroup?.name||l.classGroupId)} · ${esc(l.date||"")}</div><div class="rc">${esc(l.aiSummary||"(요약 없음)")}</div>${l.reportSent?'<span class="tag green" style="margin-top:6px">리포트 발송됨</span>':`<button class="btn sm" style="margin-top:6px" data-report="${l.id}">학부모 리포트 발송</button>`}</div>`).join(""):'<div class="row rc" style="color:var(--muted)">수업 기록이 없습니다.</div>'}
+      </div>
+    </div>`;
+  document.getElementById("l-save").onclick=async()=>{
+    const body={classGroupId:val("l-cg"),date:val("l-date"),transcript:document.getElementById("l-tr").value};
+    if(!body.classGroupId){toast("반 ID를 입력하세요. (커리큘럼/반 관리에서 확인)",true);return;}
+    try{ const r=await api("/lms/lessons",{method:"POST",body});
+      document.getElementById("l-result").innerHTML=`<div class="notice">🤖 AI 요약(${r.ai.mode==="live"?"실연동":"stub"}): ${esc(r.ai.summary)}</div>`;
+      toast("AI 요약 생성 완료."); }catch(e){toast(e.message,true);}
+  };
+  el.querySelectorAll("[data-report]").forEach(b=>b.onclick=async()=>{ try{ const r=await api(`/lms/lessons/${b.dataset.report}/send-report`,{method:"POST"}); toast(`학부모 ${r.sent}명에게 리포트 발송.`); renderView(); }catch(e){toast(e.message,true);} });
+}
+
+// --- 알림톡 로그 ---
+async function viewNotifications(el){
+  setTitle("알림톡 로그","카카오 알림톡 발송 내역 (stub: DB 기록)");
+  const list = await api("/notifications");
+  el.innerHTML = `<div class="panel"><div class="panel-head"><div><h2 class="panel-title">발송 내역 (${list.length})</h2></div></div>
+    <div class="table-wrap"><table><thead><tr><th>시각</th><th>템플릿</th><th>수신</th><th>내용</th><th>상태</th></tr></thead>
+    <tbody>${list.length?list.map(n=>`<tr><td style="white-space:nowrap">${new Date(n.createdAt).toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"})}</td><td>${esc(n.template)}</td><td>${esc(n.to)}</td><td style="color:var(--muted)">${esc(n.body.split("\n")[0])}</td><td><span class="tag ${n.status==="sent"?"green":"red"}">${n.status}</span></td></tr>`).join(""):'<tr><td colspan="5" style="color:var(--muted)">발송 내역이 없습니다.</td></tr>'}</tbody></table></div></div>`;
+}
+
+// --- 커리큘럼 ---
+async function viewCurriculum(el){
+  setTitle("LMS 커리큘럼","주차별 커리큘럼 · 진도");
+  const curs = await api("/lms/curriculum");
+  el.innerHTML = curs.map(c=>`<div class="panel" style="margin-bottom:14px"><div class="panel-head"><div><h2 class="panel-title">${esc(c.name)}</h2><p class="panel-sub">총 ${c.totalWeeks}주</p></div></div>
+    <div style="padding:6px 0">${c.weeks.map(w=>`<div class="row"><div class="row-top"><div><div class="rt">${w.week}주차 · ${esc(w.theme)}</div><div class="rc">${esc(w.topic)}</div></div><span class="tag">${w.missions}개 미션</span></div></div>`).join("")}</div></div>`).join("") || '<div class="notice">커리큘럼이 없습니다.</div>';
+}
 
 render();
